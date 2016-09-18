@@ -255,8 +255,8 @@ func (p *Packet) Set(name string, value interface{}) error {
 // PAP returns the User-Name and User-Password attributes of an Access-Request
 // packet.
 //
-// If packet's code is Access-Request, and the packet has a User-Name and
-// User-Password attribute, ok is true. Otherwise, it is false.
+// If the packet does not contain a User-Password attribute, the password is set
+// to the empty string.
 func (p *Packet) PAP() (username, password string, ok bool) {
 	if p.Code != CodeAccessRequest {
 		return
@@ -267,7 +267,9 @@ func (p *Packet) PAP() (username, password string, ok bool) {
 	}
 	pass := p.Value("User-Password")
 	if pass == nil {
-		return
+		// Free RADIUS's radtest does not send a password attribute if
+		// it is the empty string.
+		pass = ""
 	}
 	if userStr, valid := user.(string); valid {
 		username = userStr
