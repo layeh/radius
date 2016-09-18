@@ -8,17 +8,19 @@ import (
 
 // Handler is a value that can handle a server's RADIUS packet event.
 type Handler interface {
-	ServeRadius(w ResponseWriter, p *Packet)
+	ServeRADIUS(w ResponseWriter, p *Packet)
 }
 
 // HandlerFunc is a wrapper that allows ordinary functions to be used as a
 // handler.
 type HandlerFunc func(w ResponseWriter, p *Packet)
 
-// ServeRadius calls h(w, p).
-func (h HandlerFunc) ServeRadius(w ResponseWriter, p *Packet) {
+// ServeRADIUS calls h(w, p).
+func (h HandlerFunc) ServeRADIUS(w ResponseWriter, p *Packet) {
 	h(w, p)
 }
+
+var _ Handler = HandlerFunc(nil)
 
 // ResponseWriter is used by Handler when replying to a RADIUS packet.
 type ResponseWriter interface {
@@ -195,7 +197,7 @@ func (s *Server) ListenAndServe() error {
 				packet: packet,
 			}
 
-			s.Handler.ServeRadius(&response, packet)
+			s.Handler.ServeRADIUS(&response, packet)
 
 			activeLock.Lock()
 			delete(active, key)
