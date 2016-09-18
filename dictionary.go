@@ -5,15 +5,9 @@ import (
 	"sync"
 )
 
-var builtinOnce sync.Once
-
 // Builtin is the built-in dictionary. It is initially loaded with the
 // attributes defined in RFC 2865 and RFC 2866.
 var Builtin *Dictionary
-
-func initDictionary() {
-	Builtin = &Dictionary{}
-}
 
 type dictEntry struct {
 	Type  byte
