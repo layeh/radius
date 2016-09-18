@@ -24,15 +24,6 @@ var (
 	AttributeUnknown AttributeCodec
 )
 
-func init() {
-	AttributeText = attributeText{}
-	AttributeString = attributeString{}
-	AttributeAddress = attributeAddress{}
-	AttributeInteger = attributeInteger{}
-	AttributeTime = attributeTime{}
-	AttributeUnknown = attributeString{}
-}
-
 type attributeText struct{}
 
 func (attributeText) Decode(packet *Packet, value []byte) (interface{}, error) {

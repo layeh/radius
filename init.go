@@ -3,6 +3,13 @@ package radius
 func init() {
 	Builtin = &Dictionary{}
 
+	AttributeText = attributeText{}
+	AttributeString = attributeString{}
+	AttributeAddress = attributeAddress{}
+	AttributeInteger = attributeInteger{}
+	AttributeTime = attributeTime{}
+	AttributeUnknown = attributeString{}
+
 	// RFC 2865
 	// TODO: Attribute* should be initialized before
 	Builtin.MustRegister("User-Name", 1, AttributeText)
