@@ -171,7 +171,7 @@ func (s *Server) ListenAndServe() error {
 			continue
 		}
 		buff = buff[:n]
-		//go s.handleUDP(s.listener, buff, remoteAddr)
+
 		go func(conn *net.UDPConn, buff []byte, remoteAddr *net.UDPAddr) {
 			packet, err := Parse(buff, s.Secret, s.Dictionary)
 			if err != nil {
