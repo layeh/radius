@@ -1,7 +1,7 @@
 #!/bin/sh
 # simple-auth verifies that RADIUS_USERNAME and RADIUS_PASSWORD equal the
 # first and second arguments, respectively.
-if [ -z "$1" -o -z "$2" ]; then
+if [ -z "$1" ]; then
   echo -n Username and/or password not defined on server
   exit 1
 fi
