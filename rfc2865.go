@@ -4,35 +4,45 @@ import (
 	"bytes"
 	"crypto/md5"
 	"errors"
+	"math"
 )
 
-// TODO: support User-Password attributes longer than 16 bytes
 type rfc2865UserPassword struct{}
 
 func (rfc2865UserPassword) Decode(p *Packet, value []byte) (interface{}, error) {
 	if p.Secret == nil {
 		return nil, errors.New("radius: User-Password attribute requires Packet.Secret")
 	}
-	if len(value) != 16 {
+	if len(value) < 16 || len(value) > 128 {
 		return nil, errors.New("radius: invalid User-Password attribute length")
 	}
-	v := make([]byte, len(value))
-	copy(v, value)
 
-	var mask [md5.Size]byte
+	dec := make([]byte, 0, len(value))
+
 	hash := md5.New()
 	hash.Write(p.Secret)
 	hash.Write(p.Authenticator[:])
-	hash.Sum(mask[0:0])
+	dec = hash.Sum(dec)
 
-	for i, b := range v {
-		v[i] = b ^ mask[i]
+	for i, b := range value[:16] {
+		dec[i] ^= b
 	}
 
-	if i := bytes.IndexByte(v, 0); i > -1 {
-		return string(v[:i]), nil
+	for i := 16; i < len(value); i += 16 {
+		hash.Reset()
+		hash.Write(p.Secret)
+		hash.Write(value[i-16 : i])
+		dec = hash.Sum(dec)
+
+		for j, b := range value[i : i+16] {
+			dec[i+j] ^= b
+		}
 	}
-	return string(v), nil
+
+	if i := bytes.IndexByte(dec, 0); i > -1 {
+		return string(dec[:i]), nil
+	}
+	return string(dec), nil
 }
 
 func (rfc2865UserPassword) Encode(p *Packet, value interface{}) ([]byte, error) {
@@ -50,19 +60,36 @@ func (rfc2865UserPassword) Encode(p *Packet, value interface{}) ([]byte, error) 
 		password = bytePassword
 	}
 
-	if len(password) > 16 {
-		return nil, errors.New("radius: invalid User-Password attribute length")
+	if len(password) > 128 {
+		return nil, errors.New("radius: User-Password longer than 128 characters")
 	}
 
-	var mask [md5.Size]byte
+	chunks := int(math.Ceil(float64(len(password)) / 16.))
+	if chunks == 0 {
+		chunks = 1
+	}
+
+	enc := make([]byte, 0, chunks*16)
+
 	hash := md5.New()
 	hash.Write(p.Secret)
 	hash.Write(p.Authenticator[:])
-	hash.Sum(mask[0:0])
+	enc = hash.Sum(enc)
 
-	for i, b := range password {
-		mask[i] = b ^ mask[i]
+	for i, b := range password[:16] {
+		enc[i] ^= b
 	}
 
-	return mask[:], nil
+	for i := 16; i < len(password); i += 16 {
+		hash.Reset()
+		hash.Write(p.Secret)
+		hash.Write(enc[i-16 : i])
+		enc = hash.Sum(enc)
+
+		for j, b := range password[i : i+16] {
+			enc[i+j] ^= b
+		}
+	}
+
+	return enc, nil
 }

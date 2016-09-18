@@ -130,3 +130,35 @@ func Test_RFC2865_7_2(t *testing.T) {
 		t.Fatal("expecting Framed-Protocol = 1")
 	}
 }
+
+func TestPasswords(t *testing.T) {
+	passwords := []string{
+		"",
+		"qwerty",
+		"helloworld1231231231231233489hegufudhsgdsfygdf8g",
+	}
+
+	for _, password := range passwords {
+		secret := []byte("xyzzy5461")
+
+		r := radius.New(radius.CodeAccessRequest, secret)
+		if r == nil {
+			t.Fatal("could not create new RADIUS packet")
+		}
+		r.Add("User-Password", password)
+
+		b, err := r.Encode()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		q, err := radius.Parse(b, secret, radius.Builtin)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if s := q.String("User-Password"); s != password {
+			t.Fatalf("incorrect User-Password (expecting %q, got %q)", password, s)
+		}
+	}
+}
