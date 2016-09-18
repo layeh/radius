@@ -50,7 +50,10 @@ func handler(w radius.ResponseWriter, p *radius.Packet) {
 
 	cmd.Env = append(cmd.Env, "RADIUS_USERNAME="+username, "RADIUS_PASSWORD="+password)
 
-	output, _ := cmd.Output()
+	output, err := cmd.Output()
+	if err != nil {
+		log.Printf("handler error: %s\n", err)
+	}
 
 	var attributes []*radius.Attribute
 	if len(output) > 0 {
@@ -59,7 +62,7 @@ func handler(w radius.ResponseWriter, p *radius.Packet) {
 		}
 	}
 
-	if cmd.ProcessState.Success() {
+	if cmd.ProcessState != nil && cmd.ProcessState.Success() {
 		log.Printf("%s accepted (%s #%d)\n", username, w.RemoteAddr(), p.Identifier)
 		w.AccessAccept(attributes...)
 	} else {
