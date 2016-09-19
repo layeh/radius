@@ -46,9 +46,9 @@ type ResponseWriter interface {
 
 type responseWriter struct {
 	// listener that received the packet
-	conn *net.UDPConn
+	conn net.PacketConn
 	// where the packet came from
-	addr *net.UDPAddr
+	addr net.Addr
 	// original packet
 	packet *Packet
 }
@@ -96,7 +96,7 @@ func (r *responseWriter) Write(packet *Packet) error {
 	if err != nil {
 		return err
 	}
-	if _, err := r.conn.WriteToUDP(raw, r.addr); err != nil {
+	if _, err := r.conn.WriteTo(raw, r.addr); err != nil {
 		return err
 	}
 	return nil
@@ -120,37 +120,12 @@ type Server struct {
 
 	// The packet handler that handles incoming, valid packets.
 	Handler Handler
-
-	listener *net.UDPConn
 }
 
-// ListenAndServe starts a RADIUS server on the address given in s.
-func (s *Server) ListenAndServe() error {
-	if s.listener != nil {
-		return errors.New("radius: server already started")
-	}
-
+// Serve accepts incoming connections on the net.PacketConn pc.
+func (s *Server) Serve(pc net.PacketConn) error {
 	if s.Handler == nil {
 		return errors.New("radius: nil Handler")
-	}
-
-	addrStr := ":1812"
-	if s.Addr != "" {
-		addrStr = s.Addr
-	}
-
-	network := "udp"
-	if s.Network != "" {
-		network = s.Network
-	}
-
-	addr, err := net.ResolveUDPAddr(network, addrStr)
-	if err != nil {
-		return err
-	}
-	s.listener, err = net.ListenUDP(network, addr)
-	if err != nil {
-		return err
 	}
 
 	type activeKey struct {
@@ -165,16 +140,19 @@ func (s *Server) ListenAndServe() error {
 
 	for {
 		buff := make([]byte, 4096)
-		n, remoteAddr, err := s.listener.ReadFromUDP(buff)
-		if err != nil && !err.(*net.OpError).Temporary() {
-			break
+		n, remoteAddr, err := pc.ReadFrom(buff)
+		if err != nil {
+			if err.(*net.OpError).Temporary() {
+				return err
+			}
+			continue
 		}
 		if n == 0 {
 			continue
 		}
 		buff = buff[:n]
 
-		go func(conn *net.UDPConn, buff []byte, remoteAddr *net.UDPAddr) {
+		go func(buff []byte, remoteAddr net.Addr) {
 			packet, err := Parse(buff, s.Secret, s.Dictionary)
 			if err != nil {
 				return
@@ -192,7 +170,7 @@ func (s *Server) ListenAndServe() error {
 			activeLock.Unlock()
 
 			response := responseWriter{
-				conn:   conn,
+				conn:   pc,
 				addr:   remoteAddr,
 				packet: packet,
 			}
@@ -202,18 +180,30 @@ func (s *Server) ListenAndServe() error {
 			activeLock.Lock()
 			delete(active, key)
 			activeLock.Unlock()
-		}(s.listener, buff, remoteAddr)
+		}(buff, remoteAddr)
 	}
-	// TODO: only return nil if s.Close was called
-	s.listener = nil
-	return nil
 }
 
-// Close stops listening for packets. Any packet that is currently being
-// handled will not be able to respond to the sender.
-func (s *Server) Close() error {
-	if s.listener == nil {
-		return nil
+// ListenAndServe starts a RADIUS server on the address given in s.
+func (s *Server) ListenAndServe() error {
+	if s.Handler == nil {
+		return errors.New("radius: nil Handler")
 	}
-	return s.listener.Close()
+
+	addrStr := ":1812"
+	if s.Addr != "" {
+		addrStr = s.Addr
+	}
+
+	network := "udp"
+	if s.Network != "" {
+		network = s.Network
+	}
+
+	pc, err := net.ListenPacket(network, addrStr)
+	if err != nil {
+		return err
+	}
+	defer pc.Close()
+	return s.Serve(pc)
 }
