@@ -135,7 +135,7 @@ func (s *Server) Serve(pc net.PacketConn) error {
 
 	var (
 		activeLock sync.Mutex
-		active     = map[activeKey]bool{}
+		active     = map[activeKey]struct{}{}
 	)
 
 	for {
@@ -163,7 +163,7 @@ func (s *Server) Serve(pc net.PacketConn) error {
 				activeLock.Unlock()
 				return
 			}
-			active[key] = true
+			active[key] = struct{}{}
 			activeLock.Unlock()
 
 			response := responseWriter{
