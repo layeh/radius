@@ -11,7 +11,6 @@ func init() {
 	AttributeUnknown = attributeString{}
 
 	// RFC 2865
-	// TODO: Attribute* should be initialized before
 	Builtin.MustRegister("User-Name", 1, AttributeText)
 	Builtin.MustRegister("User-Password", 2, rfc2865UserPassword{})
 	Builtin.MustRegister("CHAP-Password", 3, AttributeString)
