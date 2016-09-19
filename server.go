@@ -147,16 +147,13 @@ func (s *Server) Serve(pc net.PacketConn) error {
 			}
 			continue
 		}
-		if n == 0 {
+
+		packet, err := Parse(buff[:n], s.Secret, s.Dictionary)
+		if err != nil {
 			continue
 		}
-		buff = buff[:n]
 
-		go func(buff []byte, remoteAddr net.Addr) {
-			packet, err := Parse(buff, s.Secret, s.Dictionary)
-			if err != nil {
-				return
-			}
+		go func(packet *Packet, remoteAddr net.Addr) {
 			key := activeKey{
 				IP:         remoteAddr.String(),
 				Identifier: packet.Identifier,
@@ -180,7 +177,7 @@ func (s *Server) Serve(pc net.PacketConn) error {
 			activeLock.Lock()
 			delete(active, key)
 			activeLock.Unlock()
-		}(buff, remoteAddr)
+		}(packet, remoteAddr)
 	}
 }
 
