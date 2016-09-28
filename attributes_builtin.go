@@ -22,7 +22,39 @@ var (
 	AttributeTime AttributeCodec
 	// []byte
 	AttributeUnknown AttributeCodec
+	//
+	AttributeVendorSpecific AttributeCodec
 )
+
+type attributeVendorSpecific struct{}
+
+type VendorSpecificAttribute struct {
+	Value        string
+	VendorID     uint32
+	VendorType   uint8
+	VendorLength uint8
+}
+
+func (attributeVendorSpecific) Decode(packet *Packet, value []byte) (interface{}, error) {
+
+	return "", nil
+}
+
+func (attributeVendorSpecific) Encode(packet *Packet, value interface{}) ([]byte, error) {
+	vsa, ok := value.(VendorSpecificAttribute)
+	if !ok {
+		return nil, errors.New("radius: value must be of type VendorSpecificAttribute")
+	}
+	v := make([]byte, 4)
+	binary.BigEndian.PutUint32(v, vsa.VendorID)
+	v = append(v, vsa.VendorType)
+	v = append(v, uint8(len(vsa.Value)+2))
+
+	valB := []byte(vsa.Value)
+	v = append(v, valB...)
+
+	return v, nil
+}
 
 type attributeText struct{}
 

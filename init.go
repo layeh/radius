@@ -9,6 +9,7 @@ func init() {
 	AttributeInteger = attributeInteger{}
 	AttributeTime = attributeTime{}
 	AttributeUnknown = attributeString{}
+	AttributeVendorSpecific = attributeVendorSpecific{}
 
 	// RFC 2865
 	// TODO: Attribute* should be initialized before
@@ -35,7 +36,7 @@ func init() {
 	Builtin.MustRegister("Framed-IPX-Network", 23, AttributeAddress)
 	Builtin.MustRegister("State", 24, AttributeString)
 	Builtin.MustRegister("Class", 25, AttributeString)
-	Builtin.MustRegister("Vendor-Specific", 26, AttributeString)
+	Builtin.MustRegister("Vendor-Specific", 26, AttributeVendorSpecific)
 	Builtin.MustRegister("Session-Timeout", 27, AttributeInteger)
 	Builtin.MustRegister("Idle-Timeout", 28, AttributeInteger)
 	Builtin.MustRegister("Termination-Action", 29, AttributeInteger)
