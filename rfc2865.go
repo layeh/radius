@@ -3,6 +3,7 @@ package radius
 import (
 	"bytes"
 	"crypto/md5"
+	"encoding/binary"
 	"errors"
 	"math"
 )
@@ -92,4 +93,34 @@ func (rfc2865UserPassword) Encode(p *Packet, value interface{}) ([]byte, error) 
 	}
 
 	return enc, nil
+}
+
+// VendorSpecific defines RFC 2865's Vendor-Specific attribute.
+type VendorSpecific struct {
+	VendorID uint32
+	Data     []byte
+}
+
+type rfc2865VendorSpecific struct{}
+
+func (rfc2865VendorSpecific) Decode(p *Packet, value []byte) (interface{}, error) {
+	if len(value) < 5 {
+		return nil, errors.New("radius: Vendor-Specific attribute too small")
+	}
+	var attr VendorSpecific
+	attr.VendorID = binary.BigEndian.Uint32(value[:4])
+	attr.Data = make([]byte, len(value)-4)
+	copy(attr.Data, value[4:])
+	return attr, nil
+}
+
+func (rfc2865VendorSpecific) Encode(p *Packet, value interface{}) ([]byte, error) {
+	attr, ok := value.(VendorSpecific)
+	if !ok {
+		return nil, errors.New("radius: Vendor-Specific attribute is not type VendorSpecific")
+	}
+	b := make([]byte, 4+len(attr.Data))
+	binary.BigEndian.PutUint32(b[:4], attr.VendorID)
+	copy(b[4:], attr.Data)
+	return b, nil
 }
