@@ -182,8 +182,6 @@ func (p *Packet) Attr(name string) *Attribute {
 //
 //  - If no such attribute exists with the given dictionary name, "" is
 //    returned
-//  - If the attribute's Codec implements AttributeStringer,
-//    AttributeStringer.String(value) is returned
 //  - If the value implements fmt.Stringer, value.String() is returned
 //  - If the value is string, itself is returned
 //  - If the value is []byte, string(value) is returned
@@ -194,12 +192,6 @@ func (p *Packet) String(name string) string {
 		return ""
 	}
 	value := attr.Value
-
-	if codec := p.Dictionary.Codec(attr.Type); codec != nil {
-		if stringer, ok := codec.(AttributeStringer); ok {
-			return stringer.String(value)
-		}
-	}
 
 	if stringer, ok := value.(interface {
 		String() string
@@ -236,15 +228,6 @@ func (p *Packet) AddAttr(attribute *Attribute) {
 func (p *Packet) Set(name string, value interface{}) error {
 	for _, attr := range p.Attributes {
 		if attrName, ok := p.Dictionary.Name(attr.Type); ok && attrName == name {
-			codec := p.Dictionary.Codec(attr.Type)
-			if transformer, ok := codec.(AttributeTransformer); ok {
-				transformed, err := transformer.Transform(value)
-				if err != nil {
-					return err
-				}
-				attr.Value = transformed
-				return nil
-			}
 			attr.Value = value
 			return nil
 		}

@@ -68,21 +68,10 @@ func (d *Dictionary) get(name string) (t byte, codec AttributeCodec, ok bool) {
 // name.
 //
 // If name is not registered, nil and an error is returned.
-//
-// If the attribute's codec implements AttributeTransformer, the value is
-// first transformed before being stored in *Attribute. If the transform
-// function returns an error, nil and the error is returned.
 func (d *Dictionary) Attr(name string, value interface{}) (*Attribute, error) {
-	t, codec, ok := d.get(name)
+	t, _, ok := d.get(name)
 	if !ok {
 		return nil, errors.New("radius: attribute name not registered")
-	}
-	if transformer, ok := codec.(AttributeTransformer); ok {
-		transformed, err := transformer.Transform(value)
-		if err != nil {
-			return nil, err
-		}
-		value = transformed
 	}
 	return &Attribute{
 		Type:  t,

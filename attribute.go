@@ -13,15 +13,3 @@ type AttributeCodec interface {
 	Decode(packet *Packet, wire []byte) (interface{}, error)
 	Encode(packet *Packet, value interface{}) ([]byte, error)
 }
-
-// AttributeTransformer defines an extension of AttributeCodec. It provides a
-// method for converting attribute values to ones permitted by the attribute.
-type AttributeTransformer interface {
-	Transform(value interface{}) (interface{}, error)
-}
-
-// AttributeStringer defines an extension of AttributeCodec. It provides a
-// method for converting an attribute value to a string.
-type AttributeStringer interface {
-	String(value interface{}) string
-}
