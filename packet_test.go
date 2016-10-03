@@ -21,7 +21,7 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x01, 0x10, 0x05, 0x06, 0x00, 0x00, 0x00, 0x03,
 	}
 
-	p, err := radius.Parse(request, secret, radius.Builtin)
+	p, err := radius.Parse(request, secret, radius.Builtin, radius.Vendor)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,7 +103,7 @@ func Test_RFC2865_7_2(t *testing.T) {
 		0x02, 0x07, 0x06, 0x00, 0x00, 0x00, 0x01,
 	}
 
-	p, err := radius.Parse(request, secret, radius.Builtin)
+	p, err := radius.Parse(request, secret, radius.Builtin, radius.Vendor)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -152,7 +152,7 @@ func TestPasswords(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		q, err := radius.Parse(b, secret, radius.Builtin)
+		q, err := radius.Parse(b, secret, radius.Builtin, radius.Vendor)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -160,5 +160,47 @@ func TestPasswords(t *testing.T) {
 		if s := q.String("User-Password"); s != password {
 			t.Fatalf("incorrect User-Password (expecting %q, got %q)", password, s)
 		}
+	}
+}
+
+func TestVSA(t *testing.T) {
+	secret := []byte("xyzzy5461")
+	radius.Vendor.Register(2011, "Huawei-Input-Burst-Size", 1, radius.AttributeInteger)
+	radius.Vendor.Register(2011, "Huawei-Gateway", 73, radius.AttributeAddress)
+	radius.Vendor.Register(2011, "Huawei-Version", 254, radius.AttributeString)
+
+
+	r := radius.New(radius.CodeAccessRequest, secret)
+	if r == nil {
+		t.Fatal("could not create new RADIUS packet")
+	}
+
+	huaweiVersion := "Huawei ME60"
+	huaweiInputBurstSize := uint32(123456)
+	huaweiGateway := "192.168.0.1"
+	r.Add("Huawei-Version", huaweiVersion)
+	r.Add("Huawei-Input-Burst-Size", huaweiInputBurstSize)
+	r.Add("Huawei-Gateway", net.ParseIP(huaweiGateway))
+
+	b, err := r.Encode()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	q, err := radius.Parse(b, secret, radius.Builtin, radius.Vendor)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if s := q.String("Huawei-Version"); s != huaweiVersion {
+		t.Fatalf("incorrect Huawei-Version (expecting %q, got %q)", huaweiVersion, s)
+	}
+
+	if s := q.Value("Huawei-Input-Burst-Size"); s != huaweiInputBurstSize {
+		t.Fatalf("incorrect Huawei-Input-Burst-Size (expecting %q, got %q)", huaweiInputBurstSize, s)
+	}
+
+	if ip := q.Value("Huawei-Gateway").(net.IP); !ip.Equal(net.ParseIP(huaweiGateway)) {
+		t.Fatalf("incorrect Huawei-Gateway should be %s", huaweiGateway)
 	}
 }

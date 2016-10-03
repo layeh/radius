@@ -91,7 +91,7 @@ func (c *Client) Exchange(packet *Packet, addr string) (*Packet, error) {
 			conn.Close()
 			return nil, err
 		}
-		received, err := Parse(incoming[:n], packet.Secret, packet.Dictionary)
+		received, err := Parse(incoming[:n], packet.Secret, packet.Dictionary, packet.DictionaryVendor)
 		if err == nil && received.IsAuthentic(packet) {
 			conn.Close()
 			return received, nil

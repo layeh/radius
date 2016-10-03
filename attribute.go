@@ -3,6 +3,7 @@ package radius
 // Attribute is a RADIUS attribute, which is part of a RADIUS packet.
 type Attribute struct {
 	Type  byte
+	VendorID uint32
 	Value interface{}
 }
 

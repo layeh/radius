@@ -70,6 +70,7 @@ func (r *responseWriter) accessRespond(code Code, attributes ...*Attribute) erro
 		Secret: r.packet.Secret,
 
 		Dictionary: r.packet.Dictionary,
+		DictionaryVendor: r.packet.DictionaryVendor,
 
 		Attributes: attributes,
 	}
@@ -117,6 +118,7 @@ type Server struct {
 
 	// Dictionary used when decoding incoming packets.
 	Dictionary *Dictionary
+	DictionaryVendor *DictionaryVendor
 
 	// The packet handler that handles incoming, valid packets.
 	Handler Handler
@@ -148,7 +150,7 @@ func (s *Server) Serve(pc net.PacketConn) error {
 			continue
 		}
 
-		packet, err := Parse(buff[:n], s.Secret, s.Dictionary)
+		packet, err := Parse(buff[:n], s.Secret, s.Dictionary, s.DictionaryVendor)
 		if err != nil {
 			continue
 		}
