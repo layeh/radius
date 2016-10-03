@@ -1,7 +1,12 @@
 package radius
 
+import (
+	"io/ioutil"
+)
+
 func init() {
 	Builtin = &Dictionary{}
+	Vendor  = &DictionaryVendor{}
 
 	AttributeText = attributeText{}
 	AttributeString = attributeString{}
@@ -9,6 +14,12 @@ func init() {
 	AttributeInteger = attributeInteger{}
 	AttributeTime = attributeTime{}
 	AttributeUnknown = attributeString{}
+
+	codecMap := make(map[string]AttributeCodec)
+	codecMap["string"]  = AttributeString
+	codecMap["octets"]  = AttributeString
+	codecMap["ipaddr"]  = AttributeAddress
+	codecMap["integer"] = AttributeInteger
 
 	// RFC 2865
 	Builtin.MustRegister("User-Name", 1, AttributeText)
@@ -66,4 +77,28 @@ func init() {
 	Builtin.MustRegister("Acct-Terminate-Cause", 49, AttributeInteger)
 	Builtin.MustRegister("Acct-Multi-Session-Id", 50, AttributeText)
 	Builtin.MustRegister("Acct-Link-Count", 51, AttributeInteger)
+
+	dictPath := "/usr/local/share/go-radius/"
+	files, _ := ioutil.ReadDir (dictPath)
+	dp := DictionaryParser{}
+
+	for _, file := range files {
+		f := dictPath + file.Name()
+		dp.Parse (f)
+	}
+
+	for vid, v := range dp.Vendors {
+		for aid, attr := range v.Attributes {
+			if v.Attributes[aid] == nil {
+				continue
+			}
+
+			codec := codecMap[attr.Format]
+			if codec == nil {
+				codec = AttributeUnknown
+			}
+
+			Vendor.Register(vid, attr.Name, byte(aid), codec)
+		}
+	}
 }

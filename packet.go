@@ -36,6 +36,7 @@ type Packet struct {
 	Secret []byte
 
 	Dictionary *Dictionary
+	DictionaryVendor *DictionaryVendor
 
 	Attributes []*Attribute
 }
@@ -54,6 +55,7 @@ func New(code Code, secret []byte) *Packet {
 		Identifier: buff[0],
 		Secret:     secret,
 		Dictionary: Builtin,
+		DictionaryVendor: Vendor,
 	}
 	copy(packet.Authenticator[:], buff[1:])
 	return packet
@@ -66,7 +68,7 @@ func New(code Code, secret []byte) *Packet {
 // Note: this function does not validate the authenticity of a packet.
 // Ensuring a packet's authenticity should be done using the IsAuthentic
 // method.
-func Parse(data, secret []byte, dictionary *Dictionary) (*Packet, error) {
+func Parse(data, secret []byte, dictionary *Dictionary, dictionaryVendor *DictionaryVendor) (*Packet, error) {
 	if len(data) < 20 {
 		return nil, errors.New("radius: packet must be at least 20 bytes long")
 	}
@@ -76,6 +78,7 @@ func Parse(data, secret []byte, dictionary *Dictionary) (*Packet, error) {
 		Identifier: data[1],
 		Secret:     secret,
 		Dictionary: dictionary,
+		DictionaryVendor: dictionaryVendor,
 	}
 
 	length := binary.BigEndian.Uint16(data[2:4])
@@ -160,6 +163,15 @@ func (p *Packet) ClearAttributes() {
 // the given name. nil is returned if no such attribute exists.
 func (p *Packet) Value(name string) interface{} {
 	if attr := p.Attr(name); attr != nil {
+		if vsa, ok := attr.Value.(VendorSpecific); ok {
+			subAttrs := p.DictionaryVendor.SubAttributes(vsa.VendorID, vsa.Data)
+			if len(subAttrs) > 1 {
+				return subAttrs
+			} else if len(subAttrs) == 1{
+				return subAttrs[0].Value
+			}
+		}
+
 		return attr.Value
 	}
 	return nil
@@ -171,6 +183,14 @@ func (p *Packet) Attr(name string) *Attribute {
 	for _, attr := range p.Attributes {
 		if attrName, ok := p.Dictionary.Name(attr.Type); ok && attrName == name {
 			return attr
+		} else if attr.Type == 26 {
+			if vsa, ok := attr.Value.(VendorSpecific); ok {
+				vid := vsa.VendorID
+				aid := vsa.Data[0]
+				if attrName, ok := p.DictionaryVendor.Name(vid, aid); ok && attrName == name {
+					return attr
+				}
+			}
 		}
 	}
 	return nil
@@ -187,11 +207,10 @@ func (p *Packet) Attr(name string) *Attribute {
 //  - If the value is []byte, string(value) is returned
 //  - Otherwise, "" is returned
 func (p *Packet) String(name string) string {
-	attr := p.Attr(name)
-	if attr == nil {
+	value := p.Value(name)
+	if value == nil {
 		return ""
 	}
-	value := attr.Value
 
 	if stringer, ok := value.(interface {
 		String() string
@@ -212,7 +231,10 @@ func (p *Packet) String(name string) string {
 func (p *Packet) Add(name string, value interface{}) error {
 	attr, err := p.Dictionary.Attr(name, value)
 	if err != nil {
-		return err
+		attr, err = p.DictionaryVendor.Attr(name, value)
+		if err != nil {
+			return err
+		}
 	}
 	p.AddAttr(attr)
 	return nil
