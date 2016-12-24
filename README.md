@@ -1,10 +1,10 @@
-# radius [![GoDoc](https://godoc.org/github.com/layeh/radius?status.svg)](https://godoc.org/github.com/layeh/radius)
+# radius [![GoDoc](https://godoc.org/layeh.com/radius?status.svg)](https://godoc.org/layeh.com/radius)
 
 a Go (golang) [RADIUS](https://tools.ietf.org/html/rfc2865) client and server implementation
 
 ## Installation
 
-    go get -u github.com/layeh/radius
+    go get -u layeh.com/radius
 
 ## License
 

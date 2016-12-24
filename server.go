@@ -1,4 +1,4 @@
-package radius
+package radius // import "layeh.com/radius"
 
 import (
 	"errors"

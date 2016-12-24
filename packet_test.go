@@ -1,11 +1,9 @@
-package radius_test
+package radius // import "layeh.com/radius"
 
 import (
 	"bytes"
 	"net"
 	"testing"
-
-	"github.com/layeh/radius"
 )
 
 func Test_RFC2865_7_1(t *testing.T) {
@@ -21,11 +19,11 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x01, 0x10, 0x05, 0x06, 0x00, 0x00, 0x00, 0x03,
 	}
 
-	p, err := radius.Parse(request, secret, radius.Builtin)
+	p, err := Parse(request, secret, Builtin)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.Code != radius.CodeAccessRequest {
+	if p.Code != CodeAccessRequest {
 		t.Fatal("expecting Code = PacketCodeAccessRequest")
 	}
 	if p.Identifier != 0 {
@@ -67,8 +65,8 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x0e, 0x06, 0xc0, 0xa8, 0x01, 0x03,
 	}
 
-	q := radius.Packet{
-		Code:          radius.CodeAccessAccept,
+	q := Packet{
+		Code:          CodeAccessAccept,
 		Identifier:    p.Identifier,
 		Authenticator: p.Authenticator,
 		Secret:        secret,
@@ -103,12 +101,12 @@ func Test_RFC2865_7_2(t *testing.T) {
 		0x02, 0x07, 0x06, 0x00, 0x00, 0x00, 0x01,
 	}
 
-	p, err := radius.Parse(request, secret, radius.Builtin)
+	p, err := Parse(request, secret, Builtin)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if p.Code != radius.CodeAccessRequest {
+	if p.Code != CodeAccessRequest {
 		t.Fatal("expecting code access request")
 	}
 	if p.Identifier != 1 {
@@ -141,7 +139,7 @@ func TestPasswords(t *testing.T) {
 	for _, password := range passwords {
 		secret := []byte("xyzzy5461")
 
-		r := radius.New(radius.CodeAccessRequest, secret)
+		r := New(CodeAccessRequest, secret)
 		if r == nil {
 			t.Fatal("could not create new RADIUS packet")
 		}
@@ -152,7 +150,7 @@ func TestPasswords(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		q, err := radius.Parse(b, secret, radius.Builtin)
+		q, err := Parse(b, secret, Builtin)
 		if err != nil {
 			t.Fatal(err)
 		}

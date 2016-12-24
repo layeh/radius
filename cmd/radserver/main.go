@@ -1,4 +1,4 @@
-package main
+package main // import "layeh.com/radius/cmd/radserver"
 
 import (
 	"flag"
@@ -9,7 +9,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/layeh/radius"
+	"layeh.com/radius"
 )
 
 var secret = flag.String("secret", "", "shared RADIUS secret between clients and server")

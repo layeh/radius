@@ -64,4 +64,4 @@
 //  Acct-Terminate-Cause   49  uint32
 //  Acct-Multi-Session-Id  50  string
 //  Acct-Link-Count        51  uint32
-package radius
+package radius // import "layeh.com/radius"
