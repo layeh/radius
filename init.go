@@ -13,7 +13,7 @@ func init() {
 	// RFC 2865
 	Builtin.MustRegister("User-Name", 1, AttributeText)
 	Builtin.MustRegister("User-Password", 2, rfc2865UserPassword{})
-	Builtin.MustRegister("CHAP-Password", 3, AttributeString)
+	Builtin.MustRegister("CHAP-Password", 3, rfc2865ChapPassword{})
 	Builtin.MustRegister("NAS-IP-Address", 4, AttributeAddress)
 	Builtin.MustRegister("NAS-Port", 5, AttributeInteger)
 	Builtin.MustRegister("Service-Type", 6, AttributeInteger)
