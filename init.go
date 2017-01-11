@@ -13,7 +13,7 @@ func init() {
 	// RFC 2865
 	Builtin.MustRegister("User-Name", 1, AttributeText)
 	Builtin.MustRegister("User-Password", 2, rfc2865UserPassword{})
-	Builtin.MustRegister("CHAP-Password", 3, AttributeString)
+	Builtin.MustRegister("CHAP-Password", 3, rfc2865ChapPassword{})
 	Builtin.MustRegister("NAS-IP-Address", 4, AttributeAddress)
 	Builtin.MustRegister("NAS-Port", 5, AttributeInteger)
 	Builtin.MustRegister("Service-Type", 6, AttributeInteger)
@@ -66,4 +66,9 @@ func init() {
 	Builtin.MustRegister("Acct-Terminate-Cause", 49, AttributeInteger)
 	Builtin.MustRegister("Acct-Multi-Session-Id", 50, AttributeText)
 	Builtin.MustRegister("Acct-Link-Count", 51, AttributeInteger)
+
+	//RFC 2869 (not full, see https://www.ietf.org/rfc/rfc2869.txt)
+	Builtin.MustRegister("Acct-Input-Gigawords", 52, AttributeInteger)
+	Builtin.MustRegister("Acct-Output-Gigawords", 53, AttributeInteger)
+	Builtin.MustRegister("NAS-Port-ID", 87, AttributeString)
 }

@@ -64,4 +64,10 @@
 //  Acct-Terminate-Cause   49  uint32
 //  Acct-Multi-Session-Id  50  string
 //  Acct-Link-Count        51  uint32
+// The following attributes are defined by RFC 2869:
+//
+//  Acct-Input-Gigawords   52  uint32
+//  Acct-Output-Gigawords  53  uint32
+//  NAS-Port-ID            87  string
+
 package radius // import "layeh.com/radius"

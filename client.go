@@ -3,6 +3,7 @@ package radius // import "layeh.com/radius"
 import (
 	"net"
 	"time"
+	"errors"
 )
 
 // Client is a RADIUS client that can send and receive packets to and from a
@@ -22,6 +23,9 @@ type Client struct {
 
 	// Interval on which to resend packet.
 	Retry time.Duration
+
+	// If the correct response of the server isn't important for you
+	WithoutAuthentic bool
 }
 
 // Exchange sends the packet to the given server address and waits for a
@@ -92,9 +96,13 @@ func (c *Client) Exchange(packet *Packet, addr string) (*Packet, error) {
 			return nil, err
 		}
 		received, err := Parse(incoming[:n], packet.Secret, packet.Dictionary)
-		if err == nil && received.IsAuthentic(packet) {
-			conn.Close()
-			return received, nil
+		if err == nil {
+			if c.WithoutAuthentic || received.IsAuthentic(packet) {
+				conn.Close()
+				return received, nil
+			}
+			return nil, errors.New("radius: udp packet by server isn't valid, you can use WithoutAuthentic = true")
 		}
+		return nil, err
 	}
 }

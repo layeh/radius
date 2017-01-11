@@ -95,6 +95,51 @@ func (rfc2865UserPassword) Encode(p *Packet, value interface{}) ([]byte, error) 
 	return enc, nil
 }
 
+type rfc2865ChapPassword struct{}
+
+func (rfc2865ChapPassword) Encode(p *Packet, value interface{}) ([]byte, error) {
+	var password []byte
+	if bytePassword, ok := value.([]byte); !ok {
+		strPassword, ok := value.(string)
+		if !ok {
+			return nil, errors.New("radius: CHAP-Password attribute must be string or []byte")
+		}
+		password = []byte(strPassword)
+	} else {
+		password = bytePassword
+	}
+
+	if len(password) > 128 {
+		return nil, errors.New("radius: CHAP-Password longer than 128 characters")
+	}
+
+	var chapChallenge []byte
+	if p.Value("CHAP-Challenge") != nil {
+		chapChallenge = []byte(p.Value("CHAP-Challenge").(string))
+
+	} else {
+		chapChallenge = p.Authenticator[:]
+	}
+
+	code := make([]byte, 1)
+	code[0] = 0x01
+
+	hash := md5.New()
+	hash.Write(code)
+	hash.Write(password)
+	hash.Write(chapChallenge)
+	enc := hash.Sum(nil)
+
+	enc = append(code, enc...)
+
+	return enc, nil
+}
+
+func (rfc2865ChapPassword) Decode(p *Packet, value []byte) (interface{}, error) {
+	return nil, errors.New("radius: decode doesn't work, see https://www.ietf.org/rfc/rfc1334.txt")
+}
+
+
 // VendorSpecific defines RFC 2865's Vendor-Specific attribute.
 type VendorSpecific struct {
 	VendorID uint32
