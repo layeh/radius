@@ -23,6 +23,9 @@ type Client struct {
 
 	// Interval on which to resend packet.
 	Retry time.Duration
+
+	// If the correct response of the server isn't important for you
+	WithoutAuthentic bool
 }
 
 // Exchange sends the packet to the given server address and waits for a
@@ -94,11 +97,11 @@ func (c *Client) Exchange(packet *Packet, addr string) (*Packet, error) {
 		}
 		received, err := Parse(incoming[:n], packet.Secret, packet.Dictionary)
 		if err == nil {
-			if received.IsAuthentic(packet) {
+			if c.WithoutAuthentic || received.IsAuthentic(packet) {
 				conn.Close()
 				return received, nil
 			}
-			return nil, errors.New("radius: udp packet by server isn't valid")
+			return nil, errors.New("radius: udp packet by server isn't valid, you can use WithoutAuthentic = true")
 		}
 		return nil, err
 	}
