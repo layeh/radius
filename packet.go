@@ -1,4 +1,4 @@
-package radius // import "layeh.com/radius"
+package radius
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"errors"
+   "log"
 )
 
 // maximum RADIUS packet size
@@ -24,6 +25,9 @@ const (
 	CodeAccessChallenge    Code = 11
 	CodeStatusServer       Code = 12
 	CodeStatusClient       Code = 13
+   CodeDisconnectRequest  Code = 40 //diego - RADIUS_DISCONNECT_REQUEST
+   CodeDisconnectAck      Code = 41 //diego - RADIUS_DISCONNECT_ACK
+   CodeDisconnectNak      Code = 42 //diego - RADIUS_DISCONNECT_NAK
 	CodeReserved           Code = 255
 )
 
@@ -59,13 +63,11 @@ func New(code Code, secret []byte) *Packet {
 	return packet
 }
 
-// Parse parses a RADIUS packet from wire data, using the given shared secret
-// and dictionary. nil and an error is returned if there is a problem parsing
-// the packet.
+// Parse parses a RADIUS packet from wire data, using the given shared secret and dictionary
+// nil and an error is returned if there is a problem parsing the packet
 //
-// Note: this function does not validate the authenticity of a packet.
-// Ensuring a packet's authenticity should be done using the IsAuthentic
-// method.
+// Note: this function does not validate the authenticity of a packet
+// Ensuring a packet's authenticity should be done using the IsAuthentic method
 func Parse(data, secret []byte, dictionary *Dictionary) (*Packet, error) {
 	if len(data) < 20 {
 		return nil, errors.New("radius: packet must be at least 20 bytes long")
@@ -82,7 +84,6 @@ func Parse(data, secret []byte, dictionary *Dictionary) (*Packet, error) {
 	if length < 20 || length > maxPacketSize {
 		return nil, errors.New("radius: invalid packet length")
 	}
-
 	copy(packet.Authenticator[:], data[4:20])
 
 	// Attributes
@@ -126,24 +127,37 @@ func Parse(data, secret []byte, dictionary *Dictionary) (*Packet, error) {
 //      CodeAccountingResponse
 //      CodeAccessChallenge
 //  - p.Authenticator contains the calculated authenticator
+//RFC3576
+//The Authenticator filed in Disconnect-Request MUST be calculated in the 
+//same way as is specified for an Accounting-Request in [RFC2866].
+//The Authenticator field in a Response packet (e.g. Disconnect-ACK,
+//Disconnect-NAK, CoA-ACK, or CoA-NAK) is called the Response
+//Authenticator, and contains a one-way MD5 hash calculated over a
+//stream of octets consisting of the 
+//==>Code
+//==>Identifier
+//==>Length
+//==>the Request Authenticator field from the packet being replied to
+//==>and the response Attributes if any
+//==>followed by the shared secret
 func (p *Packet) IsAuthentic(request *Packet) bool {
 	switch p.Code {
-	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccessChallenge:
+	case CodeDisconnectRequest, CodeDisconnectAck, CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccessChallenge:
 		wire, err := p.Encode()
 		if err != nil {
 			return false
 		}
 
 		hash := md5.New()
-		hash.Write(wire[0:4])
-		if p.Code == CodeAccountingRequest {
+		hash.Write(wire[0:4]) //code, identifier, length
+		if p.Code == CodeAccountingRequest || p.Code == CodeDisconnectRequest {
 			var nul [16]byte
 			hash.Write(nul[:])
 		} else {
-			hash.Write(request.Authenticator[:])
+			hash.Write(request.Authenticator[:]) //request authenticator
 		}
-		hash.Write(wire[20:])
-		hash.Write(request.Secret)
+		hash.Write(wire[20:]) //attributes
+		hash.Write(request.Secret) //secret
 
 		var sum [md5.Size]byte
 		return bytes.Equal(hash.Sum(sum[0:0]), p.Authenticator[:])
@@ -299,12 +313,12 @@ func (p *Packet) Encode() ([]byte, error) {
 	binary.Write(&buffer, binary.BigEndian, uint16(length))
 
 	switch p.Code {
-	case CodeAccessRequest:
+	case CodeDisconnectAck, CodeAccessRequest:
 		buffer.Write(p.Authenticator[:])
-	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge:
+	case CodeDisconnectRequest, CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge:
 		hash := md5.New()
 		hash.Write(buffer.Bytes())
-		if p.Code == CodeAccountingRequest {
+		if p.Code == CodeAccountingRequest || p.Code == CodeDisconnectRequest {
 			var nul [16]byte
 			hash.Write(nul[:])
 		} else {
@@ -315,11 +329,13 @@ func (p *Packet) Encode() ([]byte, error) {
 
 		var sum [md5.Size]byte
 		buffer.Write(hash.Sum(sum[0:0]))
+      if p.Code == CodeDisconnectRequest {
+         copy(p.Authenticator[:], hash.Sum(sum[0:0]))
+      }
 	default:
 		return nil, errors.New("radius: unknown Packet code")
 	}
 
 	buffer.ReadFrom(&bufferAttrs)
-
 	return buffer.Bytes(), nil
 }
