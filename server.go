@@ -172,11 +172,13 @@ func (s *Server) Serve(pc net.PacketConn) error {
 				packet: packet,
 			}
 
-			s.Handler.ServeRADIUS(&response, packet)
+			defer func() {
+				activeLock.Lock()
+				delete(active, key)
+				activeLock.Unlock()
+			}()
 
-			activeLock.Lock()
-			delete(active, key)
-			activeLock.Unlock()
+			s.Handler.ServeRADIUS(&response, packet)
 		}(packet, remoteAddr)
 	}
 }
