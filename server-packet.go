@@ -10,8 +10,6 @@ type packetResponseWriter struct {
 	// listener that received the packet
 	conn net.PacketConn
 	addr net.Addr
-	// original packet
-	packet *Packet
 }
 
 func (r *packetResponseWriter) Write(packet *Packet) error {
@@ -97,9 +95,8 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			activeLock.Unlock()
 
 			response := packetResponseWriter{
-				conn:   conn,
-				addr:   remoteAddr,
-				packet: packet,
+				conn: conn,
+				addr: remoteAddr,
 			}
 
 			defer func() {
