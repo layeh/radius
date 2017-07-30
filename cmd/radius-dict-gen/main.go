@@ -443,13 +443,14 @@ const ({{ range .SortedValues }}
 )
 {{ end }}
 
+var {{ .Identifier}}_Strings = map[{{ .Identifier}}]string{{ "{" }}{{ range .SortedValues }}
+	{{ $attr.Identifier }}_Value_{{ .Identifier}}: "{{ .Name }}",{{ end }}
+}
+
 func (a {{ .Identifier }}) String() string {
-	{{- if gt (len .Values) 0 }}
-	switch a { {{ range .SortedValues }}
-	case {{ $attr.Identifier }}_Value_{{ .Identifier}}:
-		return ` + "`{{ .Name }}`" + `{{ end }}
+	if str, ok := {{ .Identifier}}_Strings[a]; ok {
+		return str
 	}
-	{{- end }}
 	return "{{ .Identifier }}(" + strconv.Itoa(int(a)) + ")"
 }
 

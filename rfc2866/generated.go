@@ -39,20 +39,18 @@ const (
 	AcctStatusType_Value_Failed        AcctStatusType = 15
 )
 
+var AcctStatusType_Strings = map[AcctStatusType]string{
+	AcctStatusType_Value_Start:         "Start",
+	AcctStatusType_Value_Stop:          "Stop",
+	AcctStatusType_Value_InterimUpdate: "Interim-Update",
+	AcctStatusType_Value_AccountingOn:  "Accounting-On",
+	AcctStatusType_Value_AccountingOff: "Accounting-Off",
+	AcctStatusType_Value_Failed:        "Failed",
+}
+
 func (a AcctStatusType) String() string {
-	switch a {
-	case AcctStatusType_Value_Start:
-		return `Start`
-	case AcctStatusType_Value_Stop:
-		return `Stop`
-	case AcctStatusType_Value_InterimUpdate:
-		return `Interim-Update`
-	case AcctStatusType_Value_AccountingOn:
-		return `Accounting-On`
-	case AcctStatusType_Value_AccountingOff:
-		return `Accounting-Off`
-	case AcctStatusType_Value_Failed:
-		return `Failed`
+	if str, ok := AcctStatusType_Strings[a]; ok {
+		return str
 	}
 	return "AcctStatusType(" + strconv.Itoa(int(a)) + ")"
 }
@@ -101,7 +99,12 @@ func AcctStatusType_Set(p *radius.Packet, value AcctStatusType) {
 
 type AcctDelayTime uint32
 
+var AcctDelayTime_Strings = map[AcctDelayTime]string{}
+
 func (a AcctDelayTime) String() string {
+	if str, ok := AcctDelayTime_Strings[a]; ok {
+		return str
+	}
 	return "AcctDelayTime(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -149,7 +152,12 @@ func AcctDelayTime_Set(p *radius.Packet, value AcctDelayTime) {
 
 type AcctInputOctets uint32
 
+var AcctInputOctets_Strings = map[AcctInputOctets]string{}
+
 func (a AcctInputOctets) String() string {
+	if str, ok := AcctInputOctets_Strings[a]; ok {
+		return str
+	}
 	return "AcctInputOctets(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -197,7 +205,12 @@ func AcctInputOctets_Set(p *radius.Packet, value AcctInputOctets) {
 
 type AcctOutputOctets uint32
 
+var AcctOutputOctets_Strings = map[AcctOutputOctets]string{}
+
 func (a AcctOutputOctets) String() string {
+	if str, ok := AcctOutputOctets_Strings[a]; ok {
+		return str
+	}
 	return "AcctOutputOctets(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -361,16 +374,16 @@ const (
 	AcctAuthentic_Value_Diameter AcctAuthentic = 4
 )
 
+var AcctAuthentic_Strings = map[AcctAuthentic]string{
+	AcctAuthentic_Value_RADIUS:   "RADIUS",
+	AcctAuthentic_Value_Local:    "Local",
+	AcctAuthentic_Value_Remote:   "Remote",
+	AcctAuthentic_Value_Diameter: "Diameter",
+}
+
 func (a AcctAuthentic) String() string {
-	switch a {
-	case AcctAuthentic_Value_RADIUS:
-		return `RADIUS`
-	case AcctAuthentic_Value_Local:
-		return `Local`
-	case AcctAuthentic_Value_Remote:
-		return `Remote`
-	case AcctAuthentic_Value_Diameter:
-		return `Diameter`
+	if str, ok := AcctAuthentic_Strings[a]; ok {
+		return str
 	}
 	return "AcctAuthentic(" + strconv.Itoa(int(a)) + ")"
 }
@@ -419,7 +432,12 @@ func AcctAuthentic_Set(p *radius.Packet, value AcctAuthentic) {
 
 type AcctSessionTime uint32
 
+var AcctSessionTime_Strings = map[AcctSessionTime]string{}
+
 func (a AcctSessionTime) String() string {
+	if str, ok := AcctSessionTime_Strings[a]; ok {
+		return str
+	}
 	return "AcctSessionTime(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -467,7 +485,12 @@ func AcctSessionTime_Set(p *radius.Packet, value AcctSessionTime) {
 
 type AcctInputPackets uint32
 
+var AcctInputPackets_Strings = map[AcctInputPackets]string{}
+
 func (a AcctInputPackets) String() string {
+	if str, ok := AcctInputPackets_Strings[a]; ok {
+		return str
+	}
 	return "AcctInputPackets(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -515,7 +538,12 @@ func AcctInputPackets_Set(p *radius.Packet, value AcctInputPackets) {
 
 type AcctOutputPackets uint32
 
+var AcctOutputPackets_Strings = map[AcctOutputPackets]string{}
+
 func (a AcctOutputPackets) String() string {
+	if str, ok := AcctOutputPackets_Strings[a]; ok {
+		return str
+	}
 	return "AcctOutputPackets(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -584,44 +612,30 @@ const (
 	AcctTerminateCause_Value_HostRequest        AcctTerminateCause = 18
 )
 
+var AcctTerminateCause_Strings = map[AcctTerminateCause]string{
+	AcctTerminateCause_Value_UserRequest:        "User-Request",
+	AcctTerminateCause_Value_LostCarrier:        "Lost-Carrier",
+	AcctTerminateCause_Value_LostService:        "Lost-Service",
+	AcctTerminateCause_Value_IdleTimeout:        "Idle-Timeout",
+	AcctTerminateCause_Value_SessionTimeout:     "Session-Timeout",
+	AcctTerminateCause_Value_AdminReset:         "Admin-Reset",
+	AcctTerminateCause_Value_AdminReboot:        "Admin-Reboot",
+	AcctTerminateCause_Value_PortError:          "Port-Error",
+	AcctTerminateCause_Value_NASError:           "NAS-Error",
+	AcctTerminateCause_Value_NASRequest:         "NAS-Request",
+	AcctTerminateCause_Value_NASReboot:          "NAS-Reboot",
+	AcctTerminateCause_Value_PortUnneeded:       "Port-Unneeded",
+	AcctTerminateCause_Value_PortPreempted:      "Port-Preempted",
+	AcctTerminateCause_Value_PortSuspended:      "Port-Suspended",
+	AcctTerminateCause_Value_ServiceUnavailable: "Service-Unavailable",
+	AcctTerminateCause_Value_Callback:           "Callback",
+	AcctTerminateCause_Value_UserError:          "User-Error",
+	AcctTerminateCause_Value_HostRequest:        "Host-Request",
+}
+
 func (a AcctTerminateCause) String() string {
-	switch a {
-	case AcctTerminateCause_Value_UserRequest:
-		return `User-Request`
-	case AcctTerminateCause_Value_LostCarrier:
-		return `Lost-Carrier`
-	case AcctTerminateCause_Value_LostService:
-		return `Lost-Service`
-	case AcctTerminateCause_Value_IdleTimeout:
-		return `Idle-Timeout`
-	case AcctTerminateCause_Value_SessionTimeout:
-		return `Session-Timeout`
-	case AcctTerminateCause_Value_AdminReset:
-		return `Admin-Reset`
-	case AcctTerminateCause_Value_AdminReboot:
-		return `Admin-Reboot`
-	case AcctTerminateCause_Value_PortError:
-		return `Port-Error`
-	case AcctTerminateCause_Value_NASError:
-		return `NAS-Error`
-	case AcctTerminateCause_Value_NASRequest:
-		return `NAS-Request`
-	case AcctTerminateCause_Value_NASReboot:
-		return `NAS-Reboot`
-	case AcctTerminateCause_Value_PortUnneeded:
-		return `Port-Unneeded`
-	case AcctTerminateCause_Value_PortPreempted:
-		return `Port-Preempted`
-	case AcctTerminateCause_Value_PortSuspended:
-		return `Port-Suspended`
-	case AcctTerminateCause_Value_ServiceUnavailable:
-		return `Service-Unavailable`
-	case AcctTerminateCause_Value_Callback:
-		return `Callback`
-	case AcctTerminateCause_Value_UserError:
-		return `User-Error`
-	case AcctTerminateCause_Value_HostRequest:
-		return `Host-Request`
+	if str, ok := AcctTerminateCause_Strings[a]; ok {
+		return str
 	}
 	return "AcctTerminateCause(" + strconv.Itoa(int(a)) + ")"
 }
@@ -779,7 +793,12 @@ func AcctMultiSessionID_SetString(p *radius.Packet, value string) (err error) {
 
 type AcctLinkCount uint32
 
+var AcctLinkCount_Strings = map[AcctLinkCount]string{}
+
 func (a AcctLinkCount) String() string {
+	if str, ok := AcctLinkCount_Strings[a]; ok {
+		return str
+	}
 	return "AcctLinkCount(" + strconv.Itoa(int(a)) + ")"
 }
 

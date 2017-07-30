@@ -441,7 +441,12 @@ func NASIPAddress_Set(p *radius.Packet, value net.IP) (err error) {
 
 type NASPort uint32
 
+var NASPort_Strings = map[NASPort]string{}
+
 func (a NASPort) String() string {
+	if str, ok := NASPort_Strings[a]; ok {
+		return str
+	}
 	return "NASPort(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -503,30 +508,23 @@ const (
 	ServiceType_Value_CallbackAdministrative ServiceType = 11
 )
 
+var ServiceType_Strings = map[ServiceType]string{
+	ServiceType_Value_LoginUser:              "Login-User",
+	ServiceType_Value_FramedUser:             "Framed-User",
+	ServiceType_Value_CallbackLoginUser:      "Callback-Login-User",
+	ServiceType_Value_CallbackFramedUser:     "Callback-Framed-User",
+	ServiceType_Value_OutboundUser:           "Outbound-User",
+	ServiceType_Value_AdministrativeUser:     "Administrative-User",
+	ServiceType_Value_NASPromptUser:          "NAS-Prompt-User",
+	ServiceType_Value_AuthenticateOnly:       "Authenticate-Only",
+	ServiceType_Value_CallbackNASPrompt:      "Callback-NAS-Prompt",
+	ServiceType_Value_CallCheck:              "Call-Check",
+	ServiceType_Value_CallbackAdministrative: "Callback-Administrative",
+}
+
 func (a ServiceType) String() string {
-	switch a {
-	case ServiceType_Value_LoginUser:
-		return `Login-User`
-	case ServiceType_Value_FramedUser:
-		return `Framed-User`
-	case ServiceType_Value_CallbackLoginUser:
-		return `Callback-Login-User`
-	case ServiceType_Value_CallbackFramedUser:
-		return `Callback-Framed-User`
-	case ServiceType_Value_OutboundUser:
-		return `Outbound-User`
-	case ServiceType_Value_AdministrativeUser:
-		return `Administrative-User`
-	case ServiceType_Value_NASPromptUser:
-		return `NAS-Prompt-User`
-	case ServiceType_Value_AuthenticateOnly:
-		return `Authenticate-Only`
-	case ServiceType_Value_CallbackNASPrompt:
-		return `Callback-NAS-Prompt`
-	case ServiceType_Value_CallCheck:
-		return `Call-Check`
-	case ServiceType_Value_CallbackAdministrative:
-		return `Callback-Administrative`
+	if str, ok := ServiceType_Strings[a]; ok {
+		return str
 	}
 	return "ServiceType(" + strconv.Itoa(int(a)) + ")"
 }
@@ -584,20 +582,18 @@ const (
 	FramedProtocol_Value_X75Synchronous  FramedProtocol = 6
 )
 
+var FramedProtocol_Strings = map[FramedProtocol]string{
+	FramedProtocol_Value_PPP:             "PPP",
+	FramedProtocol_Value_SLIP:            "SLIP",
+	FramedProtocol_Value_ARAP:            "ARAP",
+	FramedProtocol_Value_GandalfSLML:     "Gandalf-SLML",
+	FramedProtocol_Value_XylogicsIPXSLIP: "Xylogics-IPX-SLIP",
+	FramedProtocol_Value_X75Synchronous:  "X.75-Synchronous",
+}
+
 func (a FramedProtocol) String() string {
-	switch a {
-	case FramedProtocol_Value_PPP:
-		return `PPP`
-	case FramedProtocol_Value_SLIP:
-		return `SLIP`
-	case FramedProtocol_Value_ARAP:
-		return `ARAP`
-	case FramedProtocol_Value_GandalfSLML:
-		return `Gandalf-SLML`
-	case FramedProtocol_Value_XylogicsIPXSLIP:
-		return `Xylogics-IPX-SLIP`
-	case FramedProtocol_Value_X75Synchronous:
-		return `X.75-Synchronous`
+	if str, ok := FramedProtocol_Strings[a]; ok {
+		return str
 	}
 	return "FramedProtocol(" + strconv.Itoa(int(a)) + ")"
 }
@@ -747,16 +743,16 @@ const (
 	FramedRouting_Value_BroadcastListen FramedRouting = 3
 )
 
+var FramedRouting_Strings = map[FramedRouting]string{
+	FramedRouting_Value_None:            "None",
+	FramedRouting_Value_Broadcast:       "Broadcast",
+	FramedRouting_Value_Listen:          "Listen",
+	FramedRouting_Value_BroadcastListen: "Broadcast-Listen",
+}
+
 func (a FramedRouting) String() string {
-	switch a {
-	case FramedRouting_Value_None:
-		return `None`
-	case FramedRouting_Value_Broadcast:
-		return `Broadcast`
-	case FramedRouting_Value_Listen:
-		return `Listen`
-	case FramedRouting_Value_BroadcastListen:
-		return `Broadcast-Listen`
+	if str, ok := FramedRouting_Strings[a]; ok {
+		return str
 	}
 	return "FramedRouting(" + strconv.Itoa(int(a)) + ")"
 }
@@ -914,7 +910,12 @@ func FilterID_SetString(p *radius.Packet, value string) (err error) {
 
 type FramedMTU uint32
 
+var FramedMTU_Strings = map[FramedMTU]string{}
+
 func (a FramedMTU) String() string {
+	if str, ok := FramedMTU_Strings[a]; ok {
+		return str
+	}
 	return "FramedMTU(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -969,16 +970,16 @@ const (
 	FramedCompression_Value_StacLZS              FramedCompression = 3
 )
 
+var FramedCompression_Strings = map[FramedCompression]string{
+	FramedCompression_Value_None:                 "None",
+	FramedCompression_Value_VanJacobsonTCPIP:     "Van-Jacobson-TCP-IP",
+	FramedCompression_Value_IPXHeaderCompression: "IPX-Header-Compression",
+	FramedCompression_Value_StacLZS:              "Stac-LZS",
+}
+
 func (a FramedCompression) String() string {
-	switch a {
-	case FramedCompression_Value_None:
-		return `None`
-	case FramedCompression_Value_VanJacobsonTCPIP:
-		return `Van-Jacobson-TCP-IP`
-	case FramedCompression_Value_IPXHeaderCompression:
-		return `IPX-Header-Compression`
-	case FramedCompression_Value_StacLZS:
-		return `Stac-LZS`
+	if str, ok := FramedCompression_Strings[a]; ok {
+		return str
 	}
 	return "FramedCompression(" + strconv.Itoa(int(a)) + ")"
 }
@@ -1085,24 +1086,20 @@ const (
 	LoginService_Value_TCPClearQuiet LoginService = 8
 )
 
+var LoginService_Strings = map[LoginService]string{
+	LoginService_Value_Telnet:        "Telnet",
+	LoginService_Value_Rlogin:        "Rlogin",
+	LoginService_Value_TCPClear:      "TCP-Clear",
+	LoginService_Value_PortMaster:    "PortMaster",
+	LoginService_Value_LAT:           "LAT",
+	LoginService_Value_X25PAD:        "X25-PAD",
+	LoginService_Value_X25T3POS:      "X25-T3POS",
+	LoginService_Value_TCPClearQuiet: "TCP-Clear-Quiet",
+}
+
 func (a LoginService) String() string {
-	switch a {
-	case LoginService_Value_Telnet:
-		return `Telnet`
-	case LoginService_Value_Rlogin:
-		return `Rlogin`
-	case LoginService_Value_TCPClear:
-		return `TCP-Clear`
-	case LoginService_Value_PortMaster:
-		return `PortMaster`
-	case LoginService_Value_LAT:
-		return `LAT`
-	case LoginService_Value_X25PAD:
-		return `X25-PAD`
-	case LoginService_Value_X25T3POS:
-		return `X25-T3POS`
-	case LoginService_Value_TCPClearQuiet:
-		return `TCP-Clear-Quiet`
+	if str, ok := LoginService_Strings[a]; ok {
+		return str
 	}
 	return "LoginService(" + strconv.Itoa(int(a)) + ")"
 }
@@ -1157,14 +1154,15 @@ const (
 	LoginTCPPort_Value_Rsh    LoginTCPPort = 514
 )
 
+var LoginTCPPort_Strings = map[LoginTCPPort]string{
+	LoginTCPPort_Value_Telnet: "Telnet",
+	LoginTCPPort_Value_Rlogin: "Rlogin",
+	LoginTCPPort_Value_Rsh:    "Rsh",
+}
+
 func (a LoginTCPPort) String() string {
-	switch a {
-	case LoginTCPPort_Value_Telnet:
-		return `Telnet`
-	case LoginTCPPort_Value_Rlogin:
-		return `Rlogin`
-	case LoginTCPPort_Value_Rsh:
-		return `Rsh`
+	if str, ok := LoginTCPPort_Strings[a]; ok {
+		return str
 	}
 	return "LoginTCPPort(" + strconv.Itoa(int(a)) + ")"
 }
@@ -1914,7 +1912,12 @@ func Class_SetString(p *radius.Packet, value string) (err error) {
 
 type SessionTimeout uint32
 
+var SessionTimeout_Strings = map[SessionTimeout]string{}
+
 func (a SessionTimeout) String() string {
+	if str, ok := SessionTimeout_Strings[a]; ok {
+		return str
+	}
 	return "SessionTimeout(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -1962,7 +1965,12 @@ func SessionTimeout_Set(p *radius.Packet, value SessionTimeout) {
 
 type IdleTimeout uint32
 
+var IdleTimeout_Strings = map[IdleTimeout]string{}
+
 func (a IdleTimeout) String() string {
+	if str, ok := IdleTimeout_Strings[a]; ok {
+		return str
+	}
 	return "IdleTimeout(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -2015,12 +2023,14 @@ const (
 	TerminationAction_Value_RADIUSRequest TerminationAction = 1
 )
 
+var TerminationAction_Strings = map[TerminationAction]string{
+	TerminationAction_Value_Default:       "Default",
+	TerminationAction_Value_RADIUSRequest: "RADIUS-Request",
+}
+
 func (a TerminationAction) String() string {
-	switch a {
-	case TerminationAction_Value_Default:
-		return `Default`
-	case TerminationAction_Value_RADIUSRequest:
-		return `RADIUS-Request`
+	if str, ok := TerminationAction_Strings[a]; ok {
+		return str
 	}
 	return "TerminationAction(" + strconv.Itoa(int(a)) + ")"
 }
@@ -2832,7 +2842,12 @@ func LoginLATGroup_SetString(p *radius.Packet, value string) (err error) {
 
 type FramedAppleTalkLink uint32
 
+var FramedAppleTalkLink_Strings = map[FramedAppleTalkLink]string{}
+
 func (a FramedAppleTalkLink) String() string {
+	if str, ok := FramedAppleTalkLink_Strings[a]; ok {
+		return str
+	}
 	return "FramedAppleTalkLink(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -2880,7 +2895,12 @@ func FramedAppleTalkLink_Set(p *radius.Packet, value FramedAppleTalkLink) {
 
 type FramedAppleTalkNetwork uint32
 
+var FramedAppleTalkNetwork_Strings = map[FramedAppleTalkNetwork]string{}
+
 func (a FramedAppleTalkNetwork) String() string {
+	if str, ok := FramedAppleTalkNetwork_Strings[a]; ok {
+		return str
+	}
 	return "FramedAppleTalkNetwork(" + strconv.Itoa(int(a)) + ")"
 }
 
@@ -3169,48 +3189,32 @@ const (
 	NASPortType_Value_Wireless80211    NASPortType = 19
 )
 
+var NASPortType_Strings = map[NASPortType]string{
+	NASPortType_Value_Async:            "Async",
+	NASPortType_Value_Sync:             "Sync",
+	NASPortType_Value_ISDN:             "ISDN",
+	NASPortType_Value_ISDNV120:         "ISDN-V120",
+	NASPortType_Value_ISDNV110:         "ISDN-V110",
+	NASPortType_Value_Virtual:          "Virtual",
+	NASPortType_Value_PIAFS:            "PIAFS",
+	NASPortType_Value_HDLCClearChannel: "HDLC-Clear-Channel",
+	NASPortType_Value_X25:              "X.25",
+	NASPortType_Value_X75:              "X.75",
+	NASPortType_Value_G3Fax:            "G.3-Fax",
+	NASPortType_Value_SDSL:             "SDSL",
+	NASPortType_Value_ADSLCAP:          "ADSL-CAP",
+	NASPortType_Value_ADSLDMT:          "ADSL-DMT",
+	NASPortType_Value_IDSL:             "IDSL",
+	NASPortType_Value_Ethernet:         "Ethernet",
+	NASPortType_Value_XDSL:             "xDSL",
+	NASPortType_Value_Cable:            "Cable",
+	NASPortType_Value_WirelessOther:    "Wireless-Other",
+	NASPortType_Value_Wireless80211:    "Wireless-802.11",
+}
+
 func (a NASPortType) String() string {
-	switch a {
-	case NASPortType_Value_Async:
-		return `Async`
-	case NASPortType_Value_Sync:
-		return `Sync`
-	case NASPortType_Value_ISDN:
-		return `ISDN`
-	case NASPortType_Value_ISDNV120:
-		return `ISDN-V120`
-	case NASPortType_Value_ISDNV110:
-		return `ISDN-V110`
-	case NASPortType_Value_Virtual:
-		return `Virtual`
-	case NASPortType_Value_PIAFS:
-		return `PIAFS`
-	case NASPortType_Value_HDLCClearChannel:
-		return `HDLC-Clear-Channel`
-	case NASPortType_Value_X25:
-		return `X.25`
-	case NASPortType_Value_X75:
-		return `X.75`
-	case NASPortType_Value_G3Fax:
-		return `G.3-Fax`
-	case NASPortType_Value_SDSL:
-		return `SDSL`
-	case NASPortType_Value_ADSLCAP:
-		return `ADSL-CAP`
-	case NASPortType_Value_ADSLDMT:
-		return `ADSL-DMT`
-	case NASPortType_Value_IDSL:
-		return `IDSL`
-	case NASPortType_Value_Ethernet:
-		return `Ethernet`
-	case NASPortType_Value_XDSL:
-		return `xDSL`
-	case NASPortType_Value_Cable:
-		return `Cable`
-	case NASPortType_Value_WirelessOther:
-		return `Wireless-Other`
-	case NASPortType_Value_Wireless80211:
-		return `Wireless-802.11`
+	if str, ok := NASPortType_Strings[a]; ok {
+		return str
 	}
 	return "NASPortType(" + strconv.Itoa(int(a)) + ")"
 }
@@ -3259,7 +3263,12 @@ func NASPortType_Set(p *radius.Packet, value NASPortType) {
 
 type PortLimit uint32
 
+var PortLimit_Strings = map[PortLimit]string{}
+
 func (a PortLimit) String() string {
+	if str, ok := PortLimit_Strings[a]; ok {
+		return str
+	}
 	return "PortLimit(" + strconv.Itoa(int(a)) + ")"
 }
 
