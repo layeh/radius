@@ -258,9 +258,29 @@ type DictionaryVendor struct {
 	LengthOctets int
 }
 
+type DictionaryExternalAttribute struct {
+	Name string
+	Pkg  string
+
+	Identifier string
+	Values     map[string]*DictionaryValue
+}
+
+func (e *DictionaryExternalAttribute) SortedValues() []*DictionaryValue {
+	values := make([]*DictionaryValue, 0, len(e.Values))
+	for _, value := range e.Values {
+		values = append(values, value)
+	}
+	sort.Slice(values, func(i, j int) bool {
+		return values[i].Number < values[j].Number
+	})
+	return values
+}
+
 type Dictionary struct {
-	Attributes map[string]*DictionaryAttribute
-	Vendors    map[string]*DictionaryVendor
+	Attributes         map[string]*DictionaryAttribute
+	Vendors            map[string]*DictionaryVendor
+	ExternalAttributes map[string]*DictionaryExternalAttribute
 }
 
 func (d *Dictionary) SortedAttributes() []*DictionaryAttribute {
@@ -274,14 +294,82 @@ func (d *Dictionary) SortedAttributes() []*DictionaryAttribute {
 	return attrs
 }
 
+func (d *Dictionary) SortedExternalAttributes() []*DictionaryExternalAttribute {
+	attrs := make([]*DictionaryExternalAttribute, 0, len(d.ExternalAttributes))
+	for _, attr := range d.ExternalAttributes {
+		attrs = append(attrs, attr)
+	}
+	sort.Slice(attrs, func(i, j int) bool {
+		return attrs[i].Name < attrs[j].Name
+	})
+	return attrs
+}
+
+// Type -> Package
+type Refs map[string]string
+
+func (r Refs) Set(v string) error {
+	s := strings.Split(v, string(os.PathListSeparator))
+	if len(s) != 2 {
+		return errors.New("invalid format")
+	}
+	if _, exists := r[s[0]]; exists {
+		return errors.New("type already exists")
+	}
+	if len(s[0]) == 0 || len(s[1]) == 0 {
+		return errors.New("empty type and/or package name")
+	}
+	r[s[0]] = s[1]
+	return nil
+}
+
+func (r Refs) String() string {
+	var b bytes.Buffer
+	b.WriteByte('{')
+	first := true
+	for typ, pkg := range r {
+		if first {
+			b.WriteString(", ")
+			first = false
+		}
+		b.WriteString(typ)
+		b.WriteRune(os.PathListSeparator)
+		b.WriteString(pkg)
+	}
+	b.WriteByte('}')
+	return b.String()
+}
+
 func main() {
+	refs := make(Refs)
 	packageName := flag.String("package", "main", "generated package name")
 	outputFile := flag.String("output", "-", "output file (\"-\" writes to standard out)")
+	flag.Var(&refs, "ref", `external package reference (format: "attribute`+string(os.PathListSeparator)+`package")`)
 	flag.Parse()
 
 	dict := &Dictionary{
-		Attributes: make(map[string]*DictionaryAttribute),
-		Vendors:    make(map[string]*DictionaryVendor),
+		Attributes:         make(map[string]*DictionaryAttribute),
+		Vendors:            make(map[string]*DictionaryVendor),
+		ExternalAttributes: make(map[string]*DictionaryExternalAttribute),
+	}
+
+	for typ, pkg := range refs {
+		if _, exists := dict.ExternalAttributes[typ]; exists {
+			fmt.Printf("radius-dict-gen: duplicate attribute %s defined\n", typ)
+			os.Exit(1)
+		}
+		ident := nameToIdentifier(typ)
+		if ident == "" {
+			fmt.Printf("radius-dict-gen: bad attribute name %s\n", typ)
+			os.Exit(1)
+		}
+		dict.ExternalAttributes[typ] = &DictionaryExternalAttribute{
+			Name: typ,
+			Pkg:  pkg,
+
+			Identifier: ident,
+			Values:     make(map[string]*DictionaryValue),
+		}
 	}
 
 	for _, filename := range flag.Args() {
@@ -329,28 +417,36 @@ func main() {
 						os.Exit(1)
 					}
 
+					var values map[string]*DictionaryValue
+
 					attr := dict.Attributes[value.Attribute]
 					if attr == nil {
-						fmt.Printf("radius-dict-gen: unknown attribute %s referenced at %s:%d\n", value.Attribute, filename, i)
-						os.Exit(1)
+						attr := dict.ExternalAttributes[value.Attribute]
+						if attr == nil {
+							fmt.Printf("radius-dict-gen: unknown attribute %s referenced at %s:%d\n", value.Attribute, filename, i)
+							os.Exit(1)
+						}
+						values = attr.Values
+					} else {
+						values = attr.Values
 					}
 
-					if _, valueExists := attr.Values[value.Name]; valueExists {
+					if _, valueExists := values[value.Name]; valueExists {
 						fmt.Printf("radius-dict-gen: duplicate attribute %s value %s referenced at %s:%d\n", value.Attribute, value.Name, filename, i)
 						os.Exit(1)
 					}
 
-					for _, v := range attr.Values {
+					for _, v := range values {
 						if v.Number == value.Number {
 							// FreeRADIUS has duplicate values
 							fmt.Fprintf(os.Stderr, "radius-dict-gen: duplicate attribute value %d as %s (previously defined as %s); overwriting\n", value.Number, value.Name, v.Name)
-							delete(attr.Values, v.Name)
+							delete(values, v.Name)
 							break
 						}
 					}
 
 					// TODO: vendor?
-					attr.Values[value.Name] = value
+					values[value.Name] = value
 
 				//case (len(fields) == 3 && len(fields) == 4) && fields[0] == "VENDOR":
 				//case len(fields) == 2 && fields[0] == "BEGIN-VENDOR":
@@ -419,6 +515,13 @@ import (
 	"strconv"
 
 	"layeh.com/radius"
+	{{ with .Dict.SortedExternalAttributes }}
+	{{- range . }}
+	{{- if .Values }}
+	. "{{ .Pkg }}"
+	{{- end }}
+	{{- end }}
+	{{- end }}
 )
 
 var _ = radius.Type(0)
@@ -431,6 +534,17 @@ const ({{ range . }}
 )
 {{ end }}
 
+{{ range .Dict.SortedExternalAttributes }}
+{{ $attr := . }}
+func init() {{ "{" }}{{ range .SortedValues }}
+	{{ $attr.Identifier }}_Strings[{{ $attr.Identifier }}_Value_{{ .Identifier }}] = "{{ .Name }}"{{ end }}
+}
+
+const ({{ range .SortedValues }}
+	{{ $attr.Identifier }}_Value_{{ .Identifier }} {{ $attr.Identifier }} = {{ .Number }}{{ end }}
+)
+{{ end }}
+
 {{ with .Dict.SortedAttributes }}
 {{ range . }}
 {{ $attr := . }}
@@ -439,12 +553,12 @@ type {{ .Identifier }} uint32
 
 {{ if gt (len .Values) 0 }}
 const ({{ range .SortedValues }}
-	{{ $attr.Identifier }}_Value_{{ .Identifier}} {{ $attr.Identifier }} = {{ .Number }}{{ end }}
+	{{ $attr.Identifier }}_Value_{{ .Identifier }} {{ $attr.Identifier }} = {{ .Number }}{{ end }}
 )
 {{ end }}
 
 var {{ .Identifier}}_Strings = map[{{ .Identifier}}]string{{ "{" }}{{ range .SortedValues }}
-	{{ $attr.Identifier }}_Value_{{ .Identifier}}: "{{ .Name }}",{{ end }}
+	{{ $attr.Identifier }}_Value_{{ .Identifier }}: "{{ .Name }}",{{ end }}
 }
 
 func (a {{ .Identifier }}) String() string {
