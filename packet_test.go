@@ -1,9 +1,12 @@
-package radius // import "layeh.com/radius"
+package radius_test
 
 import (
 	"bytes"
 	"net"
 	"testing"
+
+	"layeh.com/radius"
+	"layeh.com/radius/rfc2865"
 )
 
 func Test_RFC2865_7_1(t *testing.T) {
@@ -19,42 +22,39 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x01, 0x10, 0x05, 0x06, 0x00, 0x00, 0x00, 0x03,
 	}
 
-	p, err := Parse(request, secret, Builtin)
+	p, err := radius.Parse(request, secret)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if p.Code != CodeAccessRequest {
+	if p.Code != radius.CodeAccessRequest {
 		t.Fatal("expecting Code = PacketCodeAccessRequest")
 	}
 	if p.Identifier != 0 {
 		t.Fatal("expecting Identifier = 0")
 	}
-	if len(p.Attributes) != 4 {
+	if p.Len() != 4 {
 		t.Fatal("expecting 4 attributes")
 	}
-	if p.String("User-Name") != "nemo" {
+	if rfc2865.UserName_GetString(p) != "nemo" {
 		t.Fatal("expecting User-Name = nemo")
 	}
-	if p.String("User-Password") != "arctangent" {
+	if rfc2865.UserPassword_GetString(p) != "arctangent" {
 		t.Fatal("expecting User-Password = arctangent")
 	}
-	if username, password, ok := p.PAP(); !ok || username != "nemo" || password != "arctangent" {
-		t.Fatal("PAP values do not match attributes")
-	}
-	if ip := p.Value("NAS-IP-Address").(net.IP); !ip.Equal(net.ParseIP("192.168.1.16")) {
+	if !rfc2865.NASIPAddress_Get(p).Equal(net.ParseIP("192.168.1.16")) {
 		t.Fatal("expecting NAS-IP-Address = 192.168.1.16")
 	}
-	if p.Value("NAS-Port").(uint32) != uint32(3) {
+	if rfc2865.NASPort_Get(p) != 3 {
 		t.Fatal("expecting NAS-Port = 3")
 	}
 
 	{
 		wire, err := p.Encode()
 		if err != nil {
-			t.Fatal("expecting p.Encode to succeed")
+			t.Fatal(err)
 		}
-		if !bytes.Equal(wire, request) {
-			t.Fatal("expecting p.Encode() and request to equal")
+		if !RADIUSPacketsEqual(wire, request) {
+			t.Fatal("expecting q.Encode() and request to be equal")
 		}
 	}
 
@@ -65,25 +65,31 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x0e, 0x06, 0xc0, 0xa8, 0x01, 0x03,
 	}
 
-	q := Packet{
-		Code:          CodeAccessAccept,
+	q := radius.Packet{
+		Code:          radius.CodeAccessAccept,
 		Identifier:    p.Identifier,
 		Authenticator: p.Authenticator,
 		Secret:        secret,
-		Dictionary:    p.Dictionary,
+		Attributes:    make(radius.Attributes),
 	}
-	q.Set("Service-Type", uint32(1))
-	q.Set("Login-Service", uint32(0))
-	q.Set("Login-IP-Host", net.ParseIP("192.168.1.3"))
+	rfc2865.ServiceType_Set(&q, rfc2865.ServiceType(1))
+	rfc2865.LoginService_Set(&q, rfc2865.LoginService(0))
+	if err := rfc2865.LoginIPHost_Set(&q, net.ParseIP("192.168.1.3")); err != nil {
+		t.Fatal(err)
+	}
 
 	{
 		wire, err := q.Encode()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !bytes.Equal(response, wire) {
-			t.Fatal("expecing response and q.Encode() to be equal")
+		if !RADIUSPacketsEqual(wire, response) {
+			t.Fatalf("expecting q.Encode() and response to be equal\n%v\n%v", wire, response)
 		}
+	}
+
+	if !radius.IsAuthenticResponse(response, request, secret) {
+		t.Fatal("expecting response to be valid")
 	}
 }
 
@@ -101,31 +107,31 @@ func Test_RFC2865_7_2(t *testing.T) {
 		0x02, 0x07, 0x06, 0x00, 0x00, 0x00, 0x01,
 	}
 
-	p, err := Parse(request, secret, Builtin)
+	p, err := radius.Parse(request, secret)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	if p.Code != CodeAccessRequest {
+	if p.Code != radius.CodeAccessRequest {
 		t.Fatal("expecting code access request")
 	}
 	if p.Identifier != 1 {
 		t.Fatal("expecting Identifier = 1")
 	}
-	if p.String("User-Name") != "flopsy" {
+	if rfc2865.UserName_GetString(p) != "flopsy" {
 		t.Fatal("expecting User-Name = flopsy")
 	}
-	if ip := p.Value("NAS-IP-Address").(net.IP); !ip.Equal(net.ParseIP("192.168.1.16")) {
+	if !rfc2865.NASIPAddress_Get(p).Equal(net.ParseIP("192.168.1.16")) {
 		t.Fatal("expecting NAS-IP-Address = 192.168.1.16")
 	}
-	if p.Value("NAS-Port").(uint32) != uint32(20) {
+	if rfc2865.NASPort_Get(p) != 20 {
 		t.Fatal("expecting NAS-Port = 20")
 	}
-	if p.Value("Service-Type").(uint32) != uint32(2) {
-		t.Fatal("expecting Service-Type = 2")
+	if rfc2865.ServiceType_Get(p) != rfc2865.ServiceType_Value_FramedUser {
+		t.Fatal("expecting Service-Type = Attr_ServiceType_FramedUser")
 	}
-	if p.Value("Framed-Protocol").(uint32) != uint32(1) {
-		t.Fatal("expecting Framed-Protocol = 1")
+	if rfc2865.FramedProtocol_Get(p) != rfc2865.FramedProtocol_Value_PPP {
+		t.Fatal("expecting Framed-Protocol = Attr_FramedProtocol_PPP")
 	}
 }
 
@@ -139,24 +145,65 @@ func TestPasswords(t *testing.T) {
 	for _, password := range passwords {
 		secret := []byte("xyzzy5461")
 
-		r := New(CodeAccessRequest, secret)
+		r := radius.New(radius.CodeAccessRequest, secret)
 		if r == nil {
 			t.Fatal("could not create new RADIUS packet")
 		}
-		r.Add("User-Password", password)
+		if err := rfc2865.UserPassword_AddString(r, password); err != nil {
+			t.Fatal(err)
+		}
 
 		b, err := r.Encode()
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		q, err := Parse(b, secret, Builtin)
+		q, err := radius.Parse(b, secret)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		if s := q.String("User-Password"); s != password {
+		if s := rfc2865.UserPassword_GetString(q); s != password {
 			t.Fatalf("incorrect User-Password (expecting %q, got %q)", password, s)
 		}
 	}
+}
+
+// RADIUSPacketsEqual returns if two RADIUS packets are equal, ignoring the
+// order of attributes of different types.
+func RADIUSPacketsEqual(a, b []byte) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	if !bytes.Equal(a[:4], b[:4]) {
+		return false
+	}
+
+	// hash is going to be different, as the attribute order could change
+
+	aa, err := radius.ParseAttributes(a[20:])
+	if err != nil {
+		panic(err)
+	}
+	ab, err := radius.ParseAttributes(b[20:])
+	if err != nil {
+		panic(err)
+	}
+
+	if len(aa) != len(ab) {
+		return false
+	}
+
+	for typeA, attrsA := range aa {
+		if len(attrsA) != len(ab[typeA]) {
+			return false
+		}
+		for i, attrA := range attrsA {
+			if !bytes.Equal([]byte(attrA), []byte(ab[typeA][i])) {
+				return false
+			}
+		}
+	}
+
+	return true
 }

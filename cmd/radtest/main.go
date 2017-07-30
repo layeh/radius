@@ -1,6 +1,7 @@
 package main // import "layeh.com/radius/cmd/radtest"
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"net"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	"layeh.com/radius"
+	. "layeh.com/radius/rfc2865"
 )
 
 const usage = `
@@ -36,16 +38,14 @@ func main() {
 	hostport := net.JoinHostPort(host, port)
 
 	packet := radius.New(radius.CodeAccessRequest, []byte(flag.Arg(4)))
-	packet.Add("User-Name", flag.Arg(0))
-	packet.Add("User-Password", flag.Arg(1))
+	UserName_SetString(packet, flag.Arg(0))
+	UserPassword_SetString(packet, flag.Arg(1))
 	nasPort, _ := strconv.Atoi(flag.Arg(3))
-	packet.Add("NAS-Port", uint32(nasPort))
+	NASPort_Set(packet, NASPort(nasPort))
 
-	client := radius.Client{
-		DialTimeout: *timeout,
-		ReadTimeout: *timeout,
-	}
-	received, err := client.Exchange(packet, hostport)
+	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
+	defer cancel()
+	received, err := radius.Exchange(ctx, packet, hostport)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -57,7 +57,7 @@ func main() {
 	} else {
 		status = "Reject"
 	}
-	if msg, ok := received.Value("Reply-Message").(string); ok {
+	if msg, err := ReplyMessage_LookupString(received); err == nil {
 		status += " (" + msg + ")"
 	}
 

@@ -6,48 +6,27 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
-	"unicode"
 
 	"layeh.com/radius"
+	. "layeh.com/radius/rfc2865"
 )
 
 var secret = flag.String("secret", "", "shared RADIUS secret between clients and server")
 var command string
 var arguments []string
 
-func handler(w radius.ResponseWriter, p *radius.Packet) {
-	username, password, ok := p.PAP()
-	if !ok {
-		w.AccessReject()
+func handler(w radius.ResponseWriter, r *radius.Request) {
+	username, err1 := UserName_LookupString(r.Packet)
+	password, err2 := UserPassword_LookupString(r.Packet)
+	if err1 != nil || err2 != nil {
+		w.Write(r.Response(radius.CodeAccessReject))
 		return
 	}
-	log.Printf("%s requesting access (%s #%d)\n", username, w.RemoteAddr(), p.Identifier)
+	log.Printf("%s requesting access (%s #%d)\n", username, r.RemoteAddr, r.Identifier)
 
 	cmd := exec.Command(command, arguments...)
 
 	cmd.Env = os.Environ()
-	for _, attr := range p.Attributes {
-		name, ok := p.Dictionary.Name(attr.Type)
-		if !ok {
-			continue
-		}
-		name = strings.Map(func(r rune) rune {
-			if unicode.IsDigit(r) {
-				return r
-			}
-			if unicode.IsLetter(r) {
-				if unicode.IsUpper(r) {
-					return r
-				}
-				return unicode.ToUpper(r)
-			}
-			return '_'
-		}, name)
-		value := fmt.Sprint(attr.Value)
-		cmd.Env = append(cmd.Env, "RADIUS_"+name+"="+value)
-	}
-
 	cmd.Env = append(cmd.Env, "RADIUS_USERNAME="+username, "RADIUS_PASSWORD="+password)
 
 	output, err := cmd.Output()
@@ -55,20 +34,21 @@ func handler(w radius.ResponseWriter, p *radius.Packet) {
 		log.Printf("handler error: %s\n", err)
 	}
 
-	var attributes []*radius.Attribute
+	var code radius.Code
+	if cmd.ProcessState != nil && cmd.ProcessState.Success() {
+		code = radius.CodeAccessAccept
+		log.Printf("%s accepted (%s #%d)\n", username, r.RemoteAddr, r.Identifier)
+	} else {
+		code = radius.CodeAccessReject
+		log.Printf("%s rejected (%s #%d)\n", username, r.RemoteAddr, r.Identifier)
+	}
+	resp := r.Response(code)
+
 	if len(output) > 0 {
-		attributes = []*radius.Attribute{
-			p.Dictionary.MustAttr("Reply-Message", string(output)),
-		}
+		ReplyMessage_Set(r.Packet, output)
 	}
 
-	if cmd.ProcessState != nil && cmd.ProcessState.Success() {
-		log.Printf("%s accepted (%s #%d)\n", username, w.RemoteAddr(), p.Identifier)
-		w.AccessAccept(attributes...)
-	} else {
-		log.Printf("%s rejected (%s #%d)\n", username, w.RemoteAddr(), p.Identifier)
-		w.AccessReject(attributes...)
-	}
+	w.Write(resp)
 }
 
 const usage = `
@@ -77,15 +57,8 @@ program exits sucessfully, an Access-Accept response is sent, otherwise, an
 Access-Reject is sent. If standard out is non-empty, it is included as an
 Reply-Message attribute in the response.
 
-Any known RADIUS attribute will be added to the process's environment. The
-attribute name undergoes the following conversion before being set:
- - it is prefixed with RADIUS_
- - all letters of the attribute name are changed to uppercase
- - any non-digit and non-letter character is replaced with underscore (_)
-For example, the NAS-IP-Address attribute will be named RADIUS_NAS_IP_ADDRESS.
-
-Two special environment variables are also include: RADIUS_USERNAME and
-RADIUS_PASSWORD, which hold the username and password, respectively.
+The environment variables RADIUS_USERNAME and RADIUS_PASSWORD are set which hold
+the username and password, respectively.
 `
 
 func main() {
@@ -106,10 +79,9 @@ func main() {
 
 	log.Println("radserver starting")
 
-	server := radius.Server{
-		Handler:    radius.HandlerFunc(handler),
-		Secret:     []byte(*secret),
-		Dictionary: radius.Builtin,
+	server := radius.PacketServer{
+		Handler:      radius.HandlerFunc(handler),
+		SecretSource: radius.StaticSecretSource([]byte(*secret)),
 	}
 
 	if err := server.ListenAndServe(); err != nil {
