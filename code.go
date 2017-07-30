@@ -17,6 +17,12 @@ const (
 	CodeAccessChallenge    Code = 11
 	CodeStatusServer       Code = 12
 	CodeStatusClient       Code = 13
+	CodeDisconnectRequest  Code = 40
+	CodeDisconnectACK      Code = 41
+	CodeDisconnectNAK      Code = 42
+	CodeCoARequest         Code = 43
+	CodeCoAACK             Code = 44
+	CodeCoANAK             Code = 45
 	CodeReserved           Code = 255
 )
 
@@ -39,6 +45,18 @@ func (c Code) String() string {
 		return `Status-Server`
 	case CodeStatusClient:
 		return `Status-Client`
+	case CodeDisconnectRequest:
+		return `Disconnect-Request`
+	case CodeDisconnectACK:
+		return `Disconnect-ACK`
+	case CodeDisconnectNAK:
+		return `Disconnect-NAK`
+	case CodeCoARequest:
+		return `CoA-Request`
+	case CodeCoAACK:
+		return `CoA-ACK`
+	case CodeCoANAK:
+		return `CoA-NAK`
 	case CodeReserved:
 		return `Reserved`
 	}

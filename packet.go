@@ -100,10 +100,11 @@ func (p *Packet) Encode() ([]byte, error) {
 	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge:
 		hash := md5.New()
 		hash.Write(b[:4])
-		if p.Code == CodeAccountingRequest {
+		switch p.Code {
+		case CodeAccountingRequest, CodeDisconnectRequest, CodeCoARequest:
 			var nul [16]byte
 			hash.Write(nul[:])
-		} else {
+		default:
 			hash.Write(p.Authenticator[:])
 		}
 		hash.Write(b[20:])
