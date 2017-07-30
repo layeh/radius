@@ -7,7 +7,7 @@ import (
 // Code defines the RADIUS packet type.
 type Code int
 
-// Codes which are defined in RFC 2865.
+// Standard RADIUS packet codes.
 const (
 	CodeAccessRequest      Code = 1
 	CodeAccessAccept       Code = 2
