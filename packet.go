@@ -131,3 +131,27 @@ func IsAuthenticResponse(response, request, secret []byte) bool {
 	var sum [md5.Size]byte
 	return bytes.Equal(hash.Sum(sum[:0]), response[4:20])
 }
+
+// IsAuthenticRequest returns if the given RADIUS request is an authentic
+// request using the given secret.
+func IsAuthenticRequest(request, secret []byte) bool {
+	if len(request) < 20 || len(secret) == 0 {
+		return false
+	}
+
+	switch Code(request[0]) {
+	case CodeAccessRequest:
+		return true
+	case CodeAccountingRequest, CodeDisconnectRequest, CodeCoARequest:
+		hash := md5.New()
+		hash.Write(request[:4])
+		var nul [16]byte
+		hash.Write(nul[:])
+		hash.Write(request[20:])
+		hash.Write(secret[:])
+		var sum [md5.Size]byte
+		return bytes.Equal(hash.Sum(sum[:0]), request[4:20])
+	default:
+		return false
+	}
+}
