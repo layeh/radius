@@ -32,6 +32,10 @@ type PacketServer struct {
 	Network      string
 	SecretSource SecretSource
 	Handler      Handler
+
+	// Skip incoming packet authenticity validation.
+	// This should only be set to true for debugging purposes.
+	InsecureSkipVerify bool
 }
 
 // TODO: logger on PacketServer
@@ -72,6 +76,11 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			continue
 		}
 		if len(secret) == 0 {
+			continue
+		}
+
+		if !s.InsecureSkipVerify && !IsAuthenticRequest(buff[:n], secret) {
+			// TODO: log?
 			continue
 		}
 
