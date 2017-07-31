@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"errors"
-	"math"
 	"net"
 	"strconv"
 	"time"
@@ -147,7 +146,7 @@ func NewUserPassword(plaintext, secret, requestAuthenticator []byte) (Attribute,
 		return nil, errors.New("requestAuthenticator not 16-bytes")
 	}
 
-	chunks := int(math.Ceil(float64(len(plaintext)) / 16.))
+	chunks := len(plaintext) >> 4
 	if chunks == 0 {
 		chunks = 1
 	}
