@@ -40,9 +40,9 @@ func main() {
 
 Included in this package is the command line program `radius-dict-gen`. It can be installed with:
 
-    go get -u layeh.com/radius/radius-dict-gen
+    go get -u layeh.com/radius/cmd/radius-dict-gen
 
-This program will generate helper functions and types for reading and manipulating RADIUS attributes in a packet. It is recommended that this generated code be used for any RADIUS dictionary you would like to consume.
+This program will generate helper functions and types for reading and manipulating RADIUS attributes in a packet. It is recommended that generated code be used for any RADIUS dictionary you would like to consume.
 
 Included in this repository are sub-packages of generated helpers for commonly used RADIUS attributes, including [`rfc2865`](https://godoc.org/layeh.com/radius/rfc2865) and [`rfc2866`](https://godoc.org/layeh.com/radius/rfc2866).
 
