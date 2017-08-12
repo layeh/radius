@@ -63,7 +63,6 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 		var buff [MaxPacketLength]byte
 		n, remoteAddr, err := conn.ReadFrom(buff[:])
 		if err != nil {
-			println(err.Error())
 			if err.(*net.OpError).Temporary() { // TODO: ???
 				return err
 			}
