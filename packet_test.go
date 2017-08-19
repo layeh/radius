@@ -133,6 +133,44 @@ func Test_RFC2865_7_2(t *testing.T) {
 	if rfc2865.FramedProtocol_Get(p) != rfc2865.FramedProtocol_Value_PPP {
 		t.Fatal("expecting Framed-Protocol = Attr_FramedProtocol_PPP")
 	}
+
+	// Response
+	response := []byte{
+		0x02, 0x01, 0x00, 0x38, 0x15, 0xef, 0xbc, 0x7d, 0xab, 0x26, 0xcf, 0xa3, 0xdc, 0x34, 0xd9, 0xc0,
+		0x3c, 0x86, 0x01, 0xa4, 0x06, 0x06, 0x00, 0x00, 0x00, 0x02, 0x07, 0x06, 0x00, 0x00, 0x00, 0x01,
+		0x08, 0x06, 0xff, 0xff, 0xff, 0xfe, 0x0a, 0x06, 0x00, 0x00, 0x00, 0x00, 0x0d, 0x06, 0x00, 0x00,
+		//                                                                   ^ incorrectly a 2 in the document
+		0x00, 0x01, 0x0c, 0x06, 0x00, 0x00, 0x05, 0xdc,
+	}
+
+	p, err = radius.Parse(response, secret)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if p.Code != radius.CodeAccessAccept {
+		t.Fatal("exception code access accept")
+	}
+	if p.Identifier != 1 {
+		t.Fatal("expecting Identifier = 1")
+	}
+	if rfc2865.ServiceType_Get(p) != rfc2865.ServiceType_Value_FramedUser {
+		t.Fatal("expecting Service-Type = Framed User")
+	}
+	if rfc2865.FramedProtocol_Get(p) != rfc2865.FramedProtocol_Value_PPP {
+		t.Fatal("expecting Framed-Protocol = PPP")
+	}
+	if !net.ParseIP("255.255.255.254").Equal(rfc2865.FramedIPAddress_Get(p)) {
+		t.Fatal("expecting Framed-IP-Address = 255.255.255.254")
+	}
+	if rfc2865.FramedRouting_Get(p) != rfc2865.FramedRouting_Value_None {
+		t.Fatal("expecting Framed-Routing = None")
+	}
+	if rfc2865.FramedCompression_Get(p) != rfc2865.FramedCompression_Value_VanJacobsonTCPIP {
+		t.Fatal("expecting Framed-Compression = VJ TCP/IP Header Compression")
+	}
+	if rfc2865.FramedMTU_Get(p) != 1500 {
+		t.Fatal("expecting Framed-MTU = 1500")
+	}
 }
 
 func TestPasswords(t *testing.T) {
