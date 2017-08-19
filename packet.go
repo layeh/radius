@@ -127,7 +127,7 @@ func IsAuthenticResponse(response, request, secret []byte) bool {
 	hash.Write(response[:4])
 	hash.Write(request[4:20])
 	hash.Write(response[20:])
-	hash.Write(secret[:])
+	hash.Write(secret)
 	var sum [md5.Size]byte
 	return bytes.Equal(hash.Sum(sum[:0]), response[4:20])
 }
@@ -148,7 +148,7 @@ func IsAuthenticRequest(request, secret []byte) bool {
 		var nul [16]byte
 		hash.Write(nul[:])
 		hash.Write(request[20:])
-		hash.Write(secret[:])
+		hash.Write(secret)
 		var sum [md5.Size]byte
 		return bytes.Equal(hash.Sum(sum[:0]), request[4:20])
 	default:
