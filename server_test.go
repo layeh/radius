@@ -2,6 +2,7 @@ package radius_test
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"testing"
 	"time"
@@ -10,7 +11,7 @@ import (
 	. "layeh.com/radius/rfc2865"
 )
 
-func Test_PacketServer_basic(t *testing.T) {
+func TestPacketServer_basic(t *testing.T) {
 	addr, err := net.ResolveUDPAddr("udp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)
@@ -34,6 +35,7 @@ func Test_PacketServer_basic(t *testing.T) {
 		}),
 	}
 
+	var clientErr error
 	go func() {
 		defer server.Shutdown(context.Background())
 
@@ -44,14 +46,21 @@ func Test_PacketServer_basic(t *testing.T) {
 		}
 		response, err := client.Exchange(context.Background(), packet, pc.LocalAddr().String())
 		if err != nil {
-			t.Fatal(err)
+			clientErr = err
+			return
 		}
 		if response.Code != radius.CodeAccessAccept {
-			t.Fatalf("expected CodeAccessAccept, got %s\n", response.Code)
+			clientErr = fmt.Errorf("expected CodeAccessAccept, got %s\n", response.Code)
 		}
 	}()
 
 	if err := server.Serve(pc); err != nil {
+		t.Fatal(err)
+	}
+
+	server.Shutdown(context.Background())
+
+	if clientErr != nil {
 		t.Fatal(err)
 	}
 }
