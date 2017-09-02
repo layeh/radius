@@ -43,7 +43,7 @@ func New(code Code, secret []byte) *Packet {
 // is malformed.
 func Parse(b, secret []byte) (*Packet, error) {
 	if len(b) < 20 {
-		return nil, errors.New("packet must be at least 20 bytes long")
+		return nil, errors.New("radius: packet not at least 20 bytes long")
 	}
 
 	length := int(binary.BigEndian.Uint16(b[2:4]))
@@ -51,7 +51,7 @@ func Parse(b, secret []byte) (*Packet, error) {
 		return nil, errors.New("radius: invalid packet length")
 	}
 
-	attrs, err := ParseAttributes(b[20:length])
+	attrs, err := ParseAttributes(b[20:])
 	if err != nil {
 		return nil, err
 	}
@@ -123,6 +123,7 @@ func IsAuthenticResponse(response, request, secret []byte) bool {
 	if len(response) < 20 || len(request) < 20 || len(secret) == 0 {
 		return false
 	}
+
 	hash := md5.New()
 	hash.Write(response[:4])
 	hash.Write(request[4:20])
