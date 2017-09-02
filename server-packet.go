@@ -1,9 +1,11 @@
 package radius
 
 import (
+	"context"
 	"errors"
 	"net"
 	"sync"
+	"sync/atomic"
 )
 
 type packetResponseWriter struct {
@@ -36,6 +38,12 @@ type PacketServer struct {
 	// Skip incoming packet authenticity validation.
 	// This should only be set to true for debugging purposes.
 	InsecureSkipVerify bool
+
+	mu           sync.Mutex
+	shuttingDown bool
+	running      chan struct{}
+	listeners    map[net.PacketConn]int
+	activeCount  int32
 }
 
 // TODO: logger on PacketServer
@@ -49,6 +57,20 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 		return errors.New("radius: nil SecretSource")
 	}
 
+	s.mu.Lock()
+	if s.shuttingDown {
+		s.mu.Unlock()
+		return ErrServerShutdown
+	}
+	if s.running == nil {
+		s.running = make(chan struct{})
+	}
+	if s.listeners == nil {
+		s.listeners = make(map[net.PacketConn]int)
+	}
+	s.listeners[conn]++
+	s.mu.Unlock()
+
 	type activeKey struct {
 		IP         string
 		Identifier byte
@@ -59,13 +81,39 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 		active     = map[activeKey]struct{}{}
 	)
 
+	atomic.AddInt32(&s.activeCount, 1)
+	defer func() {
+		s.mu.Lock()
+		s.listeners[conn]--
+		if s.listeners[conn] == 0 {
+			delete(s.listeners, conn)
+		}
+		s.mu.Unlock()
+
+		if atomic.AddInt32(&s.activeCount, -1) == 0 {
+			s.mu.Lock()
+			s.shuttingDown = false
+			close(s.running)
+			s.running = nil
+			s.mu.Unlock()
+		}
+	}()
+
 	for {
 		var buff [MaxPacketLength]byte
 		n, remoteAddr, err := conn.ReadFrom(buff[:])
 		if err != nil {
-			if err.(*net.OpError).Temporary() { // TODO: ???
+			s.mu.Lock()
+			if s.shuttingDown {
+				s.mu.Unlock()
+				return nil
+			}
+			s.mu.Unlock()
+
+			if ne, ok := err.(net.Error); ok && !ne.Temporary() {
 				return err
 			}
+			// TODO: log error?
 			continue
 		}
 
@@ -89,6 +137,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			continue
 		}
 
+		atomic.AddInt32(&s.activeCount, 1)
 		go func(packet *Packet, remoteAddr net.Addr) {
 			key := activeKey{
 				IP:         remoteAddr.String(),
@@ -111,6 +160,14 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				activeLock.Lock()
 				delete(active, key)
 				activeLock.Unlock()
+
+				if atomic.AddInt32(&s.activeCount, -1) == 0 {
+					s.mu.Lock()
+					s.shuttingDown = false
+					close(s.running)
+					s.running = nil
+					s.mu.Unlock()
+				}
 			}()
 
 			request := Request{
@@ -151,4 +208,33 @@ func (s *PacketServer) ListenAndServe() error {
 	return s.Serve(pc)
 }
 
-// TODO: UDPServer.Shutdown(context.Context) ?
+// Shutdown gracefully stops the server. It first closes all listeners (which
+// stops accepting new packets) and then waits for running handlers to complete.
+//
+// Shutdown returns after all handlers have completed, or when ctx is canceled.
+// The PacketServer is ready for re-use once the function returns nil.
+func (s *PacketServer) Shutdown(ctx context.Context) error {
+	s.mu.Lock()
+
+	if len(s.listeners) == 0 {
+		s.mu.Unlock()
+		return nil
+	}
+
+	if !s.shuttingDown {
+		s.shuttingDown = true
+		for listener := range s.listeners {
+			listener.Close()
+		}
+	}
+
+	ch := s.running
+	s.mu.Unlock()
+
+	select {
+	case <-ch:
+		return nil
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+}
