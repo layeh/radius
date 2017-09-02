@@ -62,8 +62,10 @@ type ResponseWriter interface {
 
 // SecretSource supplies RADIUS servers with the secret that should be used for
 // authorizing and decrypting packets.
+//
+// ctx is canceled if the server's Shutdown method is called.
 type SecretSource interface {
-	RADIUSSecret(remoteAddr net.Addr) ([]byte, error)
+	RADIUSSecret(ctx context.Context, remoteAddr net.Addr) ([]byte, error)
 }
 
 // StaticSecretSource returns a SecretSource that uses secret for all requests.
@@ -73,6 +75,6 @@ func StaticSecretSource(secret []byte) SecretSource {
 
 type staticSecretSource []byte
 
-func (secret staticSecretSource) RADIUSSecret(remoteAddr net.Addr) ([]byte, error) {
+func (secret staticSecretSource) RADIUSSecret(ctx context.Context, remoteAddr net.Addr) ([]byte, error) {
 	return []byte(secret), nil
 }

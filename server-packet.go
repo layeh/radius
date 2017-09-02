@@ -41,6 +41,8 @@ type PacketServer struct {
 
 	mu           sync.Mutex
 	shuttingDown bool
+	ctx          context.Context
+	ctxDone      context.CancelFunc
 	running      chan struct{}
 	listeners    map[net.PacketConn]int
 	activeCount  int32
@@ -61,6 +63,11 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 	if s.shuttingDown {
 		s.mu.Unlock()
 		return ErrServerShutdown
+	}
+	var ctx context.Context
+	if s.ctx == nil {
+		s.ctx, s.ctxDone = context.WithCancel(context.Background())
+		ctx = s.ctx
 	}
 	if s.running == nil {
 		s.running = make(chan struct{})
@@ -95,6 +102,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			s.shuttingDown = false
 			close(s.running)
 			s.running = nil
+			s.ctx = nil
 			s.mu.Unlock()
 		}
 	}()
@@ -117,7 +125,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			continue
 		}
 
-		secret, err := s.SecretSource.RADIUSSecret(remoteAddr)
+		secret, err := s.SecretSource.RADIUSSecret(ctx, remoteAddr)
 		if err != nil {
 			// TODO: log?
 			continue
@@ -166,6 +174,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 					s.shuttingDown = false
 					close(s.running)
 					s.running = nil
+					s.ctx = nil
 					s.mu.Unlock()
 				}
 			}()
@@ -174,6 +183,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				LocalAddr:  conn.LocalAddr(),
 				RemoteAddr: remoteAddr,
 				Packet:     packet,
+				ctx:        ctx,
 			}
 
 			s.Handler.ServeRADIUS(&response, &request)
@@ -223,6 +233,7 @@ func (s *PacketServer) Shutdown(ctx context.Context) error {
 
 	if !s.shuttingDown {
 		s.shuttingDown = true
+		s.ctxDone()
 		for listener := range s.listeners {
 			listener.Close()
 		}
