@@ -125,28 +125,31 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			continue
 		}
 
-		secret, err := s.SecretSource.RADIUSSecret(ctx, remoteAddr)
-		if err != nil {
-			// TODO: log?
-			continue
-		}
-		if len(secret) == 0 {
-			continue
-		}
-
-		if !s.InsecureSkipVerify && !IsAuthenticRequest(buff[:n], secret) {
-			// TODO: log?
-			continue
-		}
-
-		packet, err := Parse(buff[:n], secret)
-		if err != nil {
-			// TODO: error logger
-			continue
-		}
+		buffCopy := make([]byte, n)
+		copy(buffCopy, buff[:n])
 
 		atomic.AddInt32(&s.activeCount, 1)
-		go func(packet *Packet, remoteAddr net.Addr) {
+		go func(buff []byte, remoteAddr net.Addr) {
+			secret, err := s.SecretSource.RADIUSSecret(ctx, remoteAddr)
+			if err != nil {
+				// TODO: log only if server is not shutting down?
+				return
+			}
+			if len(secret) == 0 {
+				return
+			}
+
+			if !s.InsecureSkipVerify && !IsAuthenticRequest(buff, secret) {
+				// TODO: log?
+				return
+			}
+
+			packet, err := Parse(buff, secret)
+			if err != nil {
+				// TODO: error logger
+				return
+			}
+
 			key := activeKey{
 				IP:         remoteAddr.String(),
 				Identifier: packet.Identifier,
@@ -187,7 +190,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			}
 
 			s.Handler.ServeRADIUS(&response, &request)
-		}(packet, remoteAddr)
+		}(buffCopy, remoteAddr)
 	}
 }
 
