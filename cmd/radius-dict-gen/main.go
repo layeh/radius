@@ -117,6 +117,27 @@ func (r Refs) String() string {
 	return b.String()
 }
 
+type Set map[string]struct{}
+
+func (s Set) Set(v string) error {
+	s[v] = struct{}{}
+	return nil
+}
+
+func (s Set) List() []string {
+	values := make([]string, 0, len(s))
+	for v := range s {
+		values = append(values, v)
+	}
+	sort.Strings(values)
+	return values
+}
+
+func (s Set) String() string {
+	values := s.List()
+	return fmt.Sprintf("%#q", values)
+}
+
 type Attribute struct {
 	*dictionary.Attribute
 
@@ -149,7 +170,8 @@ func (e *ExternalAttribute) RemoveValueNumber(n int) {
 }
 
 type Data struct {
-	Package string
+	Package           string
+	IgnoredAttributes []string
 	// Dict                     *dictionary.Dictionary
 	Attributes         []*Attribute
 	ExternalAttributes []*ExternalAttribute
@@ -175,14 +197,16 @@ func (d *Data) GetExternalAttribute(name string) *ExternalAttribute {
 
 func main() {
 	refs := make(Refs)
+	ignored := make(Set)
 	packageName := flag.String("package", "main", "generated package name")
 	outputFile := flag.String("output", "-", "output file (\"-\" writes to standard out)")
 	flag.Var(&refs, "ref", `external package reference (format: "attribute`+string(os.PathListSeparator)+`package")`)
+	flag.Var(ignored, "ignore", `attributes names to ignore`)
 	flag.Parse()
 
 	data := &Data{
-		Package: *packageName,
-		// Dict:    new(dictionary.Dictionary),
+		Package:           *packageName,
+		IgnoredAttributes: ignored.List(),
 	}
 
 	parser := dictionary.Parser{
@@ -201,12 +225,40 @@ func main() {
 	}
 
 	for _, attr := range dict.Attributes {
+		if _, isIgnored := ignored[attr.Name]; isIgnored {
+			continue
+		}
+
+		invalid := false
+		if attr.Size != nil {
+			invalid = true
+		}
+		if attr.FlagHasTag != nil {
+			invalid = true
+		}
+		if attr.FlagEncrypt != nil && *attr.FlagEncrypt != 1 {
+			invalid = true
+		}
+		switch attr.Type {
+		case dictionary.AttributeDate, dictionary.AttributeIPv6Addr, dictionary.AttributeIPv6Prefix, dictionary.AttributeIFID, dictionary.AttributeInteger64:
+			invalid = true
+		}
+
+		if invalid {
+			fmt.Printf("radius-dict-gen: cannot generate code for attribute %s\n", attr.Name)
+			os.Exit(1)
+		}
+
 		data.Attributes = append(data.Attributes, &Attribute{
 			Attribute: attr,
 		})
 	}
 
 	for _, value := range dict.Values {
+		if _, isIgnored := ignored[value.Attribute]; isIgnored {
+			continue
+		}
+
 		attr := data.GetAttribute(value.Attribute)
 		if attr != nil {
 			attr.RemoveValueNumber(value.Number)
@@ -314,6 +366,12 @@ import (
 	{{- end }}
 	{{- end }}
 )
+
+{{ with .IgnoredAttributes }}
+// Ignored attributes:
+{{- range $attr := . }}
+//  - {{ $attr }}{{ end }}
+{{ end }}
 
 var _ = radius.Type(0)
 var _ = strconv.Itoa

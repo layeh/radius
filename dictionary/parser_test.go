@@ -30,12 +30,18 @@ func TestParser(t *testing.T) {
 				Name:        "User-Password",
 				OID:         "2",
 				Type:        dict.AttributeOctets,
-				FlagEncrypt: newEncrypt(1),
+				FlagEncrypt: newIntPtr(1),
 			},
 			{
 				Name: "Mode",
 				OID:  "127",
 				Type: dict.AttributeInteger,
+			},
+			{
+				Name: "ARAP-Challenge-Response",
+				OID: "84",
+				Type: dict.AttributeOctets,
+				Size: newIntPtr(8),
 			},
 		},
 		Values: []*dict.Value{
@@ -72,7 +78,7 @@ func TestParser_recursiveinclude(t *testing.T) {
 	}
 }
 
-func newEncrypt(i int) *int {
+func newIntPtr(i int) *int {
 	return &i
 }
 

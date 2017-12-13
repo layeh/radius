@@ -83,8 +83,11 @@ type Attribute struct {
 	OID  string
 	Type AttributeType
 
+	Size *int
+
 	FlagEncrypt *int
 	FlagHasTag  *bool
+	FlagConcat  *bool
 }
 
 type Value struct {

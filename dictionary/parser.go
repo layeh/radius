@@ -271,26 +271,36 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 		OID:  f[2],
 	}
 
-	switch f[3] {
-	case "string":
+	switch {
+	case f[3] == "string":
 		attr.Type = AttributeString
-	case "octets":
+	case f[3] == "octets":
 		attr.Type = AttributeOctets
-	case "ipaddr":
+	case strings.HasPrefix(f[3], "octets[") && strings.HasSuffix(f[3], "]") && len(f[3]) > 8:
+		size, err := strconv.ParseInt(f[3][7:len(f[3])-1], 10, 32)
+		if err != nil {
+			return nil, &UnknownAttributeTypeError{
+				Type: f[3],
+			}
+		}
+		attr.Size = new(int)
+		*attr.Size = int(size)
+		attr.Type = AttributeOctets
+	case f[3] == "ipaddr":
 		attr.Type = AttributeIPAddr
-	case "date":
+	case f[3] == "date":
 		attr.Type = AttributeDate
-	case "integer":
+	case f[3] == "integer":
 		attr.Type = AttributeInteger
-	case "ipv6addr":
+	case f[3] == "ipv6addr":
 		attr.Type = AttributeIPv6Addr
-	case "ipv6prefix":
+	case f[3] == "ipv6prefix":
 		attr.Type = AttributeIPv6Prefix
-	case "ifid":
+	case f[3] == "ifid":
 		attr.Type = AttributeIFID
-	case "integer64":
+	case f[3] == "integer64":
 		attr.Type = AttributeInteger64
-	case "vsa":
+	case f[3] == "vsa":
 		attr.Type = AttributeVSA
 	default:
 		return nil, &UnknownAttributeTypeError{
@@ -325,6 +335,14 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 				}
 				attr.FlagHasTag = new(bool)
 				*attr.FlagHasTag = true
+			case f == "concat":
+				if attr.FlagConcat != nil {
+					return nil, &DuplicateAttributeFlagError{
+						Flag: f,
+					}
+				}
+				attr.FlagConcat = new(bool)
+				*attr.FlagConcat = true
 			default:
 				return nil, &UnknownAttributeFlagError{
 					Flag: f,
