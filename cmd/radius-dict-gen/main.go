@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"bytes"
 	"errors"
 	"flag"
@@ -14,6 +13,8 @@ import (
 	"strings"
 	"text/template"
 	"unicode"
+
+	"layeh.com/radius/dictionary"
 )
 
 // from golint
@@ -58,7 +59,7 @@ var commonInitialisms = map[string]bool{
 	"XSS":   true,
 }
 
-func nameToIdentifier(name string) string {
+func nameToName(name string) string {
 	fields := strings.FieldsFunc(name, func(r rune) bool {
 		return !unicode.IsNumber(r) && !unicode.IsLetter(r)
 	})
@@ -74,235 +75,11 @@ func nameToIdentifier(name string) string {
 	return id.String()
 }
 
-type DictionaryAttributeType int
-
-const (
-	DictionaryAttributeString DictionaryAttributeType = iota + 1
-	DictionaryAttributeOctets
-	DictionaryAttributeIPAddr
-	DictionaryAttributeDate
-	DictionaryAttributeInteger
-	DictionaryAttributeIPv6Addr
-	DictionaryAttributeIPv6Prefix
-	DictionaryAttributeIFID
-	DictionaryAttributeInteger64
-
-	DictionaryAttributeVSA
-	// TODO: non-standard types?
-)
-
-func (t DictionaryAttributeType) String() string {
-	switch t {
-	case DictionaryAttributeString:
-		return "string"
-	case DictionaryAttributeOctets:
-		return "octets"
-	case DictionaryAttributeIPAddr:
-		return "ipaddr"
-	case DictionaryAttributeDate:
-		return "date"
-	case DictionaryAttributeInteger:
-		return "integer"
-	case DictionaryAttributeIPv6Addr:
-		return "ipv6addr"
-	case DictionaryAttributeIPv6Prefix:
-		return "ipv6prefix"
-	case DictionaryAttributeIFID:
-		return "ifid"
-	case DictionaryAttributeInteger64:
-		return "integer64"
-	case DictionaryAttributeVSA:
-		return "vsa"
+func encValue(i *int) int {
+	if i == nil {
+		return 0
 	}
-	return "DictionaryAttributeType(" + strconv.Itoa(int(t)) + ")"
-}
-
-type DictionaryValue struct {
-	Attribute string
-	Name      string
-	Number    int
-
-	Identifier string
-}
-
-func ParseDictionaryValue(f []string) (*DictionaryValue, error) {
-	value := &DictionaryValue{
-		Attribute: f[1],
-		Name:      f[2],
-	}
-
-	value.Identifier = nameToIdentifier(value.Name)
-	if value.Identifier == "" {
-		return nil, errors.New("invalid name " + value.Name)
-	}
-
-	number64, err := strconv.ParseInt(f[3], 10, 32)
-	if err != nil {
-		return nil, err
-	}
-	value.Number = int(number64)
-
-	return value, err
-}
-
-type DictionaryAttribute struct {
-	Name    string
-	OID     int
-	Type    DictionaryAttributeType
-	Encrypt int
-	HasTag  bool
-
-	Identifier string
-	Values     map[string]*DictionaryValue
-}
-
-func (a *DictionaryAttribute) SortedValues() []*DictionaryValue {
-	values := make([]*DictionaryValue, 0, len(a.Values))
-	for _, value := range a.Values {
-		values = append(values, value)
-	}
-	sort.Slice(values, func(i, j int) bool {
-		return values[i].Number < values[j].Number
-	})
-	return values
-}
-
-func ParseDictionaryAttribute(f []string) (*DictionaryAttribute, error) {
-	attr := &DictionaryAttribute{
-		Name: f[1],
-
-		Values: make(map[string]*DictionaryValue),
-	}
-
-	attr.Identifier = nameToIdentifier(f[1])
-	if attr.Identifier == "" {
-		return nil, errors.New("invalid name " + f[1])
-	}
-
-	oid, err := strconv.ParseInt(f[2], 10, 32)
-	if err != nil {
-		return nil, errors.New("invalid oid " + f[2])
-	}
-	attr.OID = int(oid)
-
-	switch f[3] {
-	case "string":
-		attr.Type = DictionaryAttributeString
-	case "octets":
-		attr.Type = DictionaryAttributeOctets
-	case "ipaddr":
-		attr.Type = DictionaryAttributeIPAddr
-	case "date":
-		attr.Type = DictionaryAttributeDate
-	case "integer":
-		attr.Type = DictionaryAttributeInteger
-	case "ipv6addr":
-		attr.Type = DictionaryAttributeIPv6Addr
-	case "ipv6prefix":
-		attr.Type = DictionaryAttributeIPv6Prefix
-	case "ifid":
-		attr.Type = DictionaryAttributeIFID
-	case "integer64":
-		attr.Type = DictionaryAttributeInteger64
-	case "vsa":
-		attr.Type = DictionaryAttributeVSA
-	default:
-		return nil, errors.New("unknown type " + f[3])
-	}
-
-	if len(f) >= 5 {
-		flags := strings.Split(f[4], ",")
-		var (
-			seenEncrypt bool
-			seenHasTag  bool
-		)
-		for _, f := range flags {
-			switch f {
-			case "encrypt=1":
-				if seenEncrypt {
-					return nil, errors.New("duplicate encrypt flag")
-				}
-				attr.Encrypt = 1
-				seenEncrypt = true
-			case "encrypt=2":
-				if seenEncrypt {
-					return nil, errors.New("duplicate encrypt flag")
-				}
-				attr.Encrypt = 2
-				seenEncrypt = true
-			case "encrypt=3":
-				if seenEncrypt {
-					return nil, errors.New("duplicate encrypt flag")
-				}
-				attr.Encrypt = 3
-				seenEncrypt = true
-			case "has_tag":
-				if seenHasTag {
-					return nil, errors.New("duplicate has_tag flag")
-				}
-				attr.HasTag = true
-				seenHasTag = true
-			default:
-				return nil, errors.New("unknown flag " + f)
-			}
-		}
-	}
-
-	return attr, nil
-}
-
-type DictionaryVendor struct {
-	Name         string
-	Number       int
-	TypeOctets   int
-	LengthOctets int
-}
-
-type DictionaryExternalAttribute struct {
-	Name string
-	Pkg  string
-
-	Identifier string
-	Values     map[string]*DictionaryValue
-}
-
-func (e *DictionaryExternalAttribute) SortedValues() []*DictionaryValue {
-	values := make([]*DictionaryValue, 0, len(e.Values))
-	for _, value := range e.Values {
-		values = append(values, value)
-	}
-	sort.Slice(values, func(i, j int) bool {
-		return values[i].Number < values[j].Number
-	})
-	return values
-}
-
-type Dictionary struct {
-	Attributes         map[string]*DictionaryAttribute
-	Vendors            map[string]*DictionaryVendor
-	ExternalAttributes map[string]*DictionaryExternalAttribute
-}
-
-func (d *Dictionary) SortedAttributes() []*DictionaryAttribute {
-	attrs := make([]*DictionaryAttribute, 0, len(d.Attributes))
-	for _, attr := range d.Attributes {
-		attrs = append(attrs, attr)
-	}
-	sort.Slice(attrs, func(i, j int) bool {
-		return attrs[i].OID < attrs[j].OID
-	})
-	return attrs
-}
-
-func (d *Dictionary) SortedExternalAttributes() []*DictionaryExternalAttribute {
-	attrs := make([]*DictionaryExternalAttribute, 0, len(d.ExternalAttributes))
-	for _, attr := range d.ExternalAttributes {
-		attrs = append(attrs, attr)
-	}
-	sort.Slice(attrs, func(i, j int) bool {
-		return attrs[i].Name < attrs[j].Name
-	})
-	return attrs
+	return *i
 }
 
 // Type -> Package
@@ -340,6 +117,62 @@ func (r Refs) String() string {
 	return b.String()
 }
 
+type Attribute struct {
+	*dictionary.Attribute
+
+	Values []*dictionary.Value
+}
+
+func (a *Attribute) RemoveValueNumber(n int) {
+	for i, v := range a.Values {
+		if v.Number == n {
+			a.Values = append(a.Values[:i], a.Values[i+1:]...)
+			return
+		}
+	}
+}
+
+type ExternalAttribute struct {
+	Name string
+	Pkg  string
+
+	Values []*dictionary.Value
+}
+
+func (e *ExternalAttribute) RemoveValueNumber(n int) {
+	for i, v := range e.Values {
+		if v.Number == n {
+			e.Values = append(e.Values[:i], e.Values[i+1:]...)
+			return
+		}
+	}
+}
+
+type Data struct {
+	Package string
+	// Dict                     *dictionary.Dictionary
+	Attributes         []*Attribute
+	ExternalAttributes []*ExternalAttribute
+}
+
+func (d *Data) GetAttribute(name string) *Attribute {
+	for _, attr := range d.Attributes {
+		if attr.Name == name {
+			return attr
+		}
+	}
+	return nil
+}
+
+func (d *Data) GetExternalAttribute(name string) *ExternalAttribute {
+	for _, attr := range d.ExternalAttributes {
+		if attr.Name == name {
+			return attr
+		}
+	}
+	return nil
+}
+
 func main() {
 	refs := make(Refs)
 	packageName := flag.String("package", "main", "generated package name")
@@ -347,122 +180,73 @@ func main() {
 	flag.Var(&refs, "ref", `external package reference (format: "attribute`+string(os.PathListSeparator)+`package")`)
 	flag.Parse()
 
-	dict := &Dictionary{
-		Attributes:         make(map[string]*DictionaryAttribute),
-		Vendors:            make(map[string]*DictionaryVendor),
-		ExternalAttributes: make(map[string]*DictionaryExternalAttribute),
+	data := &Data{
+		Package: *packageName,
+		// Dict:    new(dictionary.Dictionary),
 	}
 
-	for typ, pkg := range refs {
-		if _, exists := dict.ExternalAttributes[typ]; exists {
-			fmt.Printf("radius-dict-gen: duplicate attribute %s defined\n", typ)
-			os.Exit(1)
-		}
-		ident := nameToIdentifier(typ)
-		if ident == "" {
-			fmt.Printf("radius-dict-gen: bad attribute name %s\n", typ)
-			os.Exit(1)
-		}
-		dict.ExternalAttributes[typ] = &DictionaryExternalAttribute{
-			Name: typ,
-			Pkg:  pkg,
-
-			Identifier: ident,
-			Values:     make(map[string]*DictionaryValue),
-		}
+	parser := dictionary.Parser{
+		Opener: &dictionary.FileSystemOpener{},
 	}
 
+	dict := new(dictionary.Dictionary)
 	for _, filename := range flag.Args() {
-		// TODO: recursive check
+		localDict, err := parser.ParseFile(filename)
+		if err != nil {
+			fmt.Printf("radius-dict-gen: %s\n", err)
+			os.Exit(1)
+		}
 
-		func() {
-			f, err := os.Open(filename)
-			if err != nil {
-				fmt.Printf("radius-dict-gen: %s\n", err)
-				os.Exit(1)
+		appendDictionary(dict, localDict)
+	}
+
+	for _, attr := range dict.Attributes {
+		data.Attributes = append(data.Attributes, &Attribute{
+			Attribute: attr,
+		})
+	}
+
+	for _, value := range dict.Values {
+		attr := data.GetAttribute(value.Attribute)
+		if attr != nil {
+			attr.RemoveValueNumber(value.Number)
+			attr.Values = append(attr.Values, value)
+			continue
+		}
+
+		pkg, hasRef := refs[value.Attribute]
+		if !hasRef {
+			fmt.Printf("radius-dict-gen: unknown attribute %s\n", value.Attribute)
+			os.Exit(1)
+		}
+		exAttr := data.GetExternalAttribute(value.Attribute)
+		if exAttr == nil {
+			exAttr = &ExternalAttribute{
+				Name: value.Attribute,
+				Pkg:  pkg,
 			}
-			defer f.Close()
+			data.ExternalAttributes = append(data.ExternalAttributes, exAttr)
+		}
+		exAttr.RemoveValueNumber(value.Number)
+		exAttr.Values = append(exAttr.Values, value)
+	}
 
-			s := bufio.NewScanner(f)
+	sort.Slice(data.Attributes, func(i, j int) bool {
+		a, _ := strconv.Atoi(data.Attributes[i].OID)
+		b, _ := strconv.Atoi(data.Attributes[j].OID)
+		return a < b
+	})
 
-			for i := 1; s.Scan(); i++ {
-				line := s.Text()
-				if idx := strings.IndexByte(line, '#'); idx >= 0 {
-					line = line[:idx]
-				}
-				if len(line) == 0 {
-					continue
-				}
+	for _, attr := range data.Attributes {
+		sort.Slice(attr.Values, func(i, j int) bool {
+			return attr.Values[i].Number < attr.Values[j].Number
+		})
+	}
 
-				fields := strings.Fields(line)
-				switch {
-				case (len(fields) == 4 || len(fields) == 5) && fields[0] == "ATTRIBUTE":
-					attr, err := ParseDictionaryAttribute(fields)
-					if err != nil {
-						fmt.Printf("radius-dict-gen: invalid attribute in %s:%d: %s\n", filename, i, err)
-						os.Exit(1)
-					}
-					if _, existing := dict.Attributes[attr.Name]; existing {
-						fmt.Printf("radius-dict-gen: duplicate attribute %s defined at %s:%d\n", attr.Name, filename, i)
-						os.Exit(1)
-					}
-					// TODO: vendor?
-					dict.Attributes[attr.Name] = attr
-
-				case len(fields) == 4 && fields[0] == "VALUE":
-
-					value, err := ParseDictionaryValue(fields)
-					if err != nil {
-						fmt.Printf("radius-dict-gen: invalid value in %s:%d: %s\n", filename, i, err)
-						os.Exit(1)
-					}
-
-					var values map[string]*DictionaryValue
-
-					attr := dict.Attributes[value.Attribute]
-					if attr == nil {
-						attr := dict.ExternalAttributes[value.Attribute]
-						if attr == nil {
-							fmt.Printf("radius-dict-gen: unknown attribute %s referenced at %s:%d\n", value.Attribute, filename, i)
-							os.Exit(1)
-						}
-						values = attr.Values
-					} else {
-						values = attr.Values
-					}
-
-					if _, valueExists := values[value.Name]; valueExists {
-						fmt.Printf("radius-dict-gen: duplicate attribute %s value %s referenced at %s:%d\n", value.Attribute, value.Name, filename, i)
-						os.Exit(1)
-					}
-
-					for _, v := range values {
-						if v.Number == value.Number {
-							// FreeRADIUS has duplicate values
-							fmt.Fprintf(os.Stderr, "radius-dict-gen: duplicate attribute value %d as %s (previously defined as %s); overwriting\n", value.Number, value.Name, v.Name)
-							delete(values, v.Name)
-							break
-						}
-					}
-
-					// TODO: vendor?
-					values[value.Name] = value
-
-				//case (len(fields) == 3 && len(fields) == 4) && fields[0] == "VENDOR":
-				//case len(fields) == 2 && fields[0] == "BEGIN-VENDOR":
-				//case len(fields) == 2 && fields[0] == "END-VENDOR":
-				//case len(fields) == 2 && fields[0] == "$INCLUDE":
-				default:
-					fmt.Printf("radius-dict-gen: invalid line in %s:%d\n", filename, i)
-					os.Exit(1)
-				}
-			}
-
-			if err := s.Err(); err != nil {
-				fmt.Printf("radius-dict-gen: %s\n", err)
-				os.Exit(1)
-			}
-		}()
+	for _, attr := range data.ExternalAttributes {
+		sort.Slice(attr.Values, func(i, j int) bool {
+			return attr.Values[i].Number < attr.Values[j].Number
+		})
 	}
 
 	var output io.WriteCloser
@@ -477,16 +261,8 @@ func main() {
 		output = outFile
 	}
 
-	data := struct {
-		Package string
-		Dict    *Dictionary
-	}{
-		Package: *packageName,
-		Dict:    dict,
-	}
-
 	var b bytes.Buffer
-	if err := tpl.Execute(&b, &data); err != nil {
+	if err := tpl.Execute(&b, data); err != nil {
 		fmt.Printf("radius-dict-gen: %s\n", err)
 		os.Exit(1)
 	}
@@ -506,7 +282,22 @@ func main() {
 	}
 }
 
-var tpl = template.Must(template.New("gen").Parse(`// Generated by radius-dict-gen. DO NOT EDIT.
+func appendDictionary(d1, d2 *dictionary.Dictionary) {
+	for _, attr := range d2.Attributes {
+		d1.Attributes = append(d1.Attributes, attr)
+	}
+	for _, value := range d2.Values {
+		d1.Values = append(d1.Values, value)
+	}
+	for _, vendor := range d2.Vendors {
+		d1.Vendors = append(d1.Vendors, vendor)
+	}
+}
+
+var tpl = template.Must(template.New("gen").Funcs(template.FuncMap{
+	"ident":    nameToName,
+	"encValue": encValue,
+}).Parse(`// Generated by radius-dict-gen. DO NOT EDIT.
 
 package {{ .Package }}
 
@@ -515,7 +306,7 @@ import (
 	"strconv"
 
 	"layeh.com/radius"
-	{{ with .Dict.SortedExternalAttributes }}
+	{{ with .ExternalAttributes }}
 	{{- range . }}
 	{{- if .Values }}
 	. "{{ .Pkg }}"
@@ -528,70 +319,70 @@ var _ = radius.Type(0)
 var _ = strconv.Itoa
 var _ = net.ParseIP
 
-{{ with .Dict.SortedAttributes }}
+{{ with .Attributes }}
 const ({{ range . }}
-	{{ .Identifier}}_Type radius.Type = {{ .OID }}{{ end }}
+	{{ ident .Name}}_Type radius.Type = {{ .OID }}{{ end }}
 )
 {{ end }}
 
-{{ range .Dict.SortedExternalAttributes }}
+{{ range .ExternalAttributes }}
 {{ $attr := . }}
-func init() {{ "{" }}{{ range .SortedValues }}
-	{{ $attr.Identifier }}_Strings[{{ $attr.Identifier }}_Value_{{ .Identifier }}] = "{{ .Name }}"{{ end }}
+func init() {{ "{" }}{{ range .Values }}
+	{{ ident $attr.Name }}_Strings[{{ ident $attr.Name }}_Value_{{ ident .Name }}] = "{{ .Name }}"{{ end }}
 }
 
-const ({{ range .SortedValues }}
-	{{ $attr.Identifier }}_Value_{{ .Identifier }} {{ $attr.Identifier }} = {{ .Number }}{{ end }}
+const ({{ range .Values }}
+	{{ ident $attr.Name }}_Value_{{ ident .Name }} {{ ident $attr.Name }} = {{ .Number }}{{ end }}
 )
 {{ end }}
 
-{{ with .Dict.SortedAttributes }}
+{{ with .Attributes }}
 {{ range . }}
 {{ $attr := . }}
 {{ if eq .Type.String "integer" }}
-type {{ .Identifier }} uint32
+type {{ ident .Name }} uint32
 
-{{ if gt (len .Values) 0 }}
-const ({{ range .SortedValues }}
-	{{ $attr.Identifier }}_Value_{{ .Identifier }} {{ $attr.Identifier }} = {{ .Number }}{{ end }}
+{{ if gt (len $attr.Values) 0 }}
+const ({{ range $attr.Values }}
+	{{ ident $attr.Name }}_Value_{{ ident .Name }} {{ ident $attr.Name }} = {{ .Number }}{{ end }}
 )
 {{ end }}
 
-var {{ .Identifier}}_Strings = map[{{ .Identifier}}]string{{ "{" }}{{ range .SortedValues }}
-	{{ $attr.Identifier }}_Value_{{ .Identifier }}: "{{ .Name }}",{{ end }}
+var {{ ident .Name}}_Strings = map[{{ ident .Name}}]string{{ "{" }}{{ range $attr.Values }}
+	{{ ident $attr.Name }}_Value_{{ ident .Name }}: "{{ .Name }}",{{ end }}
 }
 
-func (a {{ .Identifier }}) String() string {
-	if str, ok := {{ .Identifier}}_Strings[a]; ok {
+func (a {{ ident .Name }}) String() string {
+	if str, ok := {{ ident .Name}}_Strings[a]; ok {
 		return str
 	}
-	return "{{ .Identifier }}(" + strconv.Itoa(int(a)) + ")"
+	return "{{ ident .Name }}(" + strconv.Itoa(int(a)) + ")"
 }
 
-func {{ .Identifier }}_Add(p *radius.Packet, value {{ .Identifier }}) {
+func {{ ident .Name }}_Add(p *radius.Packet, value {{ ident .Name }}) {
 	a := radius.NewInteger(uint32(value))
-	p.Add({{ .Identifier }}_Type, a)
+	p.Add({{ ident .Name }}_Type, a)
 }
 
-func {{ .Identifier }}_Get(p *radius.Packet) (value {{ .Identifier }}) {
-	value, _ = {{ .Identifier }}_Lookup(p)
+func {{ ident .Name }}_Get(p *radius.Packet) (value {{ ident .Name }}) {
+	value, _ = {{ ident .Name }}_Lookup(p)
 	return
 }
 
-func {{ .Identifier }}_Gets(p *radius.Packet) (values []{{ .Identifier }}, err error) {
+func {{ ident .Name }}_Gets(p *radius.Packet) (values []{{ ident .Name }}, err error) {
 	var i uint32
-	for _, attr := range p.Attributes[{{ .Identifier }}_Type] {
+	for _, attr := range p.Attributes[{{ ident .Name }}_Type] {
 		i, err = radius.Integer(attr)
 		if err != nil {
 			return
 		}
-		values = append(values, {{ .Identifier }}(i))
+		values = append(values, {{ ident .Name }}(i))
 	}
 	return
 }
 
-func {{ .Identifier }}_Lookup(p *radius.Packet) (value {{ .Identifier }}, err error) {
-	a, ok  := p.Lookup({{ .Identifier }}_Type)
+func {{ ident .Name }}_Lookup(p *radius.Packet) (value {{ ident .Name }}, err error) {
+	a, ok  := p.Lookup({{ ident .Name }}_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
@@ -601,20 +392,20 @@ func {{ .Identifier }}_Lookup(p *radius.Packet) (value {{ .Identifier }}, err er
 	if err != nil {
 		return
 	}
-	value = {{ .Identifier}}(i)
+	value = {{ ident .Name}}(i)
 	return
 }
 
-func {{ .Identifier }}_Set(p *radius.Packet, value {{ .Identifier }}) {
+func {{ ident .Name }}_Set(p *radius.Packet, value {{ ident .Name }}) {
 	a := radius.NewInteger(uint32(value))
-	p.Set({{ .Identifier }}_Type, a)
+	p.Set({{ ident .Name }}_Type, a)
 }
 
 {{ else if or (eq .Type.String "string") (eq .Type.String "octets") }}
 
-func {{ .Identifier }}_Add(p *radius.Packet, value []byte) (err error) {
+func {{ ident .Name }}_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
 	{{ else }}
 	a, err = radius.NewBytes(value)
@@ -622,13 +413,13 @@ func {{ .Identifier }}_Add(p *radius.Packet, value []byte) (err error) {
 	if err != nil {
 		return
 	}
-	p.Add({{ .Identifier }}_Type, a)
+	p.Add({{ ident .Name }}_Type, a)
 	return nil
 }
 
-func {{ .Identifier }}_AddString(p *radius.Packet, value string) (err error) {
+func {{ ident .Name }}_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
 	{{ else }}
 	a, err = radius.NewString(value)
@@ -636,23 +427,23 @@ func {{ .Identifier }}_AddString(p *radius.Packet, value string) (err error) {
 	if err != nil {
 		return
 	}
-	p.Add({{ .Identifier }}_Type, a)
+	p.Add({{ ident .Name }}_Type, a)
 	return nil
 }
 
-func {{ .Identifier }}_Get(p *radius.Packet) (value []byte) {
-	value, _ = {{ .Identifier }}_Lookup(p)
+func {{ ident .Name }}_Get(p *radius.Packet) (value []byte) {
+	value, _ = {{ ident .Name }}_Lookup(p)
 	return
 }
 
-func {{ .Identifier }}_GetString(p *radius.Packet) (value string) {
-	return string({{ .Identifier }}_Get(p))
+func {{ ident .Name }}_GetString(p *radius.Packet) (value string) {
+	return string({{ ident .Name }}_Get(p))
 }
 
-func {{ .Identifier }}_Gets(p *radius.Packet) (values [][]byte, err error) {
+func {{ ident .Name }}_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
-	for _, attr := range p.Attributes[{{ .Identifier }}_Type] {
-		{{ if eq .Encrypt 1 }}
+	for _, attr := range p.Attributes[{{ ident .Name }}_Type] {
+		{{ if eq (encValue .FlagEncrypt) 1 }}
 		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 		{{ else }}
 		i = radius.Bytes(attr)
@@ -665,10 +456,10 @@ func {{ .Identifier }}_Gets(p *radius.Packet) (values [][]byte, err error) {
 	return
 }
 
-func {{ .Identifier }}_GetStrings(p *radius.Packet) (values []string, err error) {
+func {{ ident .Name }}_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
-	for _, attr := range p.Attributes[{{ .Identifier }}_Type] {
-		{{ if eq .Encrypt 1 }}
+	for _, attr := range p.Attributes[{{ ident .Name }}_Type] {
+		{{ if eq (encValue .FlagEncrypt) 1 }}
 		var up radius.Attribute
 		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 		if err == nil {
@@ -685,13 +476,13 @@ func {{ .Identifier }}_GetStrings(p *radius.Packet) (values []string, err error)
 	return
 }
 
-func {{ .Identifier }}_Lookup(p *radius.Packet) (value []byte, err error) {
-	a, ok  := p.Lookup({{ .Identifier }}_Type)
+func {{ ident .Name }}_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok  := p.Lookup({{ ident .Name }}_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
 	{{ else }}
 	value = radius.Bytes(a)
@@ -699,13 +490,13 @@ func {{ .Identifier }}_Lookup(p *radius.Packet) (value []byte, err error) {
 	return
 }
 
-func {{ .Identifier }}_LookupString(p *radius.Packet) (value string, err error) {
-	a, ok  := p.Lookup({{ .Identifier }}_Type)
+func {{ ident .Name }}_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok  := p.Lookup({{ ident .Name }}_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	var b []byte
 	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
 	if err == nil {
@@ -717,9 +508,9 @@ func {{ .Identifier }}_LookupString(p *radius.Packet) (value string, err error) 
 	return
 }
 
-func {{ .Identifier }}_Set(p *radius.Packet, value []byte) (err error) {
+func {{ ident .Name }}_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
 	{{ else }}
 	a, err = radius.NewBytes(value)
@@ -727,13 +518,13 @@ func {{ .Identifier }}_Set(p *radius.Packet, value []byte) (err error) {
 	if err != nil {
 		return
 	}
-	p.Set({{ .Identifier }}_Type, a)
+	p.Set({{ ident .Name }}_Type, a)
 	return
 }
 
-func {{ .Identifier }}_SetString(p *radius.Packet, value string) (err error) {
+func {{ ident .Name }}_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-	{{ if eq .Encrypt 1 }}
+	{{ if eq (encValue .FlagEncrypt) 1 }}
 	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
 	{{ else }}
 	a, err = radius.NewString(value)
@@ -741,30 +532,30 @@ func {{ .Identifier }}_SetString(p *radius.Packet, value string) (err error) {
 	if err != nil {
 		return
 	}
-	p.Set({{ .Identifier }}_Type, a)
+	p.Set({{ ident .Name }}_Type, a)
 	return
 }
 
 {{ else if eq .Type.String "ipaddr" }}
 
-func {{ .Identifier }}_Add(p *radius.Packet, value net.IP) (err error) {
+func {{ ident .Name }}_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
 	if err != nil {
 		return
 	}
-	p.Add({{ .Identifier }}_Type, a)
+	p.Add({{ ident .Name }}_Type, a)
 	return nil
 }
 
-func {{ .Identifier }}_Get(p *radius.Packet) (value net.IP) {
-	value, _ = {{ .Identifier }}_Lookup(p)
+func {{ ident .Name }}_Get(p *radius.Packet) (value net.IP) {
+	value, _ = {{ ident .Name }}_Lookup(p)
 	return
 }
 
-func {{ .Identifier }}_Gets(p *radius.Packet) (values []net.IP, err error) {
+func {{ ident .Name }}_Gets(p *radius.Packet) (values []net.IP, err error) {
 	var i net.IP
-	for _, attr := range p.Attributes[{{ .Identifier }}_Type] {
+	for _, attr := range p.Attributes[{{ ident .Name }}_Type] {
 		i, err = radius.IPAddr(attr)
 		if err != nil {
 			return
@@ -774,8 +565,8 @@ func {{ .Identifier }}_Gets(p *radius.Packet) (values []net.IP, err error) {
 	return
 }
 
-func {{ .Identifier }}_Lookup(p *radius.Packet) (value net.IP, err error) {
-	a, ok  := p.Lookup({{ .Identifier }}_Type)
+func {{ ident .Name }}_Lookup(p *radius.Packet) (value net.IP, err error) {
+	a, ok  := p.Lookup({{ ident .Name }}_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
@@ -784,13 +575,13 @@ func {{ .Identifier }}_Lookup(p *radius.Packet) (value net.IP, err error) {
 	return
 }
 
-func {{ .Identifier }}_Set(p *radius.Packet, value net.IP) (err error) {
+func {{ ident .Name }}_Set(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
 	if err != nil {
 		return
 	}
-	p.Set({{ .Identifier }}_Type, a)
+	p.Set({{ ident .Name }}_Type, a)
 	return
 }
 
