@@ -12,6 +12,7 @@ func TestRFCBuild(t *testing.T) {
 		"rfc2865",
 		"rfc2866",
 		"rfc2867",
+		"rfc2869",
 		"rfc3576",
 		"rfc5176",
 	}
