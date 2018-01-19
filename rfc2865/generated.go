@@ -59,9 +59,7 @@ const (
 
 func UserName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -71,9 +69,7 @@ func UserName_Add(p *radius.Packet, value []byte) (err error) {
 
 func UserName_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -93,9 +89,7 @@ func UserName_GetString(p *radius.Packet) (value string) {
 func UserName_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[UserName_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -107,9 +101,7 @@ func UserName_Gets(p *radius.Packet) (values [][]byte, err error) {
 func UserName_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[UserName_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -124,9 +116,7 @@ func UserName_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -136,17 +126,13 @@ func UserName_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func UserName_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -156,9 +142,7 @@ func UserName_Set(p *radius.Packet, value []byte) (err error) {
 
 func UserName_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -168,9 +152,7 @@ func UserName_SetString(p *radius.Packet, value string) (err error) {
 
 func UserPassword_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
-
 	if err != nil {
 		return
 	}
@@ -180,9 +162,7 @@ func UserPassword_Add(p *radius.Packet, value []byte) (err error) {
 
 func UserPassword_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
-
 	if err != nil {
 		return
 	}
@@ -202,9 +182,7 @@ func UserPassword_GetString(p *radius.Packet) (value string) {
 func UserPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[UserPassword_Type] {
-
 		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
-
 		if err != nil {
 			return
 		}
@@ -216,13 +194,11 @@ func UserPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
 func UserPassword_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[UserPassword_Type] {
-
 		var up radius.Attribute
 		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 		if err == nil {
 			i = string(up)
 		}
-
 		if err != nil {
 			return
 		}
@@ -237,9 +213,7 @@ func UserPassword_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
-
 	return
 }
 
@@ -249,21 +223,17 @@ func UserPassword_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	var b []byte
 	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
 	if err == nil {
 		value = string(b)
 	}
-
 	return
 }
 
 func UserPassword_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
-
 	if err != nil {
 		return
 	}
@@ -273,9 +243,7 @@ func UserPassword_Set(p *radius.Packet, value []byte) (err error) {
 
 func UserPassword_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
-
 	if err != nil {
 		return
 	}
@@ -285,9 +253,7 @@ func UserPassword_SetString(p *radius.Packet, value string) (err error) {
 
 func CHAPPassword_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -297,9 +263,7 @@ func CHAPPassword_Add(p *radius.Packet, value []byte) (err error) {
 
 func CHAPPassword_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -319,9 +283,7 @@ func CHAPPassword_GetString(p *radius.Packet) (value string) {
 func CHAPPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CHAPPassword_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -333,9 +295,7 @@ func CHAPPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CHAPPassword_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CHAPPassword_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -350,9 +310,7 @@ func CHAPPassword_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -362,17 +320,13 @@ func CHAPPassword_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CHAPPassword_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -382,9 +336,7 @@ func CHAPPassword_Set(p *radius.Packet, value []byte) (err error) {
 
 func CHAPPassword_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -801,9 +753,7 @@ func FramedRouting_Set(p *radius.Packet, value FramedRouting) {
 
 func FilterID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -813,9 +763,7 @@ func FilterID_Add(p *radius.Packet, value []byte) (err error) {
 
 func FilterID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -835,9 +783,7 @@ func FilterID_GetString(p *radius.Packet) (value string) {
 func FilterID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[FilterID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -849,9 +795,7 @@ func FilterID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func FilterID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[FilterID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -866,9 +810,7 @@ func FilterID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -878,17 +820,13 @@ func FilterID_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func FilterID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -898,9 +836,7 @@ func FilterID_Set(p *radius.Packet, value []byte) (err error) {
 
 func FilterID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1211,9 +1147,7 @@ func LoginTCPPort_Set(p *radius.Packet, value LoginTCPPort) {
 
 func ReplyMessage_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1223,9 +1157,7 @@ func ReplyMessage_Add(p *radius.Packet, value []byte) (err error) {
 
 func ReplyMessage_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1245,9 +1177,7 @@ func ReplyMessage_GetString(p *radius.Packet) (value string) {
 func ReplyMessage_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[ReplyMessage_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1259,9 +1189,7 @@ func ReplyMessage_Gets(p *radius.Packet) (values [][]byte, err error) {
 func ReplyMessage_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[ReplyMessage_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1276,9 +1204,7 @@ func ReplyMessage_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1288,17 +1214,13 @@ func ReplyMessage_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func ReplyMessage_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1308,9 +1230,7 @@ func ReplyMessage_Set(p *radius.Packet, value []byte) (err error) {
 
 func ReplyMessage_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1320,9 +1240,7 @@ func ReplyMessage_SetString(p *radius.Packet, value string) (err error) {
 
 func CallbackNumber_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1332,9 +1250,7 @@ func CallbackNumber_Add(p *radius.Packet, value []byte) (err error) {
 
 func CallbackNumber_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1354,9 +1270,7 @@ func CallbackNumber_GetString(p *radius.Packet) (value string) {
 func CallbackNumber_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CallbackNumber_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1368,9 +1282,7 @@ func CallbackNumber_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CallbackNumber_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CallbackNumber_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1385,9 +1297,7 @@ func CallbackNumber_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1397,17 +1307,13 @@ func CallbackNumber_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CallbackNumber_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1417,9 +1323,7 @@ func CallbackNumber_Set(p *radius.Packet, value []byte) (err error) {
 
 func CallbackNumber_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1429,9 +1333,7 @@ func CallbackNumber_SetString(p *radius.Packet, value string) (err error) {
 
 func CallbackID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1441,9 +1343,7 @@ func CallbackID_Add(p *radius.Packet, value []byte) (err error) {
 
 func CallbackID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1463,9 +1363,7 @@ func CallbackID_GetString(p *radius.Packet) (value string) {
 func CallbackID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CallbackID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1477,9 +1375,7 @@ func CallbackID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CallbackID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CallbackID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1494,9 +1390,7 @@ func CallbackID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1506,17 +1400,13 @@ func CallbackID_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CallbackID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1526,9 +1416,7 @@ func CallbackID_Set(p *radius.Packet, value []byte) (err error) {
 
 func CallbackID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1538,9 +1426,7 @@ func CallbackID_SetString(p *radius.Packet, value string) (err error) {
 
 func FramedRoute_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1550,9 +1436,7 @@ func FramedRoute_Add(p *radius.Packet, value []byte) (err error) {
 
 func FramedRoute_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1572,9 +1456,7 @@ func FramedRoute_GetString(p *radius.Packet) (value string) {
 func FramedRoute_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[FramedRoute_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1586,9 +1468,7 @@ func FramedRoute_Gets(p *radius.Packet) (values [][]byte, err error) {
 func FramedRoute_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[FramedRoute_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1603,9 +1483,7 @@ func FramedRoute_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1615,17 +1493,13 @@ func FramedRoute_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func FramedRoute_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1635,9 +1509,7 @@ func FramedRoute_Set(p *radius.Packet, value []byte) (err error) {
 
 func FramedRoute_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1694,9 +1566,7 @@ func FramedIPXNetwork_Set(p *radius.Packet, value net.IP) (err error) {
 
 func State_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1706,9 +1576,7 @@ func State_Add(p *radius.Packet, value []byte) (err error) {
 
 func State_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1728,9 +1596,7 @@ func State_GetString(p *radius.Packet) (value string) {
 func State_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[State_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1742,9 +1608,7 @@ func State_Gets(p *radius.Packet) (values [][]byte, err error) {
 func State_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[State_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1759,9 +1623,7 @@ func State_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1771,17 +1633,13 @@ func State_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func State_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1791,9 +1649,7 @@ func State_Set(p *radius.Packet, value []byte) (err error) {
 
 func State_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1803,9 +1659,7 @@ func State_SetString(p *radius.Packet, value string) (err error) {
 
 func Class_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1815,9 +1669,7 @@ func Class_Add(p *radius.Packet, value []byte) (err error) {
 
 func Class_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -1837,9 +1689,7 @@ func Class_GetString(p *radius.Packet) (value string) {
 func Class_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[Class_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -1851,9 +1701,7 @@ func Class_Gets(p *radius.Packet) (values [][]byte, err error) {
 func Class_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[Class_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -1868,9 +1716,7 @@ func Class_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -1880,17 +1726,13 @@ func Class_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func Class_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -1900,9 +1742,7 @@ func Class_Set(p *radius.Packet, value []byte) (err error) {
 
 func Class_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2079,9 +1919,7 @@ func TerminationAction_Set(p *radius.Packet, value TerminationAction) {
 
 func CalledStationID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2091,9 +1929,7 @@ func CalledStationID_Add(p *radius.Packet, value []byte) (err error) {
 
 func CalledStationID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2113,9 +1949,7 @@ func CalledStationID_GetString(p *radius.Packet) (value string) {
 func CalledStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CalledStationID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2127,9 +1961,7 @@ func CalledStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CalledStationID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CalledStationID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2144,9 +1976,7 @@ func CalledStationID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2156,17 +1986,13 @@ func CalledStationID_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CalledStationID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2176,9 +2002,7 @@ func CalledStationID_Set(p *radius.Packet, value []byte) (err error) {
 
 func CalledStationID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2188,9 +2012,7 @@ func CalledStationID_SetString(p *radius.Packet, value string) (err error) {
 
 func CallingStationID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2200,9 +2022,7 @@ func CallingStationID_Add(p *radius.Packet, value []byte) (err error) {
 
 func CallingStationID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2222,9 +2042,7 @@ func CallingStationID_GetString(p *radius.Packet) (value string) {
 func CallingStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CallingStationID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2236,9 +2054,7 @@ func CallingStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CallingStationID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CallingStationID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2253,9 +2069,7 @@ func CallingStationID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2265,17 +2079,13 @@ func CallingStationID_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CallingStationID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2285,9 +2095,7 @@ func CallingStationID_Set(p *radius.Packet, value []byte) (err error) {
 
 func CallingStationID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2297,9 +2105,7 @@ func CallingStationID_SetString(p *radius.Packet, value string) (err error) {
 
 func NASIdentifier_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2309,9 +2115,7 @@ func NASIdentifier_Add(p *radius.Packet, value []byte) (err error) {
 
 func NASIdentifier_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2331,9 +2135,7 @@ func NASIdentifier_GetString(p *radius.Packet) (value string) {
 func NASIdentifier_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[NASIdentifier_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2345,9 +2147,7 @@ func NASIdentifier_Gets(p *radius.Packet) (values [][]byte, err error) {
 func NASIdentifier_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[NASIdentifier_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2362,9 +2162,7 @@ func NASIdentifier_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2374,17 +2172,13 @@ func NASIdentifier_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func NASIdentifier_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2394,9 +2188,7 @@ func NASIdentifier_Set(p *radius.Packet, value []byte) (err error) {
 
 func NASIdentifier_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2406,9 +2198,7 @@ func NASIdentifier_SetString(p *radius.Packet, value string) (err error) {
 
 func ProxyState_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2418,9 +2208,7 @@ func ProxyState_Add(p *radius.Packet, value []byte) (err error) {
 
 func ProxyState_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2440,9 +2228,7 @@ func ProxyState_GetString(p *radius.Packet) (value string) {
 func ProxyState_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[ProxyState_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2454,9 +2240,7 @@ func ProxyState_Gets(p *radius.Packet) (values [][]byte, err error) {
 func ProxyState_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[ProxyState_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2471,9 +2255,7 @@ func ProxyState_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2483,17 +2265,13 @@ func ProxyState_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func ProxyState_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2503,9 +2281,7 @@ func ProxyState_Set(p *radius.Packet, value []byte) (err error) {
 
 func ProxyState_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2515,9 +2291,7 @@ func ProxyState_SetString(p *radius.Packet, value string) (err error) {
 
 func LoginLATService_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2527,9 +2301,7 @@ func LoginLATService_Add(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATService_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2549,9 +2321,7 @@ func LoginLATService_GetString(p *radius.Packet) (value string) {
 func LoginLATService_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[LoginLATService_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2563,9 +2333,7 @@ func LoginLATService_Gets(p *radius.Packet) (values [][]byte, err error) {
 func LoginLATService_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[LoginLATService_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2580,9 +2348,7 @@ func LoginLATService_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2592,17 +2358,13 @@ func LoginLATService_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func LoginLATService_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2612,9 +2374,7 @@ func LoginLATService_Set(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATService_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2624,9 +2384,7 @@ func LoginLATService_SetString(p *radius.Packet, value string) (err error) {
 
 func LoginLATNode_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2636,9 +2394,7 @@ func LoginLATNode_Add(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATNode_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2658,9 +2414,7 @@ func LoginLATNode_GetString(p *radius.Packet) (value string) {
 func LoginLATNode_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[LoginLATNode_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2672,9 +2426,7 @@ func LoginLATNode_Gets(p *radius.Packet) (values [][]byte, err error) {
 func LoginLATNode_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[LoginLATNode_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2689,9 +2441,7 @@ func LoginLATNode_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2701,17 +2451,13 @@ func LoginLATNode_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func LoginLATNode_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2721,9 +2467,7 @@ func LoginLATNode_Set(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATNode_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2733,9 +2477,7 @@ func LoginLATNode_SetString(p *radius.Packet, value string) (err error) {
 
 func LoginLATGroup_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2745,9 +2487,7 @@ func LoginLATGroup_Add(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATGroup_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2767,9 +2507,7 @@ func LoginLATGroup_GetString(p *radius.Packet) (value string) {
 func LoginLATGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[LoginLATGroup_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2781,9 +2519,7 @@ func LoginLATGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
 func LoginLATGroup_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[LoginLATGroup_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -2798,9 +2534,7 @@ func LoginLATGroup_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -2810,17 +2544,13 @@ func LoginLATGroup_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func LoginLATGroup_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2830,9 +2560,7 @@ func LoginLATGroup_Set(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATGroup_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2948,9 +2676,7 @@ func FramedAppleTalkNetwork_Set(p *radius.Packet, value FramedAppleTalkNetwork) 
 
 func FramedAppleTalkZone_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -2960,9 +2686,7 @@ func FramedAppleTalkZone_Add(p *radius.Packet, value []byte) (err error) {
 
 func FramedAppleTalkZone_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -2982,9 +2706,7 @@ func FramedAppleTalkZone_GetString(p *radius.Packet) (value string) {
 func FramedAppleTalkZone_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[FramedAppleTalkZone_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -2996,9 +2718,7 @@ func FramedAppleTalkZone_Gets(p *radius.Packet) (values [][]byte, err error) {
 func FramedAppleTalkZone_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[FramedAppleTalkZone_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -3013,9 +2733,7 @@ func FramedAppleTalkZone_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -3025,17 +2743,13 @@ func FramedAppleTalkZone_LookupString(p *radius.Packet) (value string, err error
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func FramedAppleTalkZone_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -3045,9 +2759,7 @@ func FramedAppleTalkZone_Set(p *radius.Packet, value []byte) (err error) {
 
 func FramedAppleTalkZone_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -3057,9 +2769,7 @@ func FramedAppleTalkZone_SetString(p *radius.Packet, value string) (err error) {
 
 func CHAPChallenge_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -3069,9 +2779,7 @@ func CHAPChallenge_Add(p *radius.Packet, value []byte) (err error) {
 
 func CHAPChallenge_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -3091,9 +2799,7 @@ func CHAPChallenge_GetString(p *radius.Packet) (value string) {
 func CHAPChallenge_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[CHAPChallenge_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -3105,9 +2811,7 @@ func CHAPChallenge_Gets(p *radius.Packet) (values [][]byte, err error) {
 func CHAPChallenge_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[CHAPChallenge_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -3122,9 +2826,7 @@ func CHAPChallenge_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -3134,17 +2836,13 @@ func CHAPChallenge_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func CHAPChallenge_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -3154,9 +2852,7 @@ func CHAPChallenge_Set(p *radius.Packet, value []byte) (err error) {
 
 func CHAPChallenge_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -3316,9 +3012,7 @@ func PortLimit_Set(p *radius.Packet, value PortLimit) {
 
 func LoginLATPort_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -3328,9 +3022,7 @@ func LoginLATPort_Add(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATPort_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -3350,9 +3042,7 @@ func LoginLATPort_GetString(p *radius.Packet) (value string) {
 func LoginLATPort_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[LoginLATPort_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -3364,9 +3054,7 @@ func LoginLATPort_Gets(p *radius.Packet) (values [][]byte, err error) {
 func LoginLATPort_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[LoginLATPort_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -3381,9 +3069,7 @@ func LoginLATPort_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -3393,17 +3079,13 @@ func LoginLATPort_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func LoginLATPort_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -3413,9 +3095,7 @@ func LoginLATPort_Set(p *radius.Packet, value []byte) (err error) {
 
 func LoginLATPort_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}

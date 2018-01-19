@@ -258,9 +258,7 @@ func AcctOutputOctets_Set(p *radius.Packet, value AcctOutputOctets) {
 
 func AcctSessionID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -270,9 +268,7 @@ func AcctSessionID_Add(p *radius.Packet, value []byte) (err error) {
 
 func AcctSessionID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -292,9 +288,7 @@ func AcctSessionID_GetString(p *radius.Packet) (value string) {
 func AcctSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[AcctSessionID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -306,9 +300,7 @@ func AcctSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func AcctSessionID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[AcctSessionID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -323,9 +315,7 @@ func AcctSessionID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -335,17 +325,13 @@ func AcctSessionID_LookupString(p *radius.Packet) (value string, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func AcctSessionID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -355,9 +341,7 @@ func AcctSessionID_Set(p *radius.Packet, value []byte) (err error) {
 
 func AcctSessionID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -684,9 +668,7 @@ func AcctTerminateCause_Set(p *radius.Packet, value AcctTerminateCause) {
 
 func AcctMultiSessionID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -696,9 +678,7 @@ func AcctMultiSessionID_Add(p *radius.Packet, value []byte) (err error) {
 
 func AcctMultiSessionID_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
@@ -718,9 +698,7 @@ func AcctMultiSessionID_GetString(p *radius.Packet) (value string) {
 func AcctMultiSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range p.Attributes[AcctMultiSessionID_Type] {
-
 		i = radius.Bytes(attr)
-
 		if err != nil {
 			return
 		}
@@ -732,9 +710,7 @@ func AcctMultiSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {
 func AcctMultiSessionID_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range p.Attributes[AcctMultiSessionID_Type] {
-
 		i = radius.String(attr)
-
 		if err != nil {
 			return
 		}
@@ -749,9 +725,7 @@ func AcctMultiSessionID_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.Bytes(a)
-
 	return
 }
 
@@ -761,17 +735,13 @@ func AcctMultiSessionID_LookupString(p *radius.Packet) (value string, err error)
 		err = radius.ErrNoAttribute
 		return
 	}
-
 	value = radius.String(a)
-
 	return
 }
 
 func AcctMultiSessionID_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewBytes(value)
-
 	if err != nil {
 		return
 	}
@@ -781,9 +751,7 @@ func AcctMultiSessionID_Set(p *radius.Packet, value []byte) (err error) {
 
 func AcctMultiSessionID_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-
 	a, err = radius.NewString(value)
-
 	if err != nil {
 		return
 	}
