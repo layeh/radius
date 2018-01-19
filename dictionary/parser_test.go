@@ -39,7 +39,7 @@ func TestParser(t *testing.T) {
 			},
 			{
 				Name: "ARAP-Challenge-Response",
-				OID: "84",
+				OID:  "84",
 				Type: dict.AttributeOctets,
 				Size: newIntPtr(8),
 			},
