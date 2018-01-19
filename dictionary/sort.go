@@ -6,7 +6,7 @@ import (
 )
 
 func SortAttributes(attrs []*Attribute) {
-	sort.Sort(sortAttributes(attrs))
+	sort.Stable(sortAttributes(attrs))
 }
 
 type sortAttributes []*Attribute
@@ -22,7 +22,7 @@ func (s sortAttributes) Less(i, j int) bool {
 func (s sortAttributes) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
 
 func SortValues(values []*Value) {
-	sort.Sort(sortValues(values))
+	sort.Stable(sortValues(values))
 }
 
 type sortValues []*Value

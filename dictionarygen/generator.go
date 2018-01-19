@@ -403,13 +403,15 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	for _, value := range allValues {
 		if value.Attribute == attr.Name {
 			if len(values) > 0 && values[len(values)-1].Number == value.Number {
-				continue
+				values[len(values)-1] = value
+			} else {
+				values = append(values, value)
 			}
-			values = append(values, value)
 		}
 	}
 
 	ident := identifier(attr.Name)
+
 	p(w)
 	p(w, `type `, ident, ` uint32`)
 

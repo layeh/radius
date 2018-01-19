@@ -3,7 +3,7 @@ package dictionarygen
 import "sort"
 
 func sortExternalAttributes(e []*externalAttribute) {
-	sort.Sort(sortableExternalAttributes(e))
+	sort.Stable(sortableExternalAttributes(e))
 }
 
 type sortableExternalAttributes []*externalAttribute
