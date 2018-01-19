@@ -185,9 +185,6 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			g.genAttributeInteger(&w, attr, values)
 		case dictionary.AttributeVSA:
 			// skip
-		default:
-			p(&w)
-			p(&w, `// TODO: unimplemented `, attr.Name, ` (type `, attr.Type.String(), `)`)
 		}
 	}
 
