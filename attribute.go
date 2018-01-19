@@ -14,10 +14,10 @@ import (
 // expected.
 var ErrNoAttribute = errors.New("radius: attribute not found")
 
-// Attribute is a RADIUS attribute value, as encoded on the wire.
+// Attribute is a wire encoded RADIUS attribute.
 type Attribute []byte
 
-// Integer returns the given attribute as an integer. An error is returned  if
+// Integer returns the given attribute as an integer. An error is returned if
 // the attribute is not 4 bytes long.
 func Integer(a Attribute) (uint32, error) {
 	if len(a) != 4 {
