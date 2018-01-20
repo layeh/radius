@@ -113,7 +113,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				vendorBlock.Values = append(vendorBlock.Values, value)
 			}
 
-		case (len(fields) == 3 && len(fields) == 4) && fields[0] == "VENDOR":
+		case (len(fields) == 3 || len(fields) == 4) && fields[0] == "VENDOR":
 			vendor, err := p.parseVendor(fields)
 			if err != nil {
 				return &ParseError{
