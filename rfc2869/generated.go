@@ -40,9 +40,10 @@ func (a AcctInputGigawords) String() string {
 	return "AcctInputGigawords(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctInputGigawords_Add(p *radius.Packet, value AcctInputGigawords) {
+func AcctInputGigawords_Add(p *radius.Packet, value AcctInputGigawords) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctInputGigawords_Type, a)
+	return nil
 }
 
 func AcctInputGigawords_Get(p *radius.Packet) (value AcctInputGigawords) {
@@ -77,9 +78,10 @@ func AcctInputGigawords_Lookup(p *radius.Packet) (value AcctInputGigawords, err 
 	return
 }
 
-func AcctInputGigawords_Set(p *radius.Packet, value AcctInputGigawords) {
+func AcctInputGigawords_Set(p *radius.Packet, value AcctInputGigawords) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctInputGigawords_Type, a)
+	return nil
 }
 
 type AcctOutputGigawords uint32
@@ -93,9 +95,10 @@ func (a AcctOutputGigawords) String() string {
 	return "AcctOutputGigawords(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctOutputGigawords_Add(p *radius.Packet, value AcctOutputGigawords) {
+func AcctOutputGigawords_Add(p *radius.Packet, value AcctOutputGigawords) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctOutputGigawords_Type, a)
+	return nil
 }
 
 func AcctOutputGigawords_Get(p *radius.Packet) (value AcctOutputGigawords) {
@@ -130,9 +133,10 @@ func AcctOutputGigawords_Lookup(p *radius.Packet) (value AcctOutputGigawords, er
 	return
 }
 
-func AcctOutputGigawords_Set(p *radius.Packet, value AcctOutputGigawords) {
+func AcctOutputGigawords_Set(p *radius.Packet, value AcctOutputGigawords) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputGigawords_Type, a)
+	return nil
 }
 
 type ARAPZoneAccess uint32
@@ -156,9 +160,10 @@ func (a ARAPZoneAccess) String() string {
 	return "ARAPZoneAccess(" + strconv.Itoa(int(a)) + ")"
 }
 
-func ARAPZoneAccess_Add(p *radius.Packet, value ARAPZoneAccess) {
+func ARAPZoneAccess_Add(p *radius.Packet, value ARAPZoneAccess) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(ARAPZoneAccess_Type, a)
+	return nil
 }
 
 func ARAPZoneAccess_Get(p *radius.Packet) (value ARAPZoneAccess) {
@@ -193,9 +198,10 @@ func ARAPZoneAccess_Lookup(p *radius.Packet) (value ARAPZoneAccess, err error) {
 	return
 }
 
-func ARAPZoneAccess_Set(p *radius.Packet, value ARAPZoneAccess) {
+func ARAPZoneAccess_Set(p *radius.Packet, value ARAPZoneAccess) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(ARAPZoneAccess_Type, a)
+	return nil
 }
 
 type ARAPSecurity uint32
@@ -209,9 +215,10 @@ func (a ARAPSecurity) String() string {
 	return "ARAPSecurity(" + strconv.Itoa(int(a)) + ")"
 }
 
-func ARAPSecurity_Add(p *radius.Packet, value ARAPSecurity) {
+func ARAPSecurity_Add(p *radius.Packet, value ARAPSecurity) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(ARAPSecurity_Type, a)
+	return nil
 }
 
 func ARAPSecurity_Get(p *radius.Packet) (value ARAPSecurity) {
@@ -246,9 +253,10 @@ func ARAPSecurity_Lookup(p *radius.Packet) (value ARAPSecurity, err error) {
 	return
 }
 
-func ARAPSecurity_Set(p *radius.Packet, value ARAPSecurity) {
+func ARAPSecurity_Set(p *radius.Packet, value ARAPSecurity) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(ARAPSecurity_Type, a)
+	return nil
 }
 
 func ARAPSecurityData_Add(p *radius.Packet, value []byte) (err error) {
@@ -355,9 +363,10 @@ func (a PasswordRetry) String() string {
 	return "PasswordRetry(" + strconv.Itoa(int(a)) + ")"
 }
 
-func PasswordRetry_Add(p *radius.Packet, value PasswordRetry) {
+func PasswordRetry_Add(p *radius.Packet, value PasswordRetry) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(PasswordRetry_Type, a)
+	return nil
 }
 
 func PasswordRetry_Get(p *radius.Packet) (value PasswordRetry) {
@@ -392,9 +401,10 @@ func PasswordRetry_Lookup(p *radius.Packet) (value PasswordRetry, err error) {
 	return
 }
 
-func PasswordRetry_Set(p *radius.Packet, value PasswordRetry) {
+func PasswordRetry_Set(p *radius.Packet, value PasswordRetry) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(PasswordRetry_Type, a)
+	return nil
 }
 
 type Prompt uint32
@@ -416,9 +426,10 @@ func (a Prompt) String() string {
 	return "Prompt(" + strconv.Itoa(int(a)) + ")"
 }
 
-func Prompt_Add(p *radius.Packet, value Prompt) {
+func Prompt_Add(p *radius.Packet, value Prompt) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(Prompt_Type, a)
+	return nil
 }
 
 func Prompt_Get(p *radius.Packet) (value Prompt) {
@@ -453,9 +464,10 @@ func Prompt_Lookup(p *radius.Packet) (value Prompt, err error) {
 	return
 }
 
-func Prompt_Set(p *radius.Packet, value Prompt) {
+func Prompt_Set(p *radius.Packet, value Prompt) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(Prompt_Type, a)
+	return nil
 }
 
 func ConnectInfo_Add(p *radius.Packet, value []byte) (err error) {
@@ -748,9 +760,10 @@ func (a AcctInterimInterval) String() string {
 	return "AcctInterimInterval(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctInterimInterval_Add(p *radius.Packet, value AcctInterimInterval) {
+func AcctInterimInterval_Add(p *radius.Packet, value AcctInterimInterval) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctInterimInterval_Type, a)
+	return nil
 }
 
 func AcctInterimInterval_Get(p *radius.Packet) (value AcctInterimInterval) {
@@ -785,9 +798,10 @@ func AcctInterimInterval_Lookup(p *radius.Packet) (value AcctInterimInterval, er
 	return
 }
 
-func AcctInterimInterval_Set(p *radius.Packet, value AcctInterimInterval) {
+func AcctInterimInterval_Set(p *radius.Packet, value AcctInterimInterval) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctInterimInterval_Type, a)
+	return nil
 }
 
 func NASPortID_Add(p *radius.Packet, value []byte) (err error) {

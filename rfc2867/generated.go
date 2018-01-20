@@ -142,9 +142,10 @@ func (a AcctTunnelPacketsLost) String() string {
 	return "AcctTunnelPacketsLost(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctTunnelPacketsLost_Add(p *radius.Packet, value AcctTunnelPacketsLost) {
+func AcctTunnelPacketsLost_Add(p *radius.Packet, value AcctTunnelPacketsLost) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctTunnelPacketsLost_Type, a)
+	return nil
 }
 
 func AcctTunnelPacketsLost_Get(p *radius.Packet) (value AcctTunnelPacketsLost) {
@@ -179,7 +180,8 @@ func AcctTunnelPacketsLost_Lookup(p *radius.Packet) (value AcctTunnelPacketsLost
 	return
 }
 
-func AcctTunnelPacketsLost_Set(p *radius.Packet, value AcctTunnelPacketsLost) {
+func AcctTunnelPacketsLost_Set(p *radius.Packet, value AcctTunnelPacketsLost) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctTunnelPacketsLost_Type, a)
+	return nil
 }

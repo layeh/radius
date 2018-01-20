@@ -72,9 +72,10 @@ func (a ErrorCause) String() string {
 	return "ErrorCause(" + strconv.Itoa(int(a)) + ")"
 }
 
-func ErrorCause_Add(p *radius.Packet, value ErrorCause) {
+func ErrorCause_Add(p *radius.Packet, value ErrorCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(ErrorCause_Type, a)
+	return nil
 }
 
 func ErrorCause_Get(p *radius.Packet) (value ErrorCause) {
@@ -109,7 +110,8 @@ func ErrorCause_Lookup(p *radius.Packet) (value ErrorCause, err error) {
 	return
 }
 
-func ErrorCause_Set(p *radius.Packet, value ErrorCause) {
+func ErrorCause_Set(p *radius.Packet, value ErrorCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(ErrorCause_Type, a)
+	return nil
 }

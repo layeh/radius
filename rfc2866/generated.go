@@ -55,9 +55,10 @@ func (a AcctStatusType) String() string {
 	return "AcctStatusType(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctStatusType_Add(p *radius.Packet, value AcctStatusType) {
+func AcctStatusType_Add(p *radius.Packet, value AcctStatusType) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctStatusType_Type, a)
+	return nil
 }
 
 func AcctStatusType_Get(p *radius.Packet) (value AcctStatusType) {
@@ -92,9 +93,10 @@ func AcctStatusType_Lookup(p *radius.Packet) (value AcctStatusType, err error) {
 	return
 }
 
-func AcctStatusType_Set(p *radius.Packet, value AcctStatusType) {
+func AcctStatusType_Set(p *radius.Packet, value AcctStatusType) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctStatusType_Type, a)
+	return nil
 }
 
 type AcctDelayTime uint32
@@ -108,9 +110,10 @@ func (a AcctDelayTime) String() string {
 	return "AcctDelayTime(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctDelayTime_Add(p *radius.Packet, value AcctDelayTime) {
+func AcctDelayTime_Add(p *radius.Packet, value AcctDelayTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctDelayTime_Type, a)
+	return nil
 }
 
 func AcctDelayTime_Get(p *radius.Packet) (value AcctDelayTime) {
@@ -145,9 +148,10 @@ func AcctDelayTime_Lookup(p *radius.Packet) (value AcctDelayTime, err error) {
 	return
 }
 
-func AcctDelayTime_Set(p *radius.Packet, value AcctDelayTime) {
+func AcctDelayTime_Set(p *radius.Packet, value AcctDelayTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctDelayTime_Type, a)
+	return nil
 }
 
 type AcctInputOctets uint32
@@ -161,9 +165,10 @@ func (a AcctInputOctets) String() string {
 	return "AcctInputOctets(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctInputOctets_Add(p *radius.Packet, value AcctInputOctets) {
+func AcctInputOctets_Add(p *radius.Packet, value AcctInputOctets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctInputOctets_Type, a)
+	return nil
 }
 
 func AcctInputOctets_Get(p *radius.Packet) (value AcctInputOctets) {
@@ -198,9 +203,10 @@ func AcctInputOctets_Lookup(p *radius.Packet) (value AcctInputOctets, err error)
 	return
 }
 
-func AcctInputOctets_Set(p *radius.Packet, value AcctInputOctets) {
+func AcctInputOctets_Set(p *radius.Packet, value AcctInputOctets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctInputOctets_Type, a)
+	return nil
 }
 
 type AcctOutputOctets uint32
@@ -214,9 +220,10 @@ func (a AcctOutputOctets) String() string {
 	return "AcctOutputOctets(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctOutputOctets_Add(p *radius.Packet, value AcctOutputOctets) {
+func AcctOutputOctets_Add(p *radius.Packet, value AcctOutputOctets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctOutputOctets_Type, a)
+	return nil
 }
 
 func AcctOutputOctets_Get(p *radius.Packet) (value AcctOutputOctets) {
@@ -251,9 +258,10 @@ func AcctOutputOctets_Lookup(p *radius.Packet) (value AcctOutputOctets, err erro
 	return
 }
 
-func AcctOutputOctets_Set(p *radius.Packet, value AcctOutputOctets) {
+func AcctOutputOctets_Set(p *radius.Packet, value AcctOutputOctets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputOctets_Type, a)
+	return nil
 }
 
 func AcctSessionID_Add(p *radius.Packet, value []byte) (err error) {
@@ -372,9 +380,10 @@ func (a AcctAuthentic) String() string {
 	return "AcctAuthentic(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctAuthentic_Add(p *radius.Packet, value AcctAuthentic) {
+func AcctAuthentic_Add(p *radius.Packet, value AcctAuthentic) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctAuthentic_Type, a)
+	return nil
 }
 
 func AcctAuthentic_Get(p *radius.Packet) (value AcctAuthentic) {
@@ -409,9 +418,10 @@ func AcctAuthentic_Lookup(p *radius.Packet) (value AcctAuthentic, err error) {
 	return
 }
 
-func AcctAuthentic_Set(p *radius.Packet, value AcctAuthentic) {
+func AcctAuthentic_Set(p *radius.Packet, value AcctAuthentic) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctAuthentic_Type, a)
+	return nil
 }
 
 type AcctSessionTime uint32
@@ -425,9 +435,10 @@ func (a AcctSessionTime) String() string {
 	return "AcctSessionTime(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctSessionTime_Add(p *radius.Packet, value AcctSessionTime) {
+func AcctSessionTime_Add(p *radius.Packet, value AcctSessionTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctSessionTime_Type, a)
+	return nil
 }
 
 func AcctSessionTime_Get(p *radius.Packet) (value AcctSessionTime) {
@@ -462,9 +473,10 @@ func AcctSessionTime_Lookup(p *radius.Packet) (value AcctSessionTime, err error)
 	return
 }
 
-func AcctSessionTime_Set(p *radius.Packet, value AcctSessionTime) {
+func AcctSessionTime_Set(p *radius.Packet, value AcctSessionTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctSessionTime_Type, a)
+	return nil
 }
 
 type AcctInputPackets uint32
@@ -478,9 +490,10 @@ func (a AcctInputPackets) String() string {
 	return "AcctInputPackets(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctInputPackets_Add(p *radius.Packet, value AcctInputPackets) {
+func AcctInputPackets_Add(p *radius.Packet, value AcctInputPackets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctInputPackets_Type, a)
+	return nil
 }
 
 func AcctInputPackets_Get(p *radius.Packet) (value AcctInputPackets) {
@@ -515,9 +528,10 @@ func AcctInputPackets_Lookup(p *radius.Packet) (value AcctInputPackets, err erro
 	return
 }
 
-func AcctInputPackets_Set(p *radius.Packet, value AcctInputPackets) {
+func AcctInputPackets_Set(p *radius.Packet, value AcctInputPackets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctInputPackets_Type, a)
+	return nil
 }
 
 type AcctOutputPackets uint32
@@ -531,9 +545,10 @@ func (a AcctOutputPackets) String() string {
 	return "AcctOutputPackets(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctOutputPackets_Add(p *radius.Packet, value AcctOutputPackets) {
+func AcctOutputPackets_Add(p *radius.Packet, value AcctOutputPackets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctOutputPackets_Type, a)
+	return nil
 }
 
 func AcctOutputPackets_Get(p *radius.Packet) (value AcctOutputPackets) {
@@ -568,9 +583,10 @@ func AcctOutputPackets_Lookup(p *radius.Packet) (value AcctOutputPackets, err er
 	return
 }
 
-func AcctOutputPackets_Set(p *radius.Packet, value AcctOutputPackets) {
+func AcctOutputPackets_Set(p *radius.Packet, value AcctOutputPackets) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputPackets_Type, a)
+	return nil
 }
 
 type AcctTerminateCause uint32
@@ -624,9 +640,10 @@ func (a AcctTerminateCause) String() string {
 	return "AcctTerminateCause(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctTerminateCause_Add(p *radius.Packet, value AcctTerminateCause) {
+func AcctTerminateCause_Add(p *radius.Packet, value AcctTerminateCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctTerminateCause_Type, a)
+	return nil
 }
 
 func AcctTerminateCause_Get(p *radius.Packet) (value AcctTerminateCause) {
@@ -661,9 +678,10 @@ func AcctTerminateCause_Lookup(p *radius.Packet) (value AcctTerminateCause, err 
 	return
 }
 
-func AcctTerminateCause_Set(p *radius.Packet, value AcctTerminateCause) {
+func AcctTerminateCause_Set(p *radius.Packet, value AcctTerminateCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctTerminateCause_Type, a)
+	return nil
 }
 
 func AcctMultiSessionID_Add(p *radius.Packet, value []byte) (err error) {
@@ -770,9 +788,10 @@ func (a AcctLinkCount) String() string {
 	return "AcctLinkCount(" + strconv.Itoa(int(a)) + ")"
 }
 
-func AcctLinkCount_Add(p *radius.Packet, value AcctLinkCount) {
+func AcctLinkCount_Add(p *radius.Packet, value AcctLinkCount) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctLinkCount_Type, a)
+	return nil
 }
 
 func AcctLinkCount_Get(p *radius.Packet) (value AcctLinkCount) {
@@ -807,7 +826,8 @@ func AcctLinkCount_Lookup(p *radius.Packet) (value AcctLinkCount, err error) {
 	return
 }
 
-func AcctLinkCount_Set(p *radius.Packet, value AcctLinkCount) {
+func AcctLinkCount_Set(p *radius.Packet, value AcctLinkCount) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctLinkCount_Type, a)
+	return nil
 }

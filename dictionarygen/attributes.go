@@ -7,8 +7,12 @@ import (
 	"layeh.com/radius/dictionary"
 )
 
-func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attribute) {
+func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
 	ident := identifier(attr.Name)
+	var vendorIdent string
+	if vendor != nil {
+		vendorIdent = identifier(vendor.Name)
+	}
 
 	p(w)
 	p(w, `func `, ident, `_Add(p *radius.Packet, value []byte) (err error) {`)
@@ -21,8 +25,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Add(`, ident, `_Type, a)`)
-	p(w, `	return nil`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 
 	p(w)
@@ -36,8 +44,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Add(`, ident, `_Type, a)`)
-	p(w, `	return nil`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 
 	p(w)
@@ -54,7 +66,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w)
 	p(w, `func `, ident, `_Gets(p *radius.Packet) (values [][]byte, err error) {`)
 	p(w, `	var i []byte`)
-	p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
 	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
 		p(w, `		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
 	} else {
@@ -71,7 +87,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w)
 	p(w, `func `, ident, `_GetStrings(p *radius.Packet) (values []string, err error) {`)
 	p(w, `	var i string`)
-	p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
 	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
 		p(w, `		var up radius.Attribute`)
 		p(w, `		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
@@ -91,7 +111,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value []byte, err error) {`)
-	p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, attr.OID, `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
 	p(w, `	if !ok {`)
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
@@ -106,7 +130,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	p(w, `func `, ident, `_LookupString(p *radius.Packet) (value string, err error) {`)
-	p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, attr.OID, `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
 	p(w, `	if !ok {`)
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
@@ -134,8 +162,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Set(`, ident, `_Type, a)`)
-	p(w, `	return`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return`)
+	}
 	p(w, `}`)
 
 	p(w)
@@ -149,13 +181,21 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Set(`, ident, `_Type, a)`)
-	p(w, `	return`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return`)
+	}
 	p(w, `}`)
 }
 
-func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute) {
+func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
 	ident := identifier(attr.Name)
+	var vendorIdent string
+	if vendor != nil {
+		vendorIdent = identifier(vendor.Name)
+	}
 
 	p(w)
 	p(w, `func `, ident, `_Add(p *radius.Packet, value net.IP) (err error) {`)
@@ -164,8 +204,12 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute) 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Add(`, ident, `_Type, a)`)
-	p(w, `	return nil`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 
 	p(w)
@@ -177,7 +221,11 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute) 
 	p(w)
 	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.IP, err error) {`)
 	p(w, `	var i net.IP`)
-	p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
 	p(w, `		i, err = radius.IPAddr(attr)`)
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
@@ -189,7 +237,11 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute) 
 
 	p(w)
 	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.IP, err error) {`)
-	p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, attr.OID, `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
 	p(w, `	if !ok {`)
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
@@ -205,12 +257,16 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute) 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	p.Set(`, ident, `_Type, a)`)
-	p(w, `	return`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 }
 
-func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute, allValues []*dictionary.Value) {
+func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute, allValues []*dictionary.Value, vendor *dictionary.Vendor) {
 	var values []*dictionary.Value
 	for _, value := range allValues {
 		if value.Attribute == attr.Name {
@@ -223,6 +279,10 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 
 	ident := identifier(attr.Name)
+	var vendorIdent string
+	if vendor != nil {
+		vendorIdent = identifier(vendor.Name)
+	}
 
 	p(w)
 	p(w, `type `, ident, ` uint32`)
@@ -255,9 +315,14 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w, `}`)
 
 	p(w)
-	p(w, `func `, ident, `_Add(p *radius.Packet, value `, ident, `) {`)
+	p(w, `func `, ident, `_Add(p *radius.Packet, value `, ident, `) (err error) {`)
 	p(w, `	a := radius.NewInteger(uint32(value))`)
-	p(w, `	p.Add(`, ident, `_Type, a)`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 
 	p(w)
@@ -269,7 +334,11 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w)
 	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []`, ident, `, err error) {`)
 	p(w, `	var i uint32`)
-	p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
 	p(w, `		i, err = radius.Integer(attr)`)
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
@@ -281,7 +350,11 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 
 	p(w)
 	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value `, ident, `, err error) {`)
-	p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, attr.OID, `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
 	p(w, `	if !ok {`)
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
@@ -296,8 +369,13 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w, `}`)
 
 	p(w)
-	p(w, `func `, ident, `_Set(p *radius.Packet, value `, ident, `) {`)
+	p(w, `func `, ident, `_Set(p *radius.Packet, value `, ident, `) (err error) {`)
 	p(w, `	a := radius.NewInteger(uint32(value))`)
-	p(w, `	p.Set(`, ident, `_Type, a)`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
 	p(w, `}`)
 }
