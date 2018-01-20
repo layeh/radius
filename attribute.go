@@ -208,11 +208,14 @@ func VendorSpecific(a Attribute) (vendorID uint32, value Attribute, err error) {
 
 // NewVendorSpecific returns a new vendor specific attribute with the given
 // vendor ID and value.
-func NewVendorSpecific(vendorID uint32, value Attribute) Attribute {
+func NewVendorSpecific(vendorID uint32, value Attribute) (Attribute, error) {
+	if len(value) > 249 {
+		return nil, errors.New("value too long")
+	}
 	a := make([]byte, 4+len(value))
 	binary.BigEndian.PutUint32(a, vendorID)
 	copy(a[4:], value)
-	return a
+	return a, nil
 }
 
 // TODO: ipv6addr
