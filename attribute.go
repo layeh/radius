@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"encoding/binary"
 	"errors"
+	"math"
 	"net"
 	"strconv"
 	"time"
@@ -187,10 +188,14 @@ func Date(a Attribute) (time.Time, error) {
 }
 
 // NewDate returns a new Attribute from the given time.Time.
-func NewDate(t time.Time) Attribute {
+func NewDate(t time.Time) (Attribute, error) {
+	unix := t.Unix()
+	if unix > math.MaxUint32 {
+		return nil, errors.New("time out of range")
+	}
 	a := make([]byte, 4)
 	binary.BigEndian.PutUint32(a, uint32(t.Unix()))
-	return a
+	return a, nil
 }
 
 // VendorSpecific returns the vendor ID and value from the given attribute. An
