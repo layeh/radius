@@ -30,3 +30,13 @@ type sortValues []*Value
 func (s sortValues) Len() int           { return len(s) }
 func (s sortValues) Less(i, j int) bool { return s[i].Number < s[j].Number }
 func (s sortValues) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
+
+func SortVendors(vendors []*Vendor) {
+	sort.Stable(sortVendors(vendors))
+}
+
+type sortVendors []*Vendor
+
+func (s sortVendors) Len() int           { return len(s) }
+func (s sortVendors) Less(i, j int) bool { return s[i].Number < s[j].Number }
+func (s sortVendors) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
