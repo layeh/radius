@@ -141,7 +141,25 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				return nil, errors.New("dictionarygen: cannot generate code for " + vendor.Name + " vendor attribute " + attr.Name)
 			}
 		}
-		vendors = append(vendors, vendor)
+
+		vendorAttributes := make([]*dictionary.Attribute, len(vendor.Attributes))
+		copy(vendorAttributes, vendor.Attributes)
+		dictionary.SortAttributes(vendorAttributes)
+
+		vendorValues := make([]*dictionary.Value, len(vendor.Values))
+		copy(vendorValues, vendor.Values)
+		dictionary.SortValues(vendorValues)
+
+		vendors = append(vendors, &dictionary.Vendor{
+			Name:   vendor.Name,
+			Number: vendor.Number,
+
+			TypeOctets:   vendor.TypeOctets,
+			LengthOctets: vendor.LengthOctets,
+
+			Attributes: vendorAttributes,
+			Values:     vendorValues,
+		})
 	}
 	dictionary.SortVendors(vendors)
 
