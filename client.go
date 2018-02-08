@@ -18,8 +18,8 @@ type Client struct {
 	// retry).
 	Retry time.Duration
 
-	// MaxPacketErrors controls how many packet parsing errors the client will
-	// ignore before returning the error from Exchange.
+	// MaxPacketErrors controls how many packet parsing and validation errors
+	// the client will ignore before returning the error from Exchange.
 	//
 	// If zero, Exchange will drop all packet parsing errors.
 	MaxPacketErrors int
@@ -102,8 +102,15 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 			continue
 		}
 
-		if !c.InsecureSkipVerify && IsAuthenticResponse(incoming[:n], wire, packet.Secret) {
-			return received, nil
+		if !c.InsecureSkipVerify && !IsAuthenticResponse(incoming[:n], wire, packet.Secret) {
+			packetErrorCount++
+			if c.MaxPacketErrors > 0 && packetErrorCount >= c.MaxPacketErrors {
+				return nil, &NonAuthenticResponseError{}
+			}
+
+			continue
 		}
+
+		return received, nil
 	}
 }
