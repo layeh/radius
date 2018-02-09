@@ -5,6 +5,7 @@ package rfc2869
 import (
 	"net"
 	"strconv"
+	"time"
 
 	"layeh.com/radius"
 )
@@ -12,10 +13,12 @@ import (
 var _ = radius.Type(0)
 var _ = strconv.Itoa
 var _ = net.ParseIP
+var _ = time.Time{}
 
 const (
 	AcctInputGigawords_Type   radius.Type = 52
 	AcctOutputGigawords_Type  radius.Type = 53
+	EventTimestamp_Type       radius.Type = 55
 	ARAPZoneAccess_Type       radius.Type = 72
 	ARAPSecurity_Type         radius.Type = 73
 	ARAPSecurityData_Type     radius.Type = 74
@@ -136,6 +139,53 @@ func AcctOutputGigawords_Lookup(p *radius.Packet) (value AcctOutputGigawords, er
 func AcctOutputGigawords_Set(p *radius.Packet, value AcctOutputGigawords) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputGigawords_Type, a)
+	return nil
+}
+
+func EventTimestamp_Add(p *radius.Packet, value time.Time) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewDate(value)
+	if err != nil {
+		return
+	}
+	p.Add(EventTimestamp_Type, a)
+	return nil
+}
+
+func EventTimestamp_Get(p *radius.Packet) (value time.Time) {
+	value, _ = EventTimestamp_Lookup(p)
+	return
+}
+
+func EventTimestamp_Gets(p *radius.Packet) (values []time.Time, err error) {
+	var i time.Time
+	for _, attr := range p.Attributes[EventTimestamp_Type] {
+		i, err = radius.Date(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func EventTimestamp_Lookup(p *radius.Packet) (value time.Time, err error) {
+	a, ok := p.Lookup(EventTimestamp_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value, err = radius.Date(a)
+	return
+}
+
+func EventTimestamp_Set(p *radius.Packet, value time.Time) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewDate(value)
+	if err != nil {
+		return
+	}
+	p.Set(EventTimestamp_Type, a)
 	return nil
 }
 

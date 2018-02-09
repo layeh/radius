@@ -54,6 +54,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		case dictionary.AttributeString:
 		case dictionary.AttributeOctets:
 		case dictionary.AttributeIPAddr:
+		case dictionary.AttributeDate:
 		case dictionary.AttributeInteger:
 		case dictionary.AttributeVSA:
 		default:
@@ -132,6 +133,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			case dictionary.AttributeString:
 			case dictionary.AttributeOctets:
 			case dictionary.AttributeIPAddr:
+			case dictionary.AttributeDate:
 			case dictionary.AttributeInteger:
 			default:
 				invalid = true
@@ -174,6 +176,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 	p(&w, `import (`)
 	p(&w, `	"net"`)
 	p(&w, `	"strconv"`)
+	p(&w, `	"time"`)
 	p(&w)
 	p(&w, `	"layeh.com/radius"`)
 	if len(externalAttributes) > 0 {
@@ -195,6 +198,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 	p(&w, `var _ = radius.Type(0)`)
 	p(&w, `var _ = strconv.Itoa`)
 	p(&w, `var _ = net.ParseIP`)
+	p(&w, `var _ = time.Time{}`)
 
 	// Attribute types
 	if len(attrs) > 0 {
@@ -241,6 +245,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			g.genAttributeStringOctets(&w, attr, nil)
 		case dictionary.AttributeIPAddr:
 			g.genAttributeIPAddr(&w, attr, nil)
+		case dictionary.AttributeDate:
+			g.genAttributeDate(&w, attr, nil)
 		case dictionary.AttributeInteger:
 			g.genAttributeInteger(&w, attr, values, nil)
 		case dictionary.AttributeVSA:
@@ -256,6 +262,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				g.genAttributeStringOctets(&w, attr, vendor)
 			case dictionary.AttributeIPAddr:
 				g.genAttributeIPAddr(&w, attr, vendor)
+			case dictionary.AttributeDate:
+				g.genAttributeDate(&w, attr, vendor)
 			case dictionary.AttributeInteger:
 				g.genAttributeInteger(&w, attr, vendor.Values, vendor)
 			case dictionary.AttributeVSA:

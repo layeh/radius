@@ -5,6 +5,7 @@ package rfc2866
 import (
 	"net"
 	"strconv"
+	"time"
 
 	"layeh.com/radius"
 )
@@ -12,6 +13,7 @@ import (
 var _ = radius.Type(0)
 var _ = strconv.Itoa
 var _ = net.ParseIP
+var _ = time.Time{}
 
 const (
 	AcctStatusType_Type     radius.Type = 40

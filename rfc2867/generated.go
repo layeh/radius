@@ -5,6 +5,7 @@ package rfc2867
 import (
 	"net"
 	"strconv"
+	"time"
 
 	"layeh.com/radius"
 
@@ -14,6 +15,7 @@ import (
 var _ = radius.Type(0)
 var _ = strconv.Itoa
 var _ = net.ParseIP
+var _ = time.Time{}
 
 const (
 	AcctTunnelConnection_Type  radius.Type = 68

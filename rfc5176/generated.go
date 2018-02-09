@@ -5,6 +5,7 @@ package rfc5176
 import (
 	"net"
 	"strconv"
+	"time"
 
 	"layeh.com/radius"
 
@@ -14,6 +15,7 @@ import (
 var _ = radius.Type(0)
 var _ = strconv.Itoa
 var _ = net.ParseIP
+var _ = time.Time{}
 
 func init() {
 	ErrorCause_Strings[ErrorCause_Value_InvalidAttributeValue] = "Invalid-Attribute-Value"
