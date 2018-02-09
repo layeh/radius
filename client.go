@@ -24,6 +24,8 @@ type Client struct {
 	// If zero, Exchange will drop all packet parsing errors.
 	MaxPacketErrors int
 
+	// InsecureSkipVerify controls whether the client should skip verifying
+	// response packets received.
 	InsecureSkipVerify bool
 }
 
@@ -107,7 +109,6 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 			if c.MaxPacketErrors > 0 && packetErrorCount >= c.MaxPacketErrors {
 				return nil, &NonAuthenticResponseError{}
 			}
-
 			continue
 		}
 
