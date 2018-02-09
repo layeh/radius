@@ -1,20 +1,31 @@
 package radius
 
 import (
+	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
 func TestRFCBuild(t *testing.T) {
 	t.Parallel()
 
-	packages := []string{
-		"rfc2865",
-		"rfc2866",
-		"rfc2867",
-		"rfc2869",
-		"rfc3576",
-		"rfc5176",
+	var packages []string
+
+	f, err := os.Open(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	entries, err := f.Readdir(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, entry := range entries {
+		if entry.IsDir() && strings.HasPrefix(entry.Name(), "rfc") {
+			packages = append(packages, entry.Name())
+		}
 	}
 
 	for _, pkg := range packages {
