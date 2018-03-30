@@ -99,7 +99,7 @@ func (p *Packet) Encode() ([]byte, error) {
 	switch p.Code {
 	case CodeAccessRequest:
 		copy(b[4:20], p.Authenticator[:])
-	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge, CodeDisconnectRequest, CodeCoARequest:
+	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge, CodeDisconnectRequest, CodeDisconnectACK, CodeDisconnectNAK, CodeCoARequest, CodeCoAACK, CodeCoANAK:
 		hash := md5.New()
 		hash.Write(b[:4])
 		switch p.Code {
