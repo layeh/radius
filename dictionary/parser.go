@@ -272,11 +272,11 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 	}
 
 	switch {
-	case f[3] == "string":
+	case strings.EqualFold(f[3], "string"):
 		attr.Type = AttributeString
-	case f[3] == "octets":
+	case strings.EqualFold(f[3], "octets"):
 		attr.Type = AttributeOctets
-	case strings.HasPrefix(f[3], "octets[") && strings.HasSuffix(f[3], "]") && len(f[3]) > 8:
+	case len(f[3]) > 8 && strings.EqualFold(f[3][:7], "octets[") && f[3][len(f[3])-1] == ']':
 		size, err := strconv.ParseInt(f[3][7:len(f[3])-1], 10, 32)
 		if err != nil {
 			return nil, &UnknownAttributeTypeError{
@@ -286,21 +286,21 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 		attr.Size = new(int)
 		*attr.Size = int(size)
 		attr.Type = AttributeOctets
-	case f[3] == "ipaddr":
+	case strings.EqualFold(f[3], "ipaddr"):
 		attr.Type = AttributeIPAddr
-	case f[3] == "date":
+	case strings.EqualFold(f[3], "date"):
 		attr.Type = AttributeDate
-	case f[3] == "integer":
+	case strings.EqualFold(f[3], "integer"):
 		attr.Type = AttributeInteger
-	case f[3] == "ipv6addr":
+	case strings.EqualFold(f[3], "ipv6addr"):
 		attr.Type = AttributeIPv6Addr
-	case f[3] == "ipv6prefix":
+	case strings.EqualFold(f[3], "ipv6prefix"):
 		attr.Type = AttributeIPv6Prefix
-	case f[3] == "ifid":
+	case strings.EqualFold(f[3], "ifid"):
 		attr.Type = AttributeIFID
-	case f[3] == "integer64":
+	case strings.EqualFold(f[3], "integer64"):
 		attr.Type = AttributeInteger64
-	case f[3] == "vsa":
+	case strings.EqualFold(f[3], "vsa"):
 		attr.Type = AttributeVSA
 	default:
 		return nil, &UnknownAttributeTypeError{
