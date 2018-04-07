@@ -71,7 +71,7 @@ func (a Attributes) Lookup(key Type) (Attribute, bool) {
 
 // Set removes all Attributes of Type key and appends value.
 func (a Attributes) Set(key Type, value Attribute) {
-	a[key] = []Attribute{value}
+	a[key] = append(a[key][:0], value)
 }
 
 // Len returns the total number of Attributes in a.
