@@ -272,8 +272,6 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				g.genAttributeDate(&w, attr, vendor)
 			case dictionary.AttributeInteger:
 				g.genAttributeInteger(&w, attr, vendor.Values, vendor)
-			case dictionary.AttributeVSA:
-				// skip
 			}
 		}
 	}
