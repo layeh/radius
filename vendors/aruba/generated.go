@@ -5,16 +5,10 @@ package aruba
 import (
 	"net"
 	"strconv"
-	"time"
 
 	"layeh.com/radius"
 	"layeh.com/radius/rfc2865"
 )
-
-var _ = radius.Type(0)
-var _ = strconv.Itoa
-var _ = net.ParseIP
-var _ = time.Time{}
 
 const (
 	_Aruba_VendorID = 14823

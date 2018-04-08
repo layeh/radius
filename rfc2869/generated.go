@@ -3,17 +3,11 @@
 package rfc2869
 
 import (
-	"net"
 	"strconv"
 	"time"
 
 	"layeh.com/radius"
 )
-
-var _ = radius.Type(0)
-var _ = strconv.Itoa
-var _ = net.ParseIP
-var _ = time.Time{}
 
 const (
 	AcctInputGigawords_Type   radius.Type = 52

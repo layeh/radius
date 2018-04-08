@@ -5,15 +5,9 @@ package rfc2865
 import (
 	"net"
 	"strconv"
-	"time"
 
 	"layeh.com/radius"
 )
-
-var _ = radius.Type(0)
-var _ = strconv.Itoa
-var _ = net.ParseIP
-var _ = time.Time{}
 
 const (
 	UserName_Type               radius.Type = 1

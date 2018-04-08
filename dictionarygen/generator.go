@@ -35,6 +35,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		ignoredAttributes[attrName] = struct{}{}
 	}
 
+	baseImports := map[string]struct{}{}
+
 	for _, attr := range dict.Attributes {
 		if _, ignored := ignoredAttributes[attr.Name]; ignored {
 			continue
@@ -54,8 +56,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		case dictionary.AttributeString:
 		case dictionary.AttributeOctets:
 		case dictionary.AttributeIPAddr:
+			baseImports["net"] = struct{}{}
 		case dictionary.AttributeDate:
+			baseImports["time"] = struct{}{}
 		case dictionary.AttributeInteger:
+			baseImports["strconv"] = struct{}{}
 		case dictionary.AttributeVSA:
 		default:
 			invalid = true
@@ -133,8 +138,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			case dictionary.AttributeString:
 			case dictionary.AttributeOctets:
 			case dictionary.AttributeIPAddr:
+				baseImports["net"] = struct{}{}
 			case dictionary.AttributeDate:
+				baseImports["time"] = struct{}{}
 			case dictionary.AttributeInteger:
+				baseImports["strconv"] = struct{}{}
 			default:
 				invalid = true
 			}
@@ -174,11 +182,13 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 	// Imports
 	p(&w)
 	p(&w, `import (`)
-	p(&w, `	"net"`)
-	p(&w, `	"strconv"`)
-	p(&w, `	"time"`)
-	p(&w)
-	p(&w, `	"layeh.com/radius"`)
+	for imprt := range baseImports {
+		p(&w, `	`+strconv.Quote(imprt))
+	}
+	if len(attrs) > 0 || len(vendors) > 0 {
+		p(&w)
+		p(&w, `	"layeh.com/radius"`)
+	}
 	if len(vendors) > 0 {
 		p(&w, `	"layeh.com/radius/rfc2865"`)
 	}
@@ -195,13 +205,6 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		}
 	}
 	p(&w, `)`)
-
-	// Prevent unused import errors
-	p(&w)
-	p(&w, `var _ = radius.Type(0)`)
-	p(&w, `var _ = strconv.Itoa`)
-	p(&w, `var _ = net.ParseIP`)
-	p(&w, `var _ = time.Time{}`)
 
 	// Attribute types
 	if len(attrs) > 0 {
