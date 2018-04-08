@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"layeh.com/radius"
+	"layeh.com/radius/rfc2865"
 )
 
 var _ = radius.Type(0)
@@ -29,12 +30,12 @@ func _Aruba_AddVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 	if err != nil {
 		return
 	}
-	p.Add(26, vsa)
+	p.Add(rfc2865.VendorSpecific_Type, vsa)
 	return nil
 }
 
 func _Aruba_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
-	for _, attr := range p.Attributes[26] {
+	for _, attr := range p.Attributes[rfc2865.VendorSpecific_Type] {
 		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != _Aruba_VendorID {
 			continue
@@ -54,7 +55,7 @@ func _Aruba_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
 }
 
 func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok bool) {
-	for _, a := range p.Attributes[26] {
+	for _, a := range p.Attributes[rfc2865.VendorSpecific_Type] {
 		vendorID, vsa, err := radius.VendorSpecific(a)
 		if err != nil || vendorID != _Aruba_VendorID {
 			continue
@@ -74,8 +75,8 @@ func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok 
 }
 
 func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
-	for i := 0; i < len(p.Attributes[26]); {
-		vendorID, vsa, err := radius.VendorSpecific(p.Attributes[26][i])
+	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
+		vendorID, vsa, err := radius.VendorSpecific(p.Attributes[rfc2865.VendorSpecific_Type][i])
 		if err != nil || vendorID != _Aruba_VendorID {
 			i++
 			continue
@@ -92,10 +93,10 @@ func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 			j += int(vsaLen)
 		}
 		if len(vsa) > 0 {
-			copy(p.Attributes[26][i][4:], vsa)
+			copy(p.Attributes[rfc2865.VendorSpecific_Type][i][4:], vsa)
 			i++
 		} else {
-			p.Attributes[26] = append(p.Attributes[26][:i], p.Attributes[26][i+i:]...)
+			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+i:]...)
 		}
 	}
 	return _Aruba_AddVendor(p, typ, attr)

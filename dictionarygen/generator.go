@@ -179,6 +179,9 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 	p(&w, `	"time"`)
 	p(&w)
 	p(&w, `	"layeh.com/radius"`)
+	if len(vendors) > 0 {
+		p(&w, `	"layeh.com/radius/rfc2865"`)
+	}
 	if len(externalAttributes) > 0 {
 		printedNewLine := false
 		for _, exAttr := range externalAttributes {
