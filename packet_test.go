@@ -3,6 +3,7 @@ package radius_test
 import (
 	"bytes"
 	"net"
+	"strings"
 	"testing"
 
 	"layeh.com/radius"
@@ -203,6 +204,46 @@ func TestPasswords(t *testing.T) {
 
 		if s := rfc2865.UserPassword_GetString(q); s != password {
 			t.Fatalf("incorrect User-Password (expecting %q, got %q)", password, s)
+		}
+	}
+}
+
+func TestParse_invalid(t *testing.T) {
+	tests := []struct {
+		Wire  string
+		Error string
+	}{
+		{"\x01", "packet not at least 20 bytes long"},
+
+		{
+			"\x01\xff\x00\x00\x01\x01\x01\x01\x01\x01" +
+				"\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01",
+			"invalid packet length",
+		},
+		{
+			"\x01\xff\xff\xff\x01\x01\x01\x01\x01\x01" +
+				"\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01",
+			"invalid packet length",
+		},
+
+		{
+			"\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01" +
+				"\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01" +
+				"\x01\x00",
+			"invalid attribute length",
+		},
+	}
+
+	secret := []byte("12345")
+
+	for _, test := range tests {
+		packet, err := radius.Parse([]byte(test.Wire), secret)
+		if packet != nil {
+			t.Errorf("(%#x): expected empty packet, got %v", test.Wire, packet)
+		} else if err == nil {
+			t.Errorf("(%#x): expected error, got none", test.Wire)
+		} else if !strings.Contains(err.Error(), test.Error) {
+			t.Errorf("(%#x): expected error %q, got %q", test.Wire, test.Error, err.Error())
 		}
 	}
 }
