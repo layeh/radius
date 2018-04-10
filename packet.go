@@ -49,7 +49,7 @@ func Parse(b, secret []byte) (*Packet, error) {
 	}
 
 	length := int(binary.BigEndian.Uint16(b[2:4]))
-	if length < 20 || length > MaxPacketLength || len(b) > length {
+	if length < 20 || length > MaxPacketLength || len(b) != length {
 		return nil, errors.New("radius: invalid packet length")
 	}
 
