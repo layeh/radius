@@ -214,6 +214,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			p(&w, `	`, identifier(attr.Name), `_Type radius.Type = `, attr.OID)
 		}
 		p(&w, `)`)
+		g.genAttributeStringLookups(&w, attrs, "_Type", "radius.Type")
 	}
 
 	if len(vendors) > 0 {

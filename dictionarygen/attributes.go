@@ -455,3 +455,16 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	p(w, `}`)
 }
+
+func (g *Generator) genAttributeStringLookups(w io.Writer, attrs []*dictionary.Attribute, postfix, attributeType string) {
+	p(w, `func StringLookup(a `, attributeType, `) string {`)
+	p(w, `	switch a {`)
+	for _, attr := range attrs {
+		id := identifier(attr.Name)
+		p(w, `			case `, id, postfix, `: return "`, id, `"`)
+	}
+	p(w, `	}`)
+	p(w)
+	p(w, `	return ""`)
+	p(w, `}`)
+}
