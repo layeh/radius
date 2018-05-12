@@ -1,11 +1,47 @@
 package dictionary
 
-import "strconv"
+import (
+	"bytes"
+	"fmt"
+	"strconv"
+)
 
 type Dictionary struct {
 	Attributes []*Attribute
 	Values     []*Value
 	Vendors    []*Vendor
+}
+
+func (d *Dictionary) GoString() string {
+	var b bytes.Buffer
+	b.WriteString("&dictionary.Dictionary{")
+
+	if d.Attributes != nil {
+		b.WriteString("Attributes:[]*dictionary.Attribute{")
+		for _, attr := range d.Attributes {
+			fmt.Fprintf(&b, "%#v,", attr)
+		}
+		b.WriteString("},")
+	}
+
+	if d.Values != nil {
+		b.WriteString("Values:[]*dictionary.Value{")
+		for _, value := range d.Values {
+			fmt.Fprintf(&b, "%#v,", value)
+		}
+		b.WriteString("},")
+	}
+
+	if d.Vendors != nil {
+		b.WriteString("Vendors:[]*dictionary.Vendor{")
+		for _, vendor := range d.Vendors {
+			fmt.Fprintf(&b, "%#v,", vendor)
+		}
+		b.WriteString("},")
+	}
+
+	b.WriteString("}")
+	return b.String()
 }
 
 func (d *Dictionary) AttributeByName(name string) *Attribute {
@@ -17,9 +53,27 @@ func (d *Dictionary) AttributeByName(name string) *Attribute {
 	return nil
 }
 
+func (d *Dictionary) AttributeByOID(oid string) *Attribute {
+	for _, attr := range d.Attributes {
+		if attr.OID == oid {
+			return attr
+		}
+	}
+	return nil
+}
+
 func (d *Dictionary) VendorByName(name string) *Vendor {
 	for _, vendor := range d.Vendors {
 		if vendor.Name == name {
+			return vendor
+		}
+	}
+	return nil
+}
+
+func (d *Dictionary) VendorByNumber(number int) *Vendor {
+	for _, vendor := range d.Vendors {
+		if vendor.Number == number {
 			return vendor
 		}
 	}
@@ -90,6 +144,32 @@ type Attribute struct {
 	FlagConcat  *bool
 }
 
+func (a *Attribute) GoString() string {
+	var b bytes.Buffer
+	b.WriteString("&dictionary.Attribute{")
+
+	fmt.Fprintf(&b, "Name:%#v,", a.Name)
+	fmt.Fprintf(&b, "OID:%#v,", a.OID)
+	fmt.Fprintf(&b, "Type:%#v,", a.Type)
+
+	if a.Size != nil {
+		fmt.Fprintf(&b, "Size:dictionary.Int(%#v),", *(a.Size))
+	}
+
+	if a.FlagEncrypt != nil {
+		fmt.Fprintf(&b, "FlagEncrypt:dictionary.Int(%#v),", *(a.FlagEncrypt))
+	}
+	if a.FlagHasTag != nil {
+		fmt.Fprintf(&b, "FlagHasTag:dictionary.Bool(%#v),", *(a.FlagHasTag))
+	}
+	if a.FlagConcat != nil {
+		fmt.Fprintf(&b, "FlagConcat:dictionary.Bool(%#v),", *(a.FlagConcat))
+	}
+
+	b.WriteString("}")
+	return b.String()
+}
+
 type Value struct {
 	Attribute string
 	Name      string
@@ -105,6 +185,35 @@ type Vendor struct {
 
 	Attributes []*Attribute
 	Values     []*Value
+}
+
+func (v *Vendor) GoString() string {
+	var b bytes.Buffer
+	b.WriteString("&dictionary.Vendor{")
+
+	fmt.Fprintf(&b, "Name:%#v,", v.Name)
+	fmt.Fprintf(&b, "Number:%#v,", v.Number)
+
+	fmt.Fprintf(&b, "TypeOctets:%#v,", v.TypeOctets)
+	fmt.Fprintf(&b, "LengthOctets:%#v,", v.LengthOctets)
+
+	if v.Attributes != nil {
+		b.WriteString("Attributes:[]*dictionary.Attribute{")
+		for _, attr := range v.Attributes {
+			fmt.Fprintf(&b, "%#v,", attr)
+		}
+		b.WriteString("},")
+	}
+	if v.Values != nil {
+		b.WriteString("Values:[]*dictionary.Value{")
+		for _, value := range v.Values {
+			fmt.Fprintf(&b, "%#v,", value)
+		}
+		b.WriteString("},")
+	}
+
+	b.WriteString("}")
+	return b.String()
 }
 
 func (v *Vendor) AttributeByName(name string) *Attribute {
