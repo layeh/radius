@@ -2,6 +2,7 @@ package debug_test
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 
 	"layeh.com/radius"
@@ -14,7 +15,7 @@ var secret = []byte(`1234567`)
 func TestDumpPacket(t *testing.T) {
 	tests := []*struct {
 		Packet func() *radius.Packet
-		Output string
+		Output []string
 	}{
 		{
 			func() *radius.Packet {
@@ -24,10 +25,11 @@ func TestDumpPacket(t *testing.T) {
 				UserPassword_SetString(p, "12345")
 				return p
 			},
-			`Access-Request Id 33
-  User-Name = "Tim"
-  User-Password = "12345"
-`,
+			[]string{
+				`Access-Request Id 33`,
+				`  User-Name = "Tim"`,
+				`  User-Password = "12345"`,
+			},
 		},
 	}
 
@@ -39,8 +41,12 @@ func TestDumpPacket(t *testing.T) {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			p := tt.Packet()
 			result := debug.DumpPacket(config, p)
-			if result != tt.Output {
-				t.Fatalf("\nexpected:\n%s\ngot:\n%s", tt.Output, result)
+			outputStr := strings.Join(tt.Output, "\n")
+			if len(outputStr) > 0 {
+				outputStr += "\n"
+			}
+			if result != outputStr {
+				t.Fatalf("\nexpected:\n%s\ngot:\n%s", outputStr, result)
 			}
 		})
 	}
