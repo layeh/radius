@@ -31,28 +31,52 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 
 		attrsTypeIntStr := strconv.Itoa(int(attrsType))
 		var attrTypeString string
-		var stringerFunc func(p *radius.Packet, attr *dictionary.Attribute, value []byte) string
+		var stringerFunc func(value []byte) string
 		dictAttr := c.Dictionary.AttributeByOID(attrsTypeIntStr)
 		if dictAttr != nil {
 			attrTypeString = dictAttr.Name
 			switch dictAttr.Type {
 			case dictionary.AttributeString, dictionary.AttributeOctets:
-				stringerFunc = maybetextStringer
+				stringerFunc = func(value []byte) string {
+					if dictAttr != nil && dictAttr.FlagEncrypt != nil && *dictAttr.FlagEncrypt == 1 {
+						decryptedValue, err := radius.UserPassword(radius.Attribute(value), p.Secret, p.Authenticator[:])
+						if err != nil {
+							return "0x" + hex.EncodeToString(value)
+						}
+						value = decryptedValue
+					}
+					return fmt.Sprintf("%q", value)
+				}
+
 			case dictionary.AttributeInteger:
-				stringerFunc = intStringer
+				stringerFunc = func(value []byte) string {
+					switch len(value) {
+					case 4:
+						return strconv.Itoa(int(binary.BigEndian.Uint32(value)))
+					case 8:
+						return strconv.Itoa(int(binary.BigEndian.Uint64(value)))
+					}
+					return "0x" + hex.EncodeToString(value)
+				}
+
 			default:
-				stringerFunc = hexStringer
+				stringerFunc = func(value []byte) string {
+					return "0x" + hex.EncodeToString(value)
+				}
+
 			}
 		} else {
 			attrTypeString = "#" + attrsTypeIntStr
-			stringerFunc = hexStringer
+			stringerFunc = func(value []byte) string {
+				return "0x" + hex.EncodeToString(value)
+			}
 		}
 
 		for _, attr := range attrs {
 			b.WriteString("  ")
 			b.WriteString(attrTypeString)
 			b.WriteString(" = ")
-			b.WriteString(stringerFunc(p, dictAttr, attr))
+			b.WriteString(stringerFunc(attr))
 			b.WriteByte('\n')
 		}
 	}
@@ -60,31 +84,6 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 	b.Truncate(b.Len() - 1) // remove trailing \n
 
 	return b.String()
-}
-
-func intStringer(p *radius.Packet, attr *dictionary.Attribute, value []byte) string {
-	switch len(value) {
-	case 4:
-		return strconv.Itoa(int(binary.BigEndian.Uint32(value)))
-	case 8:
-		return strconv.Itoa(int(binary.BigEndian.Uint64(value)))
-	}
-	return "0x" + hex.EncodeToString(value)
-}
-
-func maybetextStringer(p *radius.Packet, attr *dictionary.Attribute, value []byte) string {
-	if attr != nil && attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
-		decryptedValue, err := radius.UserPassword(radius.Attribute(value), p.Secret, p.Authenticator[:])
-		if err != nil {
-			return "0x" + hex.EncodeToString(value)
-		}
-		value = decryptedValue
-	}
-	return fmt.Sprintf("%q", value)
-}
-
-func hexStringer(p *radius.Packet, attr *dictionary.Attribute, value []byte) string {
-	return "0x" + hex.EncodeToString(value)
 }
 
 type attributesElement struct {
