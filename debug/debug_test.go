@@ -47,7 +47,7 @@ func TestDumpPacket(t *testing.T) {
 	for i, tt := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			p := tt.Packet()
-			result := debug.DumpPacket(config, p)
+			result := debug.DumpString(config, p)
 			outputStr := strings.Join(tt.Output, "\n")
 			if result != outputStr {
 				t.Fatalf("\nexpected:\n%s\ngot:\n%s", outputStr, result)

@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"io"
 	"net"
 	"sort"
 	"strconv"
@@ -18,12 +19,18 @@ type Config struct {
 	Dictionary *dictionary.Dictionary
 }
 
-func DumpPacket(c *Config, p *radius.Packet) string {
+func DumpString(c *Config, p *radius.Packet) string {
 	var b bytes.Buffer
-	b.WriteString(p.Code.String())
-	b.WriteString(" Id ")
-	b.WriteString(strconv.Itoa(int(p.Identifier)))
-	b.WriteByte('\n')
+	Dump(&b, c, p)
+	b.Truncate(b.Len() - 1) // remove trailing \n
+	return b.String()
+}
+
+func Dump(w io.Writer, c *Config, p *radius.Packet) {
+	io.WriteString(w, p.Code.String())
+	io.WriteString(w, " Id ")
+	io.WriteString(w, strconv.Itoa(int(p.Identifier)))
+	io.WriteString(w, "\n")
 
 	for _, elem := range sortedAttributes(p.Attributes) {
 		attrsType, attrs := elem.Type, elem.Attrs
@@ -88,17 +95,13 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 		}
 
 		for _, attr := range attrs {
-			b.WriteString("  ")
-			b.WriteString(attrTypeString)
-			b.WriteString(" = ")
-			b.WriteString(stringerFunc(attr))
-			b.WriteByte('\n')
+			io.WriteString(w, "  ")
+			io.WriteString(w, attrTypeString)
+			io.WriteString(w, " = ")
+			io.WriteString(w, stringerFunc(attr))
+			io.WriteString(w, "\n")
 		}
 	}
-
-	b.Truncate(b.Len() - 1) // remove trailing \n
-
-	return b.String()
 }
 
 type attributesElement struct {
