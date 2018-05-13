@@ -8,6 +8,7 @@ import (
 	"net"
 	"sort"
 	"strconv"
+	"time"
 
 	"layeh.com/radius"
 	"layeh.com/radius/dictionary"
@@ -47,6 +48,14 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 						value = decryptedValue
 					}
 					return fmt.Sprintf("%q", value)
+				}
+
+			case dictionary.AttributeDate:
+				stringerFunc = func(value []byte) string {
+					if len(value) != 4 {
+						return "0x" + hex.EncodeToString(value)
+					}
+					return time.Unix(int64(binary.BigEndian.Uint32(value)), 0).UTC().Format(time.RFC3339)
 				}
 
 			case dictionary.AttributeInteger:
