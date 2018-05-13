@@ -89,6 +89,29 @@ func NewIPAddr(a net.IP) (Attribute, error) {
 	return b, nil
 }
 
+// IPv6Addr returns the given Attribute as an IPv6 IP address. An error is
+// returned if the attribute is not 16 bytes long.
+func IPv6Addr(a Attribute) (net.IP, error) {
+	if len(a) != net.IPv6len {
+		return nil, errors.New("invalid length")
+	}
+	b := make([]byte, net.IPv6len)
+	copy(b, []byte(a))
+	return b, nil
+}
+
+// NewIPv6Addr returns a new Attribute from the given IP address. An error is
+// returned if the given address is not an IPv6 address.
+func NewIPv6Addr(a net.IP) (Attribute, error) {
+	a = a.To16()
+	if a == nil {
+		return nil, errors.New("invalid IPv6 address")
+	}
+	b := make(Attribute, len(a))
+	copy(b, Attribute(a))
+	return b, nil
+}
+
 // UserPassword decrypts the given  "User-Password"-encrypted (as defined in RFC
 // 2865) Attribute, and returns the plaintext. An error is returned if the
 // attribute length is invalid, the secret is empty, or the requestAuthenticator

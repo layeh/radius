@@ -2,6 +2,7 @@ package dictionarygen
 
 import (
 	"io"
+	"net"
 	"strconv"
 
 	"layeh.com/radius/dictionary"
@@ -190,7 +191,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `}`)
 }
 
-func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
+func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor, length int) {
+	if length != net.IPv4len && length != net.IPv6len {
+		panic("invalid length")
+	}
+
 	ident := identifier(attr.Name)
 	var vendorIdent string
 	if vendor != nil {
@@ -200,7 +205,11 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w)
 	p(w, `func `, ident, `_Add(p *radius.Packet, value net.IP) (err error) {`)
 	p(w, `	var a radius.Attribute`)
-	p(w, `	a, err = radius.NewIPAddr(value)`)
+	if length == net.IPv4len {
+		p(w, `	a, err = radius.NewIPAddr(value)`)
+	} else {
+		p(w, `	a, err = radius.NewIPv6Addr(value)`)
+	}
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
@@ -226,7 +235,11 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
-	p(w, `		i, err = radius.IPAddr(attr)`)
+	if length == net.IPv4len {
+		p(w, `		i, err = radius.IPAddr(attr)`)
+	} else {
+		p(w, `		i, err = radius.IPv6Addr(attr)`)
+	}
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
@@ -246,14 +259,22 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	value, err = radius.IPAddr(a)`)
+	if length == net.IPv4len {
+		p(w, `	value, err = radius.IPAddr(a)`)
+	} else {
+		p(w, `	value, err = radius.IPv6Addr(a)`)
+	}
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
 	p(w, `func `, ident, `_Set(p *radius.Packet, value net.IP) (err error) {`)
 	p(w, `	var a radius.Attribute`)
-	p(w, `	a, err = radius.NewIPAddr(value)`)
+	if length == net.IPv4len {
+		p(w, `	a, err = radius.NewIPAddr(value)`)
+	} else {
+		p(w, `	a, err = radius.NewIPv6Addr(value)`)
+	}
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
