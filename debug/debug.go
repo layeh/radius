@@ -9,6 +9,7 @@ import (
 	"net"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 
 	"layeh.com/radius"
@@ -69,7 +70,20 @@ func Dump(w io.Writer, c *Config, p *radius.Packet) {
 				stringerFunc = func(value []byte) string {
 					switch len(value) {
 					case 4:
-						return strconv.Itoa(int(binary.BigEndian.Uint32(value)))
+						intVal := int(binary.BigEndian.Uint32(value))
+						if dictAttr != nil {
+							var matchedNames []string
+							for _, value := range c.Dictionary.ValuesByAttribute(dictAttr.Name) {
+								if value.Number == intVal {
+									matchedNames = append(matchedNames, value.Name)
+								}
+							}
+							if len(matchedNames) > 0 {
+								sort.Stable(sort.StringSlice(matchedNames))
+								return strings.Join(matchedNames, " / ")
+							}
+						}
+						return strconv.Itoa(intVal)
 					case 8:
 						return strconv.Itoa(int(binary.BigEndian.Uint64(value)))
 					}

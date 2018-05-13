@@ -62,6 +62,16 @@ func (d *Dictionary) AttributeByOID(oid string) *Attribute {
 	return nil
 }
 
+func (d *Dictionary) ValuesByAttribute(attribute string) []*Value {
+	var values []*Value
+	for _, value := range d.Values {
+		if value.Attribute == attribute {
+			values = append(values, value)
+		}
+	}
+	return values
+}
+
 func (d *Dictionary) VendorByName(name string) *Vendor {
 	for _, vendor := range d.Vendors {
 		if vendor.Name == name {

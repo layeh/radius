@@ -10,6 +10,7 @@ import (
 	"layeh.com/radius"
 	"layeh.com/radius/debug"
 	. "layeh.com/radius/rfc2865"
+	. "layeh.com/radius/rfc2866"
 	. "layeh.com/radius/rfc2869"
 )
 
@@ -27,6 +28,9 @@ func TestDumpPacket(t *testing.T) {
 				UserName_SetString(p, "Tim")
 				UserPassword_SetString(p, "12345")
 				NASIPAddress_Set(p, net.IPv4(10, 0, 2, 5))
+				AcctStatusType_Add(p, 3) // Alive, exists in dictionary file
+				AcctStatusType_Add(p, AcctStatusType_Value_InterimUpdate)
+				AcctLinkCount_Set(p, 2)
 				EventTimestamp_Set(p, time.Date(2018, 5, 13, 11, 55, 10, 0, time.UTC))
 				return p
 			},
@@ -35,6 +39,9 @@ func TestDumpPacket(t *testing.T) {
 				`  User-Name = "Tim"`,
 				`  User-Password = "12345"`,
 				`  NAS-IP-Address = 10.0.2.5`,
+				`  Acct-Status-Type = Alive / Interim-Update`,
+				`  Acct-Status-Type = Alive / Interim-Update`,
+				`  Acct-Link-Count = 2`,
 				`  Event-Timestamp = 2018-05-13T11:55:10Z`,
 			},
 		},
