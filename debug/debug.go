@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"sort"
 	"strconv"
 
 	"layeh.com/radius"
@@ -21,7 +22,9 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 	b.WriteString(" Id ")
 	b.WriteString(strconv.Itoa(int(p.Identifier)))
 	b.WriteByte('\n')
-	for attrsType, attrs := range p.Attributes {
+
+	for _, elem := range sortedAttributes(p.Attributes) {
+		attrsType, attrs := elem.Type, elem.Attrs
 		if len(attrs) == 0 {
 			continue
 		}
@@ -53,6 +56,7 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 			b.WriteByte('\n')
 		}
 	}
+
 	return b.String()
 }
 
@@ -80,3 +84,28 @@ func maybetextStringer(p *radius.Packet, attr *dictionary.Attribute, value []byt
 func hexStringer(p *radius.Packet, attr *dictionary.Attribute, value []byte) string {
 	return "0x" + hex.EncodeToString(value)
 }
+
+type attributesElement struct {
+	Type  radius.Type
+	Attrs []radius.Attribute
+}
+
+func sortedAttributes(attributes radius.Attributes) []attributesElement {
+	var sortedAttrs []attributesElement
+	for attrsType, attrs := range attributes {
+		sortedAttrs = append(sortedAttrs, attributesElement{
+			Type:  attrsType,
+			Attrs: attrs,
+		})
+	}
+
+	sort.Sort(sortAttributesType(sortedAttrs))
+
+	return sortedAttrs
+}
+
+type sortAttributesType []attributesElement
+
+func (s sortAttributesType) Len() int           { return len(s) }
+func (s sortAttributesType) Less(i, j int) bool { return s[i].Type < s[j].Type }
+func (s sortAttributesType) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
