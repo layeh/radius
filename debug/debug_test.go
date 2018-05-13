@@ -1,6 +1,7 @@
 package debug_test
 
 import (
+	"net"
 	"strconv"
 	"strings"
 	"testing"
@@ -23,12 +24,14 @@ func TestDumpPacket(t *testing.T) {
 				p.Identifier = 33
 				UserName_SetString(p, "Tim")
 				UserPassword_SetString(p, "12345")
+				NASIPAddress_Set(p, net.IPv4(10, 0, 2, 5))
 				return p
 			},
 			[]string{
 				`Access-Request Id 33`,
 				`  User-Name = "Tim"`,
 				`  User-Password = "12345"`,
+				`  NAS-IP-Address = 10.0.2.5`,
 			},
 		},
 	}

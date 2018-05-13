@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"fmt"
+	"net"
 	"sort"
 	"strconv"
 
@@ -57,6 +58,11 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 						return strconv.Itoa(int(binary.BigEndian.Uint64(value)))
 					}
 					return "0x" + hex.EncodeToString(value)
+				}
+
+			case dictionary.AttributeIPAddr:
+				stringerFunc = func(value []byte) string {
+					return net.IP(value).String()
 				}
 
 			default:
