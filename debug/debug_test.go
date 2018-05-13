@@ -23,8 +23,14 @@ func TestDumpPacket(t *testing.T) {
 	}{
 		{
 			func() *radius.Packet {
-				p := radius.New(radius.CodeAccessRequest, secret)
-				p.Identifier = 33
+				p := &radius.Packet{
+					Code:       radius.CodeAccessRequest,
+					Identifier: 33,
+					Secret:     secret,
+					Attributes: make(radius.Attributes),
+				}
+				p.Authenticator[0] = 0x01
+
 				UserName_SetString(p, "Tim")
 				UserPassword_SetString(p, "12345")
 				NASIPAddress_Set(p, net.IPv4(10, 0, 2, 5))
