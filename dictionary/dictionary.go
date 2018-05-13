@@ -16,7 +16,7 @@ func (d *Dictionary) GoString() string {
 	var b bytes.Buffer
 	b.WriteString("&dictionary.Dictionary{")
 
-	if d.Attributes != nil {
+	if len(d.Attributes) > 0 {
 		b.WriteString("Attributes:[]*dictionary.Attribute{")
 		for _, attr := range d.Attributes {
 			fmt.Fprintf(&b, "%#v,", attr)
@@ -24,7 +24,7 @@ func (d *Dictionary) GoString() string {
 		b.WriteString("},")
 	}
 
-	if d.Values != nil {
+	if len(d.Values) > 0 {
 		b.WriteString("Values:[]*dictionary.Value{")
 		for _, value := range d.Values {
 			fmt.Fprintf(&b, "%#v,", value)
@@ -32,7 +32,7 @@ func (d *Dictionary) GoString() string {
 		b.WriteString("},")
 	}
 
-	if d.Vendors != nil {
+	if len(d.Vendors) > 0 {
 		b.WriteString("Vendors:[]*dictionary.Vendor{")
 		for _, vendor := range d.Vendors {
 			fmt.Fprintf(&b, "%#v,", vendor)
@@ -197,14 +197,14 @@ func (v *Vendor) GoString() string {
 	fmt.Fprintf(&b, "TypeOctets:%#v,", v.TypeOctets)
 	fmt.Fprintf(&b, "LengthOctets:%#v,", v.LengthOctets)
 
-	if v.Attributes != nil {
+	if len(v.Attributes) > 0 {
 		b.WriteString("Attributes:[]*dictionary.Attribute{")
 		for _, attr := range v.Attributes {
 			fmt.Fprintf(&b, "%#v,", attr)
 		}
 		b.WriteString("},")
 	}
-	if v.Values != nil {
+	if len(v.Values) > 0 {
 		b.WriteString("Values:[]*dictionary.Value{")
 		for _, value := range v.Values {
 			fmt.Fprintf(&b, "%#v,", value)
