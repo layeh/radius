@@ -57,6 +57,8 @@ func DumpPacket(c *Config, p *radius.Packet) string {
 		}
 	}
 
+	b.Truncate(b.Len() - 1) // remove trailing \n
+
 	return b.String()
 }
 

@@ -42,9 +42,6 @@ func TestDumpPacket(t *testing.T) {
 			p := tt.Packet()
 			result := debug.DumpPacket(config, p)
 			outputStr := strings.Join(tt.Output, "\n")
-			if len(outputStr) > 0 {
-				outputStr += "\n"
-			}
 			if result != outputStr {
 				t.Fatalf("\nexpected:\n%s\ngot:\n%s", outputStr, result)
 			}
