@@ -287,6 +287,83 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 }
 
+
+func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
+	ident := identifier(attr.Name)
+	var vendorIdent string
+	if vendor != nil {
+		vendorIdent = identifier(vendor.Name)
+	}
+
+	p(w)
+	p(w, `func `, ident, `_Add(p *radius.Packet, value net.HardwareAddr) (err error) {`)
+	p(w, `	var a radius.Attribute`)
+	p(w, `	a, err = radius.NewIFID(value)`)
+	p(w, `	if err != nil {`)
+	p(w, `		return`)
+	p(w, `	}`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Get(p *radius.Packet) (value net.HardwareAddr) {`)
+	p(w, `	value, _ = `, ident, `_Lookup(p)`)
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.HardwareAddr, err error) {`)
+	p(w, `	var i net.HardwareAddr`)
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
+	p(w, `		i, err = radius.IFID(attr)`)
+	p(w, `		if err != nil {`)
+	p(w, `			return`)
+	p(w, `		}`)
+	p(w, `		values = append(values, i)`)
+	p(w, `	}`)
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.HardwareAddr, err error) {`)
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, attr.OID, `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
+	p(w, `	if !ok {`)
+	p(w, `		err = radius.ErrNoAttribute`)
+	p(w, `		return`)
+	p(w, `	}`)
+	p(w, `	value, err = radius.IFID(a)`)
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Set(p *radius.Packet, value net.HardwareAddr) (err error) {`)
+	p(w, `	var a radius.Attribute`)
+	p(w, `	a, err = radius.NewIFID(value)`)
+	p(w, `	if err != nil {`)
+	p(w, `		return`)
+	p(w, `	}`)
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return nil`)
+	}
+	p(w, `}`)
+}
+
 func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
 	ident := identifier(attr.Name)
 	var vendorIdent string

@@ -112,6 +112,28 @@ func NewIPv6Addr(a net.IP) (Attribute, error) {
 	return b, nil
 }
 
+// IFID returns the given attribute as a 8-byte hardware address. An error is
+// return if the attribute is not 8 bytes long.
+func IFID(a Attribute) (net.HardwareAddr, error) {
+	if len(a) != 8 {
+		return nil, errors.New("invalid length")
+	}
+	ifid := make(net.HardwareAddr, len(a))
+	copy(ifid, a)
+	return ifid, nil
+}
+
+// NewIFID returns a new Attribute from the given hardware address. An error
+// is returned if the address is not 8 bytes long.
+func NewIFID(addr net.HardwareAddr) (Attribute, error) {
+	if len(addr) != 8 {
+		return nil, errors.New("invalid length")
+	}
+	attr := make(Attribute, len(addr))
+	copy(attr, addr)
+	return attr, nil
+}
+
 // UserPassword decrypts the given  "User-Password"-encrypted (as defined in RFC
 // 2865) Attribute, and returns the plaintext. An error is returned if the
 // attribute length is invalid, the secret is empty, or the requestAuthenticator
