@@ -12,6 +12,7 @@ import (
 	. "layeh.com/radius/rfc2865"
 	. "layeh.com/radius/rfc2866"
 	. "layeh.com/radius/rfc2869"
+	. "layeh.com/radius/rfc3162"
 )
 
 var secret = []byte(`1234567`)
@@ -38,6 +39,10 @@ func TestDumpPacket(t *testing.T) {
 				AcctStatusType_Add(p, AcctStatusType_Value_InterimUpdate)
 				AcctLinkCount_Set(p, 2)
 				EventTimestamp_Set(p, time.Date(2018, 5, 13, 11, 55, 10, 0, time.UTC))
+				NASIPv6Address_Set(p, net.ParseIP("::1"))
+				mac, _ := net.ParseMAC("01:02:03:04:05:06:ff:ff")
+				FramedInterfaceID_Set(p, mac)
+
 				return p
 			},
 			[]string{
@@ -49,6 +54,8 @@ func TestDumpPacket(t *testing.T) {
 				`  Acct-Status-Type = Alive / Interim-Update`,
 				`  Acct-Link-Count = 2`,
 				`  Event-Timestamp = 2018-05-13T11:55:10Z`,
+				`  NAS-IPv6-Address = ::1`,
+				`  Framed-Interface-Id = 01:02:03:04:05:06:ff:ff`,
 			},
 		},
 	}

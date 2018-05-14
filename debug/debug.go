@@ -90,9 +90,21 @@ func Dump(w io.Writer, c *Config, p *radius.Packet) {
 					return "0x" + hex.EncodeToString(value)
 				}
 
-			case dictionary.AttributeIPAddr:
+			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr:
 				stringerFunc = func(value []byte) string {
-					return net.IP(value).String()
+					switch len(value) {
+					case net.IPv4len, net.IPv6len:
+						return net.IP(value).String()
+					}
+					return "0x" + hex.EncodeToString(value)
+				}
+
+			case dictionary.AttributeIFID:
+				stringerFunc = func(value []byte) string {
+					if len(value) == 8 {
+						return net.HardwareAddr(value).String()
+					}
+					return "0x" + hex.EncodeToString(value)
 				}
 
 			default:
