@@ -268,7 +268,5 @@ func NewVendorSpecific(vendorID uint32, value Attribute) (Attribute, error) {
 	return a, nil
 }
 
-// TODO: ipv6addr
 // TODO: ipv6prefix
-// TODO: ifid
 // TODO: integer64
