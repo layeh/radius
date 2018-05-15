@@ -28,7 +28,8 @@ func main() {
 			os.Exit(1)
 		}
 
-		if err := MergeDict(dict, nextDict); err != nil {
+		dict, err = dictionary.Merge(dict, nextDict)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
@@ -54,26 +55,4 @@ func main() {
 	fmt.Fprintln(w, `import "layeh.com/radius/dictionary"`)
 	fmt.Fprintln(w, "")
 	fmt.Fprintf(w, "var IncludedDictionary = %#v\n", dict)
-}
-
-func MergeDict(d1, d2 *dictionary.Dictionary) error {
-	// TODO: vendor merging
-
-	// Duplicate checks
-	for _, attr := range d2.Attributes {
-		existingAttr := dictionary.AttributeByName(d1.Attributes, attr.Name)
-		if existingAttr == nil {
-			existingAttr = dictionary.AttributeByName(d1.Attributes, attr.OID)
-		}
-
-		if existingAttr != nil {
-			return fmt.Errorf("duplicate attribute %s (%s)", attr.Name, attr.OID)
-		}
-	}
-
-	// Merge
-	d1.Attributes = append(d1.Attributes, d2.Attributes...)
-	d1.Values = append(d1.Values, d2.Values...)
-
-	return nil
 }
