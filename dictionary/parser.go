@@ -75,9 +75,9 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 
 			var existing *Attribute
 			if vendorBlock == nil {
-				existing = dict.AttributeByName(attr.Name)
+				existing = AttributeByName(dict.Attributes, attr.Name)
 			} else {
-				existing = vendorBlock.AttributeByName(attr.Name)
+				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
 			}
 			if existing != nil {
 				return &ParseError{
@@ -123,7 +123,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				}
 			}
 
-			if existing := dict.vendorByNameOrNumber(vendor.Name, vendor.Number); existing != nil {
+			if existing := vendorByNameOrNumber(dict.Vendors, vendor.Name, vendor.Number); existing != nil {
 				return &ParseError{
 					Inner: &DuplicateVendorError{
 						Vendor: vendor,
@@ -146,7 +146,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				}
 			}
 
-			vendor := dict.VendorByName(fields[1])
+			vendor := VendorByName(dict.Vendors, fields[1])
 			if vendor == nil {
 				return &ParseError{
 					Inner: &UnknownVendorError{

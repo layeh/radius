@@ -61,9 +61,9 @@ func MergeDict(d1, d2 *dictionary.Dictionary) error {
 
 	// Duplicate checks
 	for _, attr := range d2.Attributes {
-		existingAttr := d1.AttributeByName(attr.Name)
+		existingAttr := dictionary.AttributeByName(d1.Attributes, attr.Name)
 		if existingAttr == nil {
-			existingAttr = d1.AttributeByOID(attr.OID)
+			existingAttr = dictionary.AttributeByName(d1.Attributes, attr.OID)
 		}
 
 		if existingAttr != nil {

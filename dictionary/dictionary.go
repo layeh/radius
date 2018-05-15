@@ -44,61 +44,6 @@ func (d *Dictionary) GoString() string {
 	return b.String()
 }
 
-func (d *Dictionary) AttributeByName(name string) *Attribute {
-	for _, attr := range d.Attributes {
-		if attr.Name == name {
-			return attr
-		}
-	}
-	return nil
-}
-
-func (d *Dictionary) AttributeByOID(oid string) *Attribute {
-	for _, attr := range d.Attributes {
-		if attr.OID == oid {
-			return attr
-		}
-	}
-	return nil
-}
-
-func (d *Dictionary) ValuesByAttribute(attribute string) []*Value {
-	var values []*Value
-	for _, value := range d.Values {
-		if value.Attribute == attribute {
-			values = append(values, value)
-		}
-	}
-	return values
-}
-
-func (d *Dictionary) VendorByName(name string) *Vendor {
-	for _, vendor := range d.Vendors {
-		if vendor.Name == name {
-			return vendor
-		}
-	}
-	return nil
-}
-
-func (d *Dictionary) VendorByNumber(number int) *Vendor {
-	for _, vendor := range d.Vendors {
-		if vendor.Number == number {
-			return vendor
-		}
-	}
-	return nil
-}
-
-func (d *Dictionary) vendorByNameOrNumber(name string, number int) *Vendor {
-	for _, vendor := range d.Vendors {
-		if vendor.Name == name || vendor.Number == number {
-			return vendor
-		}
-	}
-	return nil
-}
-
 type AttributeType int
 
 const (
@@ -224,13 +169,4 @@ func (v *Vendor) GoString() string {
 
 	b.WriteString("}")
 	return b.String()
-}
-
-func (v *Vendor) AttributeByName(name string) *Attribute {
-	for _, attr := range v.Attributes {
-		if attr.Name == name {
-			return attr
-		}
-	}
-	return nil
 }

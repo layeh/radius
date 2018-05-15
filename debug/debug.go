@@ -42,7 +42,7 @@ func Dump(w io.Writer, c *Config, p *radius.Packet) {
 		attrsTypeIntStr := strconv.Itoa(int(attrsType))
 		var attrTypeString string
 		var stringerFunc func(value []byte) string
-		dictAttr := c.Dictionary.AttributeByOID(attrsTypeIntStr)
+		dictAttr := dictionary.AttributeByOID(c.Dictionary.Attributes, attrsTypeIntStr)
 		if dictAttr != nil {
 			attrTypeString = dictAttr.Name
 			switch dictAttr.Type {
@@ -73,7 +73,7 @@ func Dump(w io.Writer, c *Config, p *radius.Packet) {
 						intVal := int(binary.BigEndian.Uint32(value))
 						if dictAttr != nil {
 							var matchedNames []string
-							for _, value := range c.Dictionary.ValuesByAttribute(dictAttr.Name) {
+							for _, value := range dictionary.ValuesByAttribute(c.Dictionary.Values, dictAttr.Name) {
 								if value.Number == intVal {
 									matchedNames = append(matchedNames, value.Name)
 								}
