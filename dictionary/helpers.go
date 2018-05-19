@@ -3,9 +3,6 @@ package dictionary
 import "fmt"
 
 func Merge(d1, d2 *Dictionary) (*Dictionary, error) {
-	// TODO: correct vendor merging
-
-	// Duplicate checks
 	for _, attr := range d2.Attributes {
 		existingAttr := AttributeByName(d1.Attributes, attr.Name)
 		if existingAttr == nil {
@@ -17,21 +14,56 @@ func Merge(d1, d2 *Dictionary) (*Dictionary, error) {
 		}
 	}
 
-	// Merge
-	newDict := &Dictionary{
-		Attributes: make([]*Attribute, 0, len(d1.Attributes)+len(d2.Attributes)),
-		Values:     make([]*Value, 0, len(d1.Values)+len(d2.Values)),
-		Vendors:    make([]*Vendor, 0, len(d1.Vendors)+len(d2.Vendors)), // TODO: incorrect
+	for _, vendor := range d2.Vendors {
+		existingVendorByName := VendorByName(d1.Vendors, vendor.Name)
+		existingVendorByNumber := VendorByNumber(d1.Vendors, vendor.Number)
+		if existingVendorByName != existingVendorByNumber {
+			// TODO: make sure vendor flags, etc. match?
+			return nil, fmt.Errorf("conflicting vendor: %s (%d)", vendor.Name, vendor.Number)
+		}
+		if existingVendorByName == nil {
+			continue
+		}
+
+		for _, attr := range vendor.Attributes {
+			existingAttr := AttributeByName(existingVendorByName.Attributes, attr.Name)
+			if existingAttr == nil {
+				existingAttr = AttributeByOID(existingVendorByName.Attributes, attr.OID)
+			}
+
+			if existingAttr != nil {
+				return nil, fmt.Errorf("duplicate vendor attrbute %s (%s)", attr.Name, attr.OID)
+			}
+		}
 	}
 
-	newDict.Attributes = append(newDict.Attributes, d1.Attributes...)
-	newDict.Attributes = append(newDict.Attributes, d2.Attributes...)
+	newDict := new(Dictionary)
 
-	newDict.Values = append(newDict.Values, d1.Values...)
-	newDict.Values = append(newDict.Values, d2.Values...)
+	if size := len(d1.Attributes) + len(d2.Attributes); size > 0 {
+		newDict.Attributes = make([]*Attribute, 0, len(d1.Attributes)+len(d2.Attributes))
+		newDict.Attributes = append(newDict.Attributes, d1.Attributes...)
+		newDict.Attributes = append(newDict.Attributes, d2.Attributes...)
+	}
 
-	newDict.Vendors = append(newDict.Vendors, d1.Vendors...)
-	newDict.Vendors = append(newDict.Vendors, d2.Vendors...)
+	if size := len(d1.Values) + len(d2.Values); size > 0 {
+		newDict.Values = make([]*Value, 0, len(d1.Values)+len(d2.Values))
+		newDict.Values = append(newDict.Values, d1.Values...)
+		newDict.Values = append(newDict.Values, d2.Values...)
+	}
+
+	if size := len(d1.Vendors) + len(d2.Vendors); size > 0 {
+		newDict.Vendors = make([]*Vendor, 0, len(d1.Vendors)+len(d2.Vendors))
+		newDict.Vendors = append(newDict.Vendors, d1.Vendors...)
+		for _, vendor := range d2.Vendors {
+			existingVendor := VendorByNumber(newDict.Vendors, vendor.Number)
+			if existingVendor != nil {
+				existingVendor.Attributes = append(existingVendor.Attributes, vendor.Attributes...)
+				existingVendor.Values = append(existingVendor.Values, vendor.Values...)
+			} else {
+				newDict.Vendors = append(newDict.Vendors, vendor)
+			}
+		}
+	}
 
 	return newDict, nil
 }
