@@ -39,92 +39,83 @@ func Dump(w io.Writer, c *Config, p *radius.Packet) {
 			continue
 		}
 
-		attrsTypeIntStr := strconv.Itoa(int(attrsType))
-		var attrTypeString string
-		var stringerFunc func(value []byte) string
-		dictAttr := dictionary.AttributeByOID(c.Dictionary.Attributes, attrsTypeIntStr)
-		if dictAttr != nil {
-			attrTypeString = dictAttr.Name
-			switch dictAttr.Type {
-			case dictionary.AttributeString, dictionary.AttributeOctets:
-				stringerFunc = func(value []byte) string {
+		for _, attr := range attrs {
+
+			var attrTypeStr string
+			var attrsTypeIntStr string
+			var attrStr string
+
+			searchAttrs := c.Dictionary.Attributes
+			searchValues := c.Dictionary.Values
+
+			attrsTypeIntStr = strconv.Itoa(int(attrsType))
+
+			dictAttr := dictionary.AttributeByOID(searchAttrs, attrsTypeIntStr)
+			if dictAttr != nil {
+				attrTypeStr = dictAttr.Name
+				switch dictAttr.Type {
+				case dictionary.AttributeString, dictionary.AttributeOctets:
 					if dictAttr != nil && dictAttr.FlagEncrypt != nil && *dictAttr.FlagEncrypt == 1 {
-						decryptedValue, err := radius.UserPassword(radius.Attribute(value), p.Secret, p.Authenticator[:])
-						if err != nil {
-							return "0x" + hex.EncodeToString(value)
+						decryptedValue, err := radius.UserPassword(radius.Attribute(attr), p.Secret, p.Authenticator[:])
+						if err == nil {
+							attrStr = fmt.Sprintf("%q", decryptedValue)
+							break
 						}
-						value = decryptedValue
 					}
-					return fmt.Sprintf("%q", value)
-				}
+					attrStr = fmt.Sprintf("%q", attr)
 
-			case dictionary.AttributeDate:
-				stringerFunc = func(value []byte) string {
-					if len(value) != 4 {
-						return "0x" + hex.EncodeToString(value)
+				case dictionary.AttributeDate:
+					if len(attr) == 4 {
+						t := time.Unix(int64(binary.BigEndian.Uint32(attr)), 0).UTC()
+						attrStr = t.Format(time.RFC3339)
 					}
-					return time.Unix(int64(binary.BigEndian.Uint32(value)), 0).UTC().Format(time.RFC3339)
-				}
 
-			case dictionary.AttributeInteger:
-				stringerFunc = func(value []byte) string {
-					switch len(value) {
+				case dictionary.AttributeInteger:
+					switch len(attr) {
 					case 4:
-						intVal := int(binary.BigEndian.Uint32(value))
+						intVal := int(binary.BigEndian.Uint32(attr))
 						if dictAttr != nil {
 							var matchedNames []string
-							for _, value := range dictionary.ValuesByAttribute(c.Dictionary.Values, dictAttr.Name) {
+							for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
 								if value.Number == intVal {
 									matchedNames = append(matchedNames, value.Name)
 								}
 							}
 							if len(matchedNames) > 0 {
 								sort.Stable(sort.StringSlice(matchedNames))
-								return strings.Join(matchedNames, " / ")
+								attrStr = strings.Join(matchedNames, " / ")
+								break
 							}
 						}
-						return strconv.Itoa(intVal)
+						attrStr = strconv.Itoa(intVal)
 					case 8:
-						return strconv.Itoa(int(binary.BigEndian.Uint64(value)))
+						attrStr = strconv.Itoa(int(binary.BigEndian.Uint64(attr)))
 					}
-					return "0x" + hex.EncodeToString(value)
-				}
 
-			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr:
-				stringerFunc = func(value []byte) string {
-					switch len(value) {
+				case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr:
+					switch len(attr) {
 					case net.IPv4len, net.IPv6len:
-						return net.IP(value).String()
+						attrStr = net.IP(attr).String()
 					}
-					return "0x" + hex.EncodeToString(value)
-				}
 
-			case dictionary.AttributeIFID:
-				stringerFunc = func(value []byte) string {
-					if len(value) == 8 {
-						return net.HardwareAddr(value).String()
+				case dictionary.AttributeIFID:
+					if len(attr) == 8 {
+						attrStr = net.HardwareAddr(attr).String()
 					}
-					return "0x" + hex.EncodeToString(value)
+
 				}
-
-			default:
-				stringerFunc = func(value []byte) string {
-					return "0x" + hex.EncodeToString(value)
-				}
-
+			} else {
+				attrTypeStr = "#" + attrsTypeIntStr
 			}
-		} else {
-			attrTypeString = "#" + attrsTypeIntStr
-			stringerFunc = func(value []byte) string {
-				return "0x" + hex.EncodeToString(value)
-			}
-		}
 
-		for _, attr := range attrs {
+			if len(attrStr) == 0 {
+				attrStr = "0x" + hex.EncodeToString(attr)
+			}
+
 			io.WriteString(w, "  ")
-			io.WriteString(w, attrTypeString)
+			io.WriteString(w, attrTypeStr)
 			io.WriteString(w, " = ")
-			io.WriteString(w, stringerFunc(attr))
+			io.WriteString(w, attrStr)
 			io.WriteString(w, "\n")
 		}
 	}
