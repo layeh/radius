@@ -120,7 +120,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 
 	vendors := make([]*dictionary.Vendor, 0, len(dict.Vendors))
 	for _, vendor := range dict.Vendors {
-		if vendor.LengthOctets != 1 || vendor.TypeOctets != 1 {
+		if vendor.GetLengthOctets() != 1 || vendor.GetTypeOctets() != 1 {
 			return nil, errors.New("dictionarygen: cannot generate code for " + vendor.Name)
 		}
 

@@ -48,10 +48,8 @@ END-VENDOR Test`,
 	expected := &dictionary.Dictionary{
 		Vendors: []*dictionary.Vendor{
 			{
-				Name:         "Test",
-				Number:       32473,
-				LengthOctets: 1,
-				TypeOctets:   1,
+				Name:   "Test",
+				Number: 32473,
 				Attributes: []*dictionary.Attribute{
 					{
 						Name: "Test-Vendor-Name",

@@ -382,8 +382,6 @@ func (p *Parser) parseVendor(f []string) (*Vendor, error) {
 	vendor := &Vendor{
 		Name:         f[1],
 		Number:       int(number),
-		TypeOctets:   1,
-		LengthOctets: 1,
 	}
 
 	if len(f) == 4 {
@@ -395,8 +393,10 @@ func (p *Parser) parseVendor(f []string) (*Vendor, error) {
 				Format: f[3],
 			}
 		}
-		vendor.TypeOctets = int(f[3][7] - '0')
-		vendor.LengthOctets = int(f[3][9] - '0')
+		vendor.TypeOctets = new(int)
+		*vendor.TypeOctets = int(f[3][7] - '0')
+		vendor.LengthOctets = new(int)
+		*vendor.LengthOctets = int(f[3][9] - '0')
 	}
 
 	return vendor, nil

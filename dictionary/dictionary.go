@@ -135,11 +135,25 @@ type Vendor struct {
 	Name   string
 	Number int
 
-	TypeOctets   int
-	LengthOctets int
+	TypeOctets   *int
+	LengthOctets *int
 
 	Attributes []*Attribute
 	Values     []*Value
+}
+
+func (v *Vendor) GetTypeOctets() int {
+	if v.TypeOctets == nil {
+		return 1
+	}
+	return *v.TypeOctets
+}
+
+func (v *Vendor) GetLengthOctets() int {
+	if v.LengthOctets == nil {
+		return 1
+	}
+	return *v.LengthOctets
 }
 
 func (v *Vendor) GoString() string {
