@@ -75,3 +75,55 @@ func TestDumpPacket(t *testing.T) {
 		})
 	}
 }
+
+func TestDumpRequest(t *testing.T) {
+	tests := []*struct {
+		Request func() *radius.Request
+		Output  []string
+	}{
+		{
+			func() *radius.Request {
+				local, _ := net.ResolveUDPAddr("udp4", "127.0.0.1:1812")
+				remote, _ := net.ResolveUDPAddr("udp4", "10.0.10.3:34521")
+
+				req := &radius.Request{
+					LocalAddr:  local,
+					RemoteAddr: remote,
+					Packet: &radius.Packet{
+						Code:       radius.CodeAccessRequest,
+						Identifier: 5,
+						Secret:     secret,
+						Attributes: make(radius.Attributes),
+					},
+				}
+
+				UserName_SetString(req.Packet, "Tim")
+				UserPassword_SetString(req.Packet, "12345")
+				NASIPAddress_Set(req.Packet, net.IPv4(10, 0, 2, 5))
+
+				return req
+			},
+			[]string{
+				`Access-Request Id 5 from 10.0.10.3:34521 to 127.0.0.1:1812`,
+				`  User-Name = "Tim"`,
+				`  User-Password = "12345"`,
+				`  NAS-IP-Address = 10.0.2.5`,
+			},
+		},
+	}
+
+	config := &debug.Config{
+		Dictionary: debug.IncludedDictionary,
+	}
+
+	for i, tt := range tests {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			req := tt.Request()
+			result := debug.DumpRequestString(config, req)
+			outputStr := strings.Join(tt.Output, "\n")
+			if result != outputStr {
+				t.Fatalf("\nexpected:\n%s\ngot:\n%s", outputStr, result)
+			}
+		})
+	}
+}

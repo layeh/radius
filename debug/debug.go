@@ -20,6 +20,14 @@ type Config struct {
 	Dictionary *dictionary.Dictionary
 }
 
+func Dump(w io.Writer, c *Config, p *radius.Packet) {
+	io.WriteString(w, p.Code.String())
+	io.WriteString(w, " Id ")
+	io.WriteString(w, strconv.Itoa(int(p.Identifier)))
+	io.WriteString(w, "\n")
+	dumpAttrs(w, c, p)
+}
+
 func DumpString(c *Config, p *radius.Packet) string {
 	var b bytes.Buffer
 	Dump(&b, c, p)
@@ -27,12 +35,26 @@ func DumpString(c *Config, p *radius.Packet) string {
 	return b.String()
 }
 
-func Dump(w io.Writer, c *Config, p *radius.Packet) {
-	io.WriteString(w, p.Code.String())
+func DumpRequest(w io.Writer, c *Config, req *radius.Request) {
+	io.WriteString(w, req.Code.String())
 	io.WriteString(w, " Id ")
-	io.WriteString(w, strconv.Itoa(int(p.Identifier)))
+	io.WriteString(w, strconv.Itoa(int(req.Identifier)))
+	io.WriteString(w, " from ")
+	io.WriteString(w, req.RemoteAddr.String())
+	io.WriteString(w, " to ")
+	io.WriteString(w, req.LocalAddr.String())
 	io.WriteString(w, "\n")
+	dumpAttrs(w, c, req.Packet)
+}
 
+func DumpRequestString(c *Config, req *radius.Request) string {
+	var b bytes.Buffer
+	DumpRequest(&b, c, req)
+	b.Truncate(b.Len() - 1) // remove trailing \n
+	return b.String()
+}
+
+func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 	for _, elem := range sortedAttributes(p.Attributes) {
 		attrsType, attrs := elem.Type, elem.Attrs
 		if len(attrs) == 0 {
