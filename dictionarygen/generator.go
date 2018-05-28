@@ -125,6 +125,10 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		}
 
 		for _, attr := range vendor.Attributes {
+			if _, ignored := ignoredAttributes[attr.Name]; ignored {
+				continue
+			}
+
 			invalid := false
 			if attr.Size != nil {
 				invalid = true
