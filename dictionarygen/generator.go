@@ -47,9 +47,6 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if attr.Size != nil {
 			invalid = true
 		}
-		if attr.FlagHasTag != nil {
-			invalid = true
-		}
 		if attr.FlagEncrypt != nil && *attr.FlagEncrypt != 1 {
 			invalid = true
 		}
@@ -131,9 +128,6 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 
 			invalid := false
 			if attr.Size != nil {
-				invalid = true
-			}
-			if attr.FlagHasTag != nil {
 				invalid = true
 			}
 			if attr.FlagEncrypt != nil && *attr.FlagEncrypt != 1 {

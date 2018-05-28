@@ -99,6 +99,10 @@ type Attribute struct {
 	FlagConcat  *bool
 }
 
+func (a *Attribute) HasTag() bool {
+	return a.FlagHasTag != nil && *a.FlagHasTag
+}
+
 func (a *Attribute) GoString() string {
 	var b bytes.Buffer
 	b.WriteString("&dictionary.Attribute{")
