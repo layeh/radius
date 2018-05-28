@@ -287,7 +287,6 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 }
 
-
 func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
 	ident := identifier(attr.Name)
 	var vendorIdent string
@@ -440,7 +439,7 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 }
 
-func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute, allValues []*dictionary.Value, vendor *dictionary.Vendor) {
+func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute, allValues []*dictionary.Value, bitsize int, vendor *dictionary.Vendor) {
 	var values []*dictionary.Value
 	for _, value := range allValues {
 		if value.Attribute == attr.Name {
@@ -459,7 +458,11 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 
 	p(w)
-	p(w, `type `, ident, ` uint32`)
+	if bitsize == 64 {
+		p(w, `type `, ident, ` uint64`)
+	} else { // 32
+		p(w, `type `, ident, ` uint32`)
+	}
 
 	// Values
 	if len(values) > 0 {
@@ -485,12 +488,16 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w, `	if str, ok := `, ident, `_Strings[a]; ok {`)
 	p(w, `		return str`)
 	p(w, `	}`)
-	p(w, `	return "`, ident, `(" + strconv.Itoa(int(a)) + ")"`)
+	p(w, `	return "`, ident, `(" + strconv.FormatUint(uint64(a), 10) + ")"`)
 	p(w, `}`)
 
 	p(w)
 	p(w, `func `, ident, `_Add(p *radius.Packet, value `, ident, `) (err error) {`)
-	p(w, `	a := radius.NewInteger(uint32(value))`)
+	if bitsize == 64 {
+		p(w, `	a := radius.NewInteger64(uint64(value))`)
+	} else { // 32
+		p(w, `	a := radius.NewInteger(uint32(value))`)
+	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, attr.OID, `, a)`)
 	} else {
@@ -507,13 +514,21 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 
 	p(w)
 	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []`, ident, `, err error) {`)
-	p(w, `	var i uint32`)
+	if bitsize == 64 {
+		p(w, `	var i uint64`)
+	} else { // 32
+		p(w, `	var i uint32`)
+	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, attr.OID, `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
-	p(w, `		i, err = radius.Integer(attr)`)
+	if bitsize == 64 {
+		p(w, `		i, err = radius.Integer64(attr)`)
+	} else { // 32
+		p(w, `		i, err = radius.Integer(attr)`)
+	}
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
@@ -533,8 +548,13 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	p(w, `	var i uint32`)
-	p(w, `	i, err = radius.Integer(a)`)
+	if bitsize == 64 {
+		p(w, `	var i uint64`)
+		p(w, `	i, err = radius.Integer64(a)`)
+	} else { // 32
+		p(w, `	var i uint32`)
+		p(w, `	i, err = radius.Integer(a)`)
+	}
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
@@ -544,7 +564,11 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 
 	p(w)
 	p(w, `func `, ident, `_Set(p *radius.Packet, value `, ident, `) (err error) {`)
-	p(w, `	a := radius.NewInteger(uint32(value))`)
+	if bitsize == 64 {
+		p(w, `	a := radius.NewInteger64(uint64(value))`)
+	} else { // 32
+		p(w, `	a := radius.NewInteger(uint32(value))`)
+	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, attr.OID, `, a)`)
 	} else {
