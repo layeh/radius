@@ -103,6 +103,35 @@ func (a *Attribute) HasTag() bool {
 	return a.FlagHasTag != nil && *a.FlagHasTag
 }
 
+func (a *Attribute) Equals(o *Attribute) bool {
+	if a == o {
+		return true
+	}
+	if a == nil || o == nil {
+		return false
+	}
+
+	if a.Name != o.Name || a.OID != o.OID || a.Type != o.Type {
+		return false
+	}
+
+	if (a.Size == nil && o.Size != nil) || (a.Size != nil && o.Size == nil) || (a.Size != nil && o.Size != nil && *a.Size != *o.Size) {
+		return false
+	}
+
+	if (a.FlagEncrypt == nil && o.FlagEncrypt != nil) || (a.FlagEncrypt != nil && o.FlagEncrypt == nil) || (a.FlagEncrypt != nil && o.FlagEncrypt != nil && *a.FlagEncrypt != *o.FlagEncrypt) {
+		return false
+	}
+	if (a.FlagHasTag == nil && o.FlagHasTag != nil) || (a.FlagHasTag != nil && o.FlagHasTag == nil) || (a.FlagHasTag != nil && o.FlagHasTag != nil && *a.FlagHasTag != *o.FlagHasTag) {
+		return false
+	}
+	if (a.FlagConcat == nil && o.FlagConcat != nil) || (a.FlagConcat != nil && o.FlagConcat == nil) || (a.FlagConcat != nil && o.FlagConcat != nil && *a.FlagConcat != *o.FlagConcat) {
+		return false
+	}
+
+	return true
+}
+
 func (a *Attribute) GoString() string {
 	var b bytes.Buffer
 	b.WriteString("&dictionary.Attribute{")

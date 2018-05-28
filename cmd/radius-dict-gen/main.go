@@ -83,6 +83,8 @@ func main() {
 
 	parser := dictionary.Parser{
 		Opener: &dictionary.FileSystemOpener{},
+
+		IgnoreIdenticalAttributes: true,
 	}
 
 	dict, err := parser.ParseFile(flag.Arg(0))

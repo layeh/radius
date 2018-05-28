@@ -33,6 +33,10 @@ func (f *FileSystemOpener) OpenFile(name string) (File, error) {
 
 type Parser struct {
 	Opener Opener
+
+	// IgnoreIdenticalAttributes specifies whether identical attributes are
+	// ignored, rather than a parse error being emitted.
+	IgnoreIdenticalAttributes bool
 }
 
 func (p *Parser) Parse(f File) (*Dictionary, error) {
@@ -79,7 +83,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 			} else {
 				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
 			}
-			if existing != nil {
+			if existing != nil && (!p.IgnoreIdenticalAttributes || !attr.Equals(existing)) {
 				return &ParseError{
 					Inner: &DuplicateAttributeError{
 						Attribute: attr,
@@ -380,8 +384,8 @@ func (p *Parser) parseVendor(f []string) (*Vendor, error) {
 	}
 
 	vendor := &Vendor{
-		Name:         f[1],
-		Number:       int(number),
+		Name:   f[1],
+		Number: int(number),
 	}
 
 	if len(f) == 4 {
