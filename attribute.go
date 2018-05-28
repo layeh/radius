@@ -268,5 +268,20 @@ func NewVendorSpecific(vendorID uint32, value Attribute) (Attribute, error) {
 	return a, nil
 }
 
+// Integer64 returns the given attribute as an integer. An error is returned if
+// the attribute is not 8 bytes long.
+func Integer64(a Attribute) (uint64, error) {
+	if len(a) != 8 {
+		return 0, errors.New("invalid length")
+	}
+	return binary.BigEndian.Uint64(a), nil
+}
+
+// NewInteger64 creates a new Attribute from the given integer value.
+func NewInteger64(i uint64) Attribute {
+	v := make([]byte, 8)
+	binary.BigEndian.PutUint64(v, i)
+	return Attribute(v)
+}
+
 // TODO: ipv6prefix
-// TODO: integer64
