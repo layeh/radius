@@ -395,7 +395,7 @@ func (a NASPort) String() string {
 	if str, ok := NASPort_Strings[a]; ok {
 		return str
 	}
-	return "NASPort(" + strconv.Itoa(int(a)) + ")"
+	return "NASPort(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func NASPort_Add(p *radius.Packet, value NASPort) (err error) {
@@ -476,7 +476,7 @@ func (a ServiceType) String() string {
 	if str, ok := ServiceType_Strings[a]; ok {
 		return str
 	}
-	return "ServiceType(" + strconv.Itoa(int(a)) + ")"
+	return "ServiceType(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ServiceType_Add(p *radius.Packet, value ServiceType) (err error) {
@@ -547,7 +547,7 @@ func (a FramedProtocol) String() string {
 	if str, ok := FramedProtocol_Strings[a]; ok {
 		return str
 	}
-	return "FramedProtocol(" + strconv.Itoa(int(a)) + ")"
+	return "FramedProtocol(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedProtocol_Add(p *radius.Packet, value FramedProtocol) (err error) {
@@ -708,7 +708,7 @@ func (a FramedRouting) String() string {
 	if str, ok := FramedRouting_Strings[a]; ok {
 		return str
 	}
-	return "FramedRouting(" + strconv.Itoa(int(a)) + ")"
+	return "FramedRouting(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedRouting_Add(p *radius.Packet, value FramedRouting) (err error) {
@@ -856,7 +856,7 @@ func (a FramedMTU) String() string {
 	if str, ok := FramedMTU_Strings[a]; ok {
 		return str
 	}
-	return "FramedMTU(" + strconv.Itoa(int(a)) + ")"
+	return "FramedMTU(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedMTU_Add(p *radius.Packet, value FramedMTU) (err error) {
@@ -923,7 +923,7 @@ func (a FramedCompression) String() string {
 	if str, ok := FramedCompression_Strings[a]; ok {
 		return str
 	}
-	return "FramedCompression(" + strconv.Itoa(int(a)) + ")"
+	return "FramedCompression(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedCompression_Add(p *radius.Packet, value FramedCompression) (err error) {
@@ -1045,7 +1045,7 @@ func (a LoginService) String() string {
 	if str, ok := LoginService_Strings[a]; ok {
 		return str
 	}
-	return "LoginService(" + strconv.Itoa(int(a)) + ")"
+	return "LoginService(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func LoginService_Add(p *radius.Packet, value LoginService) (err error) {
@@ -1110,7 +1110,7 @@ func (a LoginTCPPort) String() string {
 	if str, ok := LoginTCPPort_Strings[a]; ok {
 		return str
 	}
-	return "LoginTCPPort(" + strconv.Itoa(int(a)) + ")"
+	return "LoginTCPPort(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func LoginTCPPort_Add(p *radius.Packet, value LoginTCPPort) (err error) {
@@ -1770,7 +1770,7 @@ func (a SessionTimeout) String() string {
 	if str, ok := SessionTimeout_Strings[a]; ok {
 		return str
 	}
-	return "SessionTimeout(" + strconv.Itoa(int(a)) + ")"
+	return "SessionTimeout(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func SessionTimeout_Add(p *radius.Packet, value SessionTimeout) (err error) {
@@ -1825,7 +1825,7 @@ func (a IdleTimeout) String() string {
 	if str, ok := IdleTimeout_Strings[a]; ok {
 		return str
 	}
-	return "IdleTimeout(" + strconv.Itoa(int(a)) + ")"
+	return "IdleTimeout(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func IdleTimeout_Add(p *radius.Packet, value IdleTimeout) (err error) {
@@ -1888,7 +1888,7 @@ func (a TerminationAction) String() string {
 	if str, ok := TerminationAction_Strings[a]; ok {
 		return str
 	}
-	return "TerminationAction(" + strconv.Itoa(int(a)) + ")"
+	return "TerminationAction(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func TerminationAction_Add(p *radius.Packet, value TerminationAction) (err error) {
@@ -2594,7 +2594,7 @@ func (a FramedAppleTalkLink) String() string {
 	if str, ok := FramedAppleTalkLink_Strings[a]; ok {
 		return str
 	}
-	return "FramedAppleTalkLink(" + strconv.Itoa(int(a)) + ")"
+	return "FramedAppleTalkLink(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedAppleTalkLink_Add(p *radius.Packet, value FramedAppleTalkLink) (err error) {
@@ -2649,7 +2649,7 @@ func (a FramedAppleTalkNetwork) String() string {
 	if str, ok := FramedAppleTalkNetwork_Strings[a]; ok {
 		return str
 	}
-	return "FramedAppleTalkNetwork(" + strconv.Itoa(int(a)) + ")"
+	return "FramedAppleTalkNetwork(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func FramedAppleTalkNetwork_Add(p *radius.Packet, value FramedAppleTalkNetwork) (err error) {
@@ -2934,7 +2934,7 @@ func (a NASPortType) String() string {
 	if str, ok := NASPortType_Strings[a]; ok {
 		return str
 	}
-	return "NASPortType(" + strconv.Itoa(int(a)) + ")"
+	return "NASPortType(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func NASPortType_Add(p *radius.Packet, value NASPortType) (err error) {
@@ -2989,7 +2989,7 @@ func (a PortLimit) String() string {
 	if str, ok := PortLimit_Strings[a]; ok {
 		return str
 	}
-	return "PortLimit(" + strconv.Itoa(int(a)) + ")"
+	return "PortLimit(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func PortLimit_Add(p *radius.Packet, value PortLimit) (err error) {

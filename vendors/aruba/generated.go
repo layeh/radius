@@ -193,7 +193,7 @@ func (a ArubaUserVlan) String() string {
 	if str, ok := ArubaUserVlan_Strings[a]; ok {
 		return str
 	}
-	return "ArubaUserVlan(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaUserVlan(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaUserVlan_Add(p *radius.Packet, value ArubaUserVlan) (err error) {
@@ -246,7 +246,7 @@ func (a ArubaPrivAdminUser) String() string {
 	if str, ok := ArubaPrivAdminUser_Strings[a]; ok {
 		return str
 	}
-	return "ArubaPrivAdminUser(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaPrivAdminUser(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaPrivAdminUser_Add(p *radius.Packet, value ArubaPrivAdminUser) (err error) {
@@ -1100,7 +1100,7 @@ func (a ArubaNoDHCPFingerprint) String() string {
 	if str, ok := ArubaNoDHCPFingerprint_Strings[a]; ok {
 		return str
 	}
-	return "ArubaNoDHCPFingerprint(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaNoDHCPFingerprint(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaNoDHCPFingerprint_Add(p *radius.Packet, value ArubaNoDHCPFingerprint) (err error) {
@@ -1420,7 +1420,7 @@ func (a ArubaMdpsMaxDevices) String() string {
 	if str, ok := ArubaMdpsMaxDevices_Strings[a]; ok {
 		return str
 	}
-	return "ArubaMdpsMaxDevices(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaMdpsMaxDevices(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaMdpsMaxDevices_Add(p *radius.Packet, value ArubaMdpsMaxDevices) (err error) {
@@ -2185,7 +2185,7 @@ func (a ArubaAirGroupDeviceType) String() string {
 	if str, ok := ArubaAirGroupDeviceType_Strings[a]; ok {
 		return str
 	}
-	return "ArubaAirGroupDeviceType(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaAirGroupDeviceType(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaAirGroupDeviceType_Add(p *radius.Packet, value ArubaAirGroupDeviceType) (err error) {
@@ -3084,7 +3084,7 @@ func (a ArubaAirGroupVersion) String() string {
 	if str, ok := ArubaAirGroupVersion_Strings[a]; ok {
 		return str
 	}
-	return "ArubaAirGroupVersion(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaAirGroupVersion(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaAirGroupVersion_Add(p *radius.Packet, value ArubaAirGroupVersion) (err error) {
@@ -3137,7 +3137,7 @@ func (a ArubaAuthSurvMethod) String() string {
 	if str, ok := ArubaAuthSurvMethod_Strings[a]; ok {
 		return str
 	}
-	return "ArubaAuthSurvMethod(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaAuthSurvMethod(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaAuthSurvMethod_Add(p *radius.Packet, value ArubaAuthSurvMethod) (err error) {
@@ -3190,7 +3190,7 @@ func (a ArubaPortBounceHost) String() string {
 	if str, ok := ArubaPortBounceHost_Strings[a]; ok {
 		return str
 	}
-	return "ArubaPortBounceHost(" + strconv.Itoa(int(a)) + ")"
+	return "ArubaPortBounceHost(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ArubaPortBounceHost_Add(p *radius.Packet, value ArubaPortBounceHost) (err error) {

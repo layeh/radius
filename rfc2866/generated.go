@@ -47,7 +47,7 @@ func (a AcctStatusType) String() string {
 	if str, ok := AcctStatusType_Strings[a]; ok {
 		return str
 	}
-	return "AcctStatusType(" + strconv.Itoa(int(a)) + ")"
+	return "AcctStatusType(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctStatusType_Add(p *radius.Packet, value AcctStatusType) (err error) {
@@ -102,7 +102,7 @@ func (a AcctDelayTime) String() string {
 	if str, ok := AcctDelayTime_Strings[a]; ok {
 		return str
 	}
-	return "AcctDelayTime(" + strconv.Itoa(int(a)) + ")"
+	return "AcctDelayTime(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctDelayTime_Add(p *radius.Packet, value AcctDelayTime) (err error) {
@@ -157,7 +157,7 @@ func (a AcctInputOctets) String() string {
 	if str, ok := AcctInputOctets_Strings[a]; ok {
 		return str
 	}
-	return "AcctInputOctets(" + strconv.Itoa(int(a)) + ")"
+	return "AcctInputOctets(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctInputOctets_Add(p *radius.Packet, value AcctInputOctets) (err error) {
@@ -212,7 +212,7 @@ func (a AcctOutputOctets) String() string {
 	if str, ok := AcctOutputOctets_Strings[a]; ok {
 		return str
 	}
-	return "AcctOutputOctets(" + strconv.Itoa(int(a)) + ")"
+	return "AcctOutputOctets(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctOutputOctets_Add(p *radius.Packet, value AcctOutputOctets) (err error) {
@@ -372,7 +372,7 @@ func (a AcctAuthentic) String() string {
 	if str, ok := AcctAuthentic_Strings[a]; ok {
 		return str
 	}
-	return "AcctAuthentic(" + strconv.Itoa(int(a)) + ")"
+	return "AcctAuthentic(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctAuthentic_Add(p *radius.Packet, value AcctAuthentic) (err error) {
@@ -427,7 +427,7 @@ func (a AcctSessionTime) String() string {
 	if str, ok := AcctSessionTime_Strings[a]; ok {
 		return str
 	}
-	return "AcctSessionTime(" + strconv.Itoa(int(a)) + ")"
+	return "AcctSessionTime(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctSessionTime_Add(p *radius.Packet, value AcctSessionTime) (err error) {
@@ -482,7 +482,7 @@ func (a AcctInputPackets) String() string {
 	if str, ok := AcctInputPackets_Strings[a]; ok {
 		return str
 	}
-	return "AcctInputPackets(" + strconv.Itoa(int(a)) + ")"
+	return "AcctInputPackets(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctInputPackets_Add(p *radius.Packet, value AcctInputPackets) (err error) {
@@ -537,7 +537,7 @@ func (a AcctOutputPackets) String() string {
 	if str, ok := AcctOutputPackets_Strings[a]; ok {
 		return str
 	}
-	return "AcctOutputPackets(" + strconv.Itoa(int(a)) + ")"
+	return "AcctOutputPackets(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctOutputPackets_Add(p *radius.Packet, value AcctOutputPackets) (err error) {
@@ -632,7 +632,7 @@ func (a AcctTerminateCause) String() string {
 	if str, ok := AcctTerminateCause_Strings[a]; ok {
 		return str
 	}
-	return "AcctTerminateCause(" + strconv.Itoa(int(a)) + ")"
+	return "AcctTerminateCause(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctTerminateCause_Add(p *radius.Packet, value AcctTerminateCause) (err error) {
@@ -780,7 +780,7 @@ func (a AcctLinkCount) String() string {
 	if str, ok := AcctLinkCount_Strings[a]; ok {
 		return str
 	}
-	return "AcctLinkCount(" + strconv.Itoa(int(a)) + ")"
+	return "AcctLinkCount(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctLinkCount_Add(p *radius.Packet, value AcctLinkCount) (err error) {

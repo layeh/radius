@@ -34,7 +34,7 @@ func (a AcctInputGigawords) String() string {
 	if str, ok := AcctInputGigawords_Strings[a]; ok {
 		return str
 	}
-	return "AcctInputGigawords(" + strconv.Itoa(int(a)) + ")"
+	return "AcctInputGigawords(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctInputGigawords_Add(p *radius.Packet, value AcctInputGigawords) (err error) {
@@ -89,7 +89,7 @@ func (a AcctOutputGigawords) String() string {
 	if str, ok := AcctOutputGigawords_Strings[a]; ok {
 		return str
 	}
-	return "AcctOutputGigawords(" + strconv.Itoa(int(a)) + ")"
+	return "AcctOutputGigawords(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctOutputGigawords_Add(p *radius.Packet, value AcctOutputGigawords) (err error) {
@@ -201,7 +201,7 @@ func (a ARAPZoneAccess) String() string {
 	if str, ok := ARAPZoneAccess_Strings[a]; ok {
 		return str
 	}
-	return "ARAPZoneAccess(" + strconv.Itoa(int(a)) + ")"
+	return "ARAPZoneAccess(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ARAPZoneAccess_Add(p *radius.Packet, value ARAPZoneAccess) (err error) {
@@ -256,7 +256,7 @@ func (a ARAPSecurity) String() string {
 	if str, ok := ARAPSecurity_Strings[a]; ok {
 		return str
 	}
-	return "ARAPSecurity(" + strconv.Itoa(int(a)) + ")"
+	return "ARAPSecurity(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ARAPSecurity_Add(p *radius.Packet, value ARAPSecurity) (err error) {
@@ -404,7 +404,7 @@ func (a PasswordRetry) String() string {
 	if str, ok := PasswordRetry_Strings[a]; ok {
 		return str
 	}
-	return "PasswordRetry(" + strconv.Itoa(int(a)) + ")"
+	return "PasswordRetry(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func PasswordRetry_Add(p *radius.Packet, value PasswordRetry) (err error) {
@@ -467,7 +467,7 @@ func (a Prompt) String() string {
 	if str, ok := Prompt_Strings[a]; ok {
 		return str
 	}
-	return "Prompt(" + strconv.Itoa(int(a)) + ")"
+	return "Prompt(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func Prompt_Add(p *radius.Packet, value Prompt) (err error) {
@@ -801,7 +801,7 @@ func (a AcctInterimInterval) String() string {
 	if str, ok := AcctInterimInterval_Strings[a]; ok {
 		return str
 	}
-	return "AcctInterimInterval(" + strconv.Itoa(int(a)) + ")"
+	return "AcctInterimInterval(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctInterimInterval_Add(p *radius.Packet, value AcctInterimInterval) (err error) {

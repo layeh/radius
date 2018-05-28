@@ -64,7 +64,7 @@ func (a ErrorCause) String() string {
 	if str, ok := ErrorCause_Strings[a]; ok {
 		return str
 	}
-	return "ErrorCause(" + strconv.Itoa(int(a)) + ")"
+	return "ErrorCause(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func ErrorCause_Add(p *radius.Packet, value ErrorCause) (err error) {

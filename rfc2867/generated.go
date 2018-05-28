@@ -134,7 +134,7 @@ func (a AcctTunnelPacketsLost) String() string {
 	if str, ok := AcctTunnelPacketsLost_Strings[a]; ok {
 		return str
 	}
-	return "AcctTunnelPacketsLost(" + strconv.Itoa(int(a)) + ")"
+	return "AcctTunnelPacketsLost(" + strconv.FormatUint(uint64(a), 10) + ")"
 }
 
 func AcctTunnelPacketsLost_Add(p *radius.Packet, value AcctTunnelPacketsLost) (err error) {
