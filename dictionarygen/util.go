@@ -14,7 +14,28 @@ func p(w io.Writer, s ...string) {
 	io.WriteString(w, "\n")
 }
 
+var firstCharacterReplacements = map[byte]string{
+	'0': "Zero",
+	'1': "One",
+	'2': "Two",
+	'3': "Three",
+	'4': "Four",
+	'5': "Five",
+	'6': "Six",
+	'7': "Seven",
+	'8': "Eight",
+	'9': "Nine",
+}
+
 func identifier(name string) string {
+	if len(name) == 0 {
+		return ""
+	}
+
+	if replacement, ok := firstCharacterReplacements[name[0]]; ok {
+		name = replacement + name[1:]
+	}
+
 	fields := strings.FieldsFunc(name, func(r rune) bool {
 		return !unicode.IsNumber(r) && !unicode.IsLetter(r)
 	})
