@@ -83,7 +83,10 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 			} else {
 				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
 			}
-			if existing != nil && (!p.IgnoreIdenticalAttributes || !attr.Equals(existing)) {
+			if existing != nil {
+				if p.IgnoreIdenticalAttributes && attr.Equals(existing) {
+					break
+				}
 				return &ParseError{
 					Inner: &DuplicateAttributeError{
 						Attribute: attr,
