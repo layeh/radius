@@ -3,6 +3,7 @@ package dictionarygen
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"go/format"
 	"net"
 	"strconv"
@@ -36,6 +37,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		ignoredAttributes[attrName] = struct{}{}
 	}
 
+	attrIdents := map[string]*dictionary.Attribute{}
+
 	baseImports := map[string]struct{}{}
 
 	for _, attr := range dict.Attributes {
@@ -63,6 +66,12 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		default:
 			invalid = true
 		}
+
+		ident := identifier(attr.Name)
+		if existingAttr, ok := attrIdents[ident]; ok {
+			return nil, fmt.Errorf("dictionarygen: conflicting identifier between %s (%s) and %s (%s)", existingAttr.Name, existingAttr.OID, attr.Name, attr.OID)
+		}
+		attrIdents[ident] = attr
 
 		if invalid {
 			return nil, errors.New("dictionarygen: cannot generate code for attribute " + attr.Name)
@@ -145,6 +154,12 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			default:
 				invalid = true
 			}
+
+			ident := identifier(attr.Name)
+			if existingAttr, ok := attrIdents[ident]; ok {
+				return nil, fmt.Errorf("dictionarygen: conflicting identifier between %s (%s) and %s (%s)", existingAttr.Name, existingAttr.OID, attr.Name, attr.OID)
+			}
+			attrIdents[ident] = attr
 
 			if invalid {
 				return nil, errors.New("dictionarygen: cannot generate code for " + vendor.Name + " vendor attribute " + attr.Name)

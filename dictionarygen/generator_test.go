@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"layeh.com/radius/dictionary"
@@ -15,12 +16,17 @@ func TestTestData(t *testing.T) {
 		Name          string
 		InitParser    func(*dictionary.Parser)
 		InitGenerator func(*Generator)
+		Err           string
 	}{
 		{
 			Name: "identical-attributes",
 			InitParser: func(p *dictionary.Parser) {
 				p.IgnoreIdenticalAttributes = true
 			},
+		},
+		{
+			Name: "identifier-collision",
+			Err:  "conflicting identifier between First_Name (200) and First-Name (201)",
 		},
 	}
 
@@ -48,6 +54,12 @@ func TestTestData(t *testing.T) {
 
 			generatedCode, err := generator.Generate(dict)
 			if err != nil {
+				if tt.Err != "" {
+					if !strings.Contains(err.Error(), tt.Err) {
+						t.Fatalf("got generate error %v; expected %v", err, tt.Err)
+					}
+					return
+				}
 				t.Fatalf("could not generate dictionary code: %s", err)
 			}
 
