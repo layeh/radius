@@ -28,6 +28,9 @@ func TestTestData(t *testing.T) {
 			Name: "identifier-collision",
 			Err:  "conflicting identifier between First_Name (200) and First-Name (201)",
 		},
+		{
+			Name: "tlv-attributes",
+		},
 	}
 
 	for _, tt := range tbl {

@@ -68,4 +68,12 @@ $INCLUDE recursive_2.dict
 $INCLUDE recursive_1.dict
 `,
 	},
+	{
+		Filename: "tlv.dict",
+		Contents: `
+ATTRIBUTE  Struct-Name  4  tlv
+ATTRIBUTE  Field1       4.1 string
+ATTRIBUTE  Field2       4.2 integer64
+`,
+	},
 }
