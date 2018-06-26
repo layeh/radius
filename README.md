@@ -49,3 +49,7 @@ Included in this repository are sub-packages of generated helpers for commonly u
 ## License
 
 MPL 2.0
+
+## Author
+
+Tim Cooper (<tim.cooper@layeh.com>)
