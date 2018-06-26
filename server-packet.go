@@ -107,8 +107,8 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 		}
 	}()
 
+	var buff [MaxPacketLength]byte
 	for {
-		var buff [MaxPacketLength]byte
 		n, remoteAddr, err := conn.ReadFrom(buff[:])
 		if err != nil {
 			s.mu.Lock()
@@ -125,8 +125,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			continue
 		}
 
-		buffCopy := make([]byte, n)
-		copy(buffCopy, buff[:n])
+		buffCopy := append([]byte(nil), buff[:n]...)
 
 		atomic.AddInt32(&s.activeCount, 1)
 		go func(buff []byte, remoteAddr net.Addr) {
