@@ -8,7 +8,7 @@ import (
 	"errors"
 )
 
-// MaxPacketLength is the maximum possible wire length of a RADIUS packet.
+// MaxPacketLength is the maximum wire length of a RADIUS packet.
 const MaxPacketLength = 4095
 
 // Packet is a RADIUS packet.
