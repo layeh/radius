@@ -131,3 +131,10 @@ type NestedVendorBlockError struct {
 func (e *NestedVendorBlockError) Error() string {
 	return `invalid BEGIN-VENDOR inside vendor block`
 }
+
+type UnsupportedNestedTLVError struct {
+}
+
+func (e *UnsupportedNestedTLVError) Error() string {
+	return `Nested tlv type is not supported`
+}

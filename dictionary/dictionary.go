@@ -58,6 +58,7 @@ const (
 	AttributeInteger64
 
 	AttributeVSA
+	AttributeTLV
 	// TODO: non-standard types?
 )
 
@@ -83,14 +84,39 @@ func (t AttributeType) String() string {
 		return "integer64"
 	case AttributeVSA:
 		return "vsa"
+	case AttributeTLV:
+		return "tlv"
 	}
 	return "AttributeType(" + strconv.Itoa(int(t)) + ")"
 }
 
+func (t AttributeType) TypeDef() string {
+	switch t {
+	case AttributeString:
+		return "string"
+	case AttributeOctets:
+		return "[]byte"
+	case AttributeIPAddr:
+		return "net.IP"
+	case AttributeDate:
+		return "time.Time"
+	case AttributeInteger:
+		return "uint32"
+	case AttributeIPv6Addr:
+		return "net.IP"
+	case AttributeIFID:
+		return "net.HardwareAddr"
+	case AttributeInteger64:
+		return "uint64"
+	}
+	return ""
+}
+
 type Attribute struct {
-	Name string
-	OID  string
-	Type AttributeType
+	Name       string
+	OID        string
+	Type       AttributeType
+	Attributes []*Attribute
 
 	Size *int
 
@@ -152,6 +178,11 @@ func (a *Attribute) GoString() string {
 	}
 	if a.FlagConcat != nil {
 		fmt.Fprintf(&b, "FlagConcat:dictionary.Bool(%#v),", *(a.FlagConcat))
+	}
+	if a.Attributes != nil {
+		for _, attr := range a.Attributes {
+			fmt.Fprintf(&b, attr.GoString())
+		}
 	}
 
 	b.WriteString("}")

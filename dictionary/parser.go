@@ -68,6 +68,20 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 		fields := strings.Fields(line)
 		switch {
 		case (len(fields) == 4 || len(fields) == 5) && fields[0] == "ATTRIBUTE":
+			parentCode := ""
+			isSubAttr := false
+			codes := strings.Split(fields[2], ".")
+			if len(codes) == 2 {
+				parentCode = codes[0]
+				isSubAttr = true
+			} else if len(codes) > 2 {
+				return &ParseError{
+					Inner: &UnsupportedNestedTLVError{},
+					File:  f,
+					Line:  lineNo,
+				}
+			}
+
 			attr, err := p.parseAttribute(fields)
 			if err != nil {
 				return &ParseError{
@@ -77,12 +91,16 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				}
 			}
 
-			var existing *Attribute
-			if vendorBlock == nil {
-				existing = AttributeByName(dict.Attributes, attr.Name)
-			} else {
-				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
+			var attributesP = &dict.Attributes
+			if vendorBlock != nil {
+				attributesP = &vendorBlock.Attributes
 			}
+			if isSubAttr {
+				parentAttr := AttributeByOID(*attributesP, parentCode)
+				attributesP = &parentAttr.Attributes
+			}
+			existing := AttributeByName(*attributesP, attr.Name)
+
 			if existing != nil {
 				if p.IgnoreIdenticalAttributes && attr.Equals(existing) {
 					break
@@ -96,11 +114,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				}
 			}
 
-			if vendorBlock == nil {
-				dict.Attributes = append(dict.Attributes, attr)
-			} else {
-				vendorBlock.Attributes = append(vendorBlock.Attributes, attr)
-			}
+			*attributesP = append(*attributesP, attr)
 
 		case len(fields) == 4 && fields[0] == "VALUE":
 			value, err := p.parseValue(fields)
@@ -273,9 +287,10 @@ func (p *Parser) ParseFile(filename string) (*Dictionary, error) {
 func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 	// 4 <= len(f) <= 5
 
+	codes := strings.Split(f[2], ".")
 	attr := &Attribute{
 		Name: f[1],
-		OID:  f[2],
+		OID:  codes[len(codes)-1],
 	}
 
 	switch {
@@ -309,6 +324,8 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 		attr.Type = AttributeInteger64
 	case strings.EqualFold(f[3], "vsa"):
 		attr.Type = AttributeVSA
+	case strings.EqualFold(f[3], "tlv"):
+		attr.Type = AttributeTLV
 	default:
 		return nil, &UnknownAttributeTypeError{
 			Type: f[3],

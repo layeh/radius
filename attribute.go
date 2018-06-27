@@ -15,8 +15,20 @@ import (
 // expected.
 var ErrNoAttribute = errors.New("radius: attribute not found")
 
+// ErrTLVAttribute is returned when structure fields is missing or wrong
+var ErrTLVAttribute = errors.New("radius TLV: bad attributes")
+
+// ErrEmptyStruct is returned when trying to send empty struct as radius parameter
+var ErrEmptyStruct = errors.New("radius: Empty struct")
+
 // Attribute is a wire encoded RADIUS attribute.
 type Attribute []byte
+
+// TypedAttribute is a type-value tuple
+type TypedAttribute struct {
+	Typ  Type
+	Attr Attribute
+}
 
 // Integer returns the given attribute as an integer. An error is returned if
 // the attribute is not 4 bytes long.
@@ -308,6 +320,25 @@ func NewTag(tag byte, value Attribute) (Attribute, error) {
 	a[0] = tag
 	copy(a[1:], value)
 	return a, nil
+}
+
+// TLV return attribute with all the struct fields
+func TLV(a Attribute) (Attributes, error) {
+	attributes, err := ParseAttributes(a)
+	return attributes, err
+}
+
+// NewTLV creates a new Attribute with all the struct fields
+func NewTLV(attributes []TypedAttribute) (Attribute, error) {
+	var b []byte
+	for _, attr := range attributes {
+		size := 2 + len(attr.Attr)
+		b = append(b, byte(attr.Typ))
+		b = append(b, byte(size))
+		b = append(b, attr.Attr...)
+	}
+
+	return b, nil
 }
 
 // TODO: ipv6prefix

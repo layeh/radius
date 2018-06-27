@@ -78,6 +78,41 @@ func TestParser_recursiveinclude(t *testing.T) {
 	}
 }
 
+func TestParser_TLV(t *testing.T) {
+	parser := dict.Parser{
+		Opener: files,
+	}
+
+	d, err := parser.ParseFile("tlv.dict")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	expected := &dict.Dictionary{
+		Attributes: []*dict.Attribute{
+			{
+				Name: "Struct-Name",
+				OID:  "4",
+				Type: dict.AttributeTLV,
+				Attributes: []*dict.Attribute{
+					{
+						Name: "Field1",
+						OID:  "1",
+						Type: dict.AttributeString,
+					},
+					{
+						Name: "Field2",
+						OID:  "2",
+						Type: dict.AttributeInteger64,
+					},
+				},
+			},
+		},
+	}
+	if !reflect.DeepEqual(d, expected) {
+		t.Fatalf("got %s expected %s", dictString(d), dictString(expected))
+	}
+}
 func newIntPtr(i int) *int {
 	return &i
 }
