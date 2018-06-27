@@ -64,15 +64,12 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 		for _, attr := range attrs {
 
 			var attrTypeStr string
-			var attrsTypeIntStr string
 			var attrStr string
 
 			searchAttrs := c.Dictionary.Attributes
 			searchValues := c.Dictionary.Values
 
-			attrsTypeIntStr = strconv.Itoa(int(attrsType))
-
-			dictAttr := dictionary.AttributeByOID(searchAttrs, attrsTypeIntStr)
+			dictAttr := dictionary.AttributeByOID(searchAttrs, dictionary.OID{int(attrsType)})
 			if dictAttr != nil {
 				attrTypeStr = dictAttr.Name
 				switch dictAttr.Type {
@@ -127,7 +124,7 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 
 				}
 			} else {
-				attrTypeStr = "#" + attrsTypeIntStr
+				attrTypeStr = "#" + strconv.Itoa(int(attrsType))
 			}
 
 			if len(attrStr) == 0 {

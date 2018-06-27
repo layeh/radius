@@ -77,9 +77,9 @@ func AttributeByName(attrs []*Attribute, name string) *Attribute {
 	return nil
 }
 
-func AttributeByOID(attrs []*Attribute, oid string) *Attribute {
+func AttributeByOID(attrs []*Attribute, oid OID) *Attribute {
 	for _, attr := range attrs {
-		if attr.OID == oid {
+		if attr.OID.Equals(oid) {
 			return attr
 		}
 	}

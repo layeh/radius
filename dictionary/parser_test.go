@@ -7,6 +7,31 @@ import (
 	"testing"
 )
 
+func TestParseOID(t *testing.T) {
+	tests := []struct {
+		String string
+		OID    OID
+	}{
+		{"", nil},
+		{".", nil},
+		{"..3", nil},
+		{"1..3", nil},
+		{".1.2.3", nil},
+
+		{"1", OID{1}},
+		{"123", OID{123}},
+		{"123.1", OID{123, 1}},
+		{"123.1.55", OID{123, 1, 55}},
+	}
+
+	for _, tt := range tests {
+		out := parseOID(tt.String)
+		if !tt.OID.Equals(out) {
+			t.Errorf("input %#v: got %#v; expecting %#v", tt.String, out, tt.OID)
+		}
+	}
+}
+
 func TestParser(t *testing.T) {
 	parser := Parser{
 		Opener: files,
@@ -21,23 +46,23 @@ func TestParser(t *testing.T) {
 		Attributes: []*Attribute{
 			{
 				Name: "User-Name",
-				OID:  "1",
+				OID:  OID{1},
 				Type: AttributeString,
 			},
 			{
 				Name:        "User-Password",
-				OID:         "2",
+				OID:         OID{2},
 				Type:        AttributeOctets,
 				FlagEncrypt: newIntPtr(1),
 			},
 			{
 				Name: "Mode",
-				OID:  "127",
+				OID:  OID{127},
 				Type: AttributeInteger,
 			},
 			{
 				Name: "ARAP-Challenge-Response",
-				OID:  "84",
+				OID:  OID{84},
 				Type: AttributeOctets,
 				Size: newIntPtr(8),
 			},

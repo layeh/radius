@@ -47,6 +47,9 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		}
 
 		invalid := false
+		if len(attr.OID) != 1 {
+			invalid = true
+		}
 		if attr.Size != nil {
 			invalid = true
 		}
@@ -136,6 +139,9 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			}
 
 			invalid := false
+			if len(attr.OID) != 1 {
+				invalid = true
+			}
 			if attr.Size != nil {
 				invalid = true
 			}
@@ -225,7 +231,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		p(&w)
 		p(&w, `const (`)
 		for _, attr := range attrs {
-			p(&w, `	`, identifier(attr.Name), `_Type radius.Type = `, attr.OID)
+			p(&w, `	`, identifier(attr.Name), `_Type radius.Type = `, strconv.Itoa(attr.OID[0]))
 		}
 		p(&w, `)`)
 	}

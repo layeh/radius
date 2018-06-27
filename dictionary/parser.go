@@ -270,12 +270,41 @@ func (p *Parser) ParseFile(filename string) (*Dictionary, error) {
 	return p.Parse(f)
 }
 
+func parseOID(s string) OID {
+	var o OID
+	for i, ch := range s {
+		switch ch {
+		case '.':
+			if i == 0 || len(s) == i+1 || s[i+1] < '0' || s[i+1] > '9' {
+				return nil
+			}
+			o = append(o, 0)
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			if i == 0 {
+				o = append(o, 0)
+			}
+			o[len(o)-1] *= 10
+			o[len(o)-1] += int(ch - '0')
+		default:
+			return nil
+		}
+	}
+	return o
+}
+
 func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 	// 4 <= len(f) <= 5
 
+	oid := parseOID(f[2])
+	if len(oid) == 0 {
+		return nil, &InvalidOIDError{
+			OID: f[2],
+		}
+	}
+
 	attr := &Attribute{
 		Name: f[1],
-		OID:  f[2],
+		OID:  oid,
 	}
 
 	switch {

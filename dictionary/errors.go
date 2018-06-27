@@ -131,3 +131,11 @@ type NestedVendorBlockError struct {
 func (e *NestedVendorBlockError) Error() string {
 	return `invalid BEGIN-VENDOR inside vendor block`
 }
+
+type InvalidOIDError struct {
+	OID string
+}
+
+func (e *InvalidOIDError) Error() string {
+	return `invalid OID "` + e.OID + `"`
+}

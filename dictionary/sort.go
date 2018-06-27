@@ -2,7 +2,6 @@ package dictionary
 
 import (
 	"sort"
-	"strconv"
 )
 
 func SortAttributes(attrs []*Attribute) {
@@ -14,9 +13,25 @@ type sortAttributes []*Attribute
 func (s sortAttributes) Len() int { return len(s) }
 
 func (s sortAttributes) Less(i, j int) bool {
-	iOID, _ := strconv.Atoi(s[i].OID)
-	jOID, _ := strconv.Atoi(s[j].OID)
-	return iOID < jOID
+	a := s[i].OID
+	b := s[i].OID
+
+	for len(a) > 0 || len(b) > 0 {
+		var x, y int
+		if len(a) > 0 {
+			x = a[0]
+			a = a[1:]
+		}
+		if len(b) > 0 {
+			y = b[0]
+			b = b[1:]
+		}
+		if x != y {
+			return x < y
+		}
+	}
+
+	return false
 }
 
 func (s sortAttributes) Swap(i, j int) { s[i], s[j] = s[j], s[i] }

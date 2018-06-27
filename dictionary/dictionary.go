@@ -87,9 +87,39 @@ func (t AttributeType) String() string {
 	return "AttributeType(" + strconv.Itoa(int(t)) + ")"
 }
 
+type OID []int
+
+func (o OID) Equals(other OID) bool {
+	if len(o) != len(other) {
+		return false
+	}
+	for i, n := 0, len(o); i < n; i++ {
+		if o[i] != other[i] {
+			return false
+		}
+	}
+	return true
+}
+
+func (o OID) String() string {
+	if len(o) == 0 {
+		return ""
+	}
+
+	const maximumIntLength = 3
+	b := make([]byte, 0, len(o)*(maximumIntLength+1)-1)
+	for i, e := range o {
+		if i > 0 {
+			b = append(b, '.')
+		}
+		b = strconv.AppendInt(b, int64(e), 10)
+	}
+	return string(b)
+}
+
 type Attribute struct {
 	Name string
-	OID  string
+	OID  OID
 	Type AttributeType
 
 	Size *int
@@ -111,7 +141,7 @@ func (a *Attribute) Equals(o *Attribute) bool {
 		return false
 	}
 
-	if a.Name != o.Name || a.OID != o.OID || a.Type != o.Type {
+	if a.Name != o.Name || !a.OID.Equals(o.OID) || a.Type != o.Type {
 		return false
 	}
 
