@@ -1,10 +1,8 @@
-package dictionary_test
+package dictionary
 
 import (
 	"reflect"
 	"testing"
-
-	"layeh.com/radius/dictionary"
 )
 
 func TestMerge(t *testing.T) {
@@ -27,7 +25,7 @@ END-VENDOR Test`,
 		},
 	}
 
-	parser := &dictionary.Parser{
+	parser := &Parser{
 		Opener: MemoryOpener(files),
 	}
 	d1, err := parser.ParseFile("dict1")
@@ -40,25 +38,25 @@ END-VENDOR Test`,
 		t.Fatal(err)
 	}
 
-	merged, err := dictionary.Merge(d1, d2)
+	merged, err := Merge(d1, d2)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	expected := &dictionary.Dictionary{
-		Vendors: []*dictionary.Vendor{
+	expected := &Dictionary{
+		Vendors: []*Vendor{
 			{
 				Name:   "Test",
 				Number: 32473,
-				Attributes: []*dictionary.Attribute{
+				Attributes: []*Attribute{
 					{
 						Name: "Test-Vendor-Name",
-						Type: dictionary.AttributeString,
+						Type: AttributeString,
 						OID:  "5",
 					},
 					{
 						Name: "Test-Vendor-Int",
-						Type: dictionary.AttributeInteger,
+						Type: AttributeInteger,
 						OID:  "10",
 					},
 				},

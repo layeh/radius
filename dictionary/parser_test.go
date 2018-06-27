@@ -1,16 +1,14 @@
-package dictionary_test
+package dictionary
 
 import (
 	"bytes"
 	"fmt"
 	"reflect"
 	"testing"
-
-	dict "layeh.com/radius/dictionary"
 )
 
 func TestParser(t *testing.T) {
-	parser := dict.Parser{
+	parser := Parser{
 		Opener: files,
 	}
 
@@ -19,32 +17,32 @@ func TestParser(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	expected := &dict.Dictionary{
-		Attributes: []*dict.Attribute{
+	expected := &Dictionary{
+		Attributes: []*Attribute{
 			{
 				Name: "User-Name",
 				OID:  "1",
-				Type: dict.AttributeString,
+				Type: AttributeString,
 			},
 			{
 				Name:        "User-Password",
 				OID:         "2",
-				Type:        dict.AttributeOctets,
+				Type:        AttributeOctets,
 				FlagEncrypt: newIntPtr(1),
 			},
 			{
 				Name: "Mode",
 				OID:  "127",
-				Type: dict.AttributeInteger,
+				Type: AttributeInteger,
 			},
 			{
 				Name: "ARAP-Challenge-Response",
 				OID:  "84",
-				Type: dict.AttributeOctets,
+				Type: AttributeOctets,
 				Size: newIntPtr(8),
 			},
 		},
-		Values: []*dict.Value{
+		Values: []*Value{
 			{
 				Attribute: "Mode",
 				Name:      "Full",
@@ -64,16 +62,16 @@ func TestParser(t *testing.T) {
 }
 
 func TestParser_recursiveinclude(t *testing.T) {
-	parser := dict.Parser{
+	parser := Parser{
 		Opener: files,
 	}
 
 	d, err := parser.ParseFile("recursive_1.dict")
-	pErr, ok := err.(*dict.ParseError)
+	pErr, ok := err.(*ParseError)
 	if !ok || pErr == nil || d != nil {
 		t.Fatalf("got %v, expected *ParseError", pErr)
 	}
-	if _, ok := pErr.Inner.(*dict.RecursiveIncludeError); !ok {
+	if _, ok := pErr.Inner.(*RecursiveIncludeError); !ok {
 		t.Fatalf("got %v, expected *RecursiveIncludeError", pErr.Inner)
 	}
 }
@@ -82,7 +80,7 @@ func newIntPtr(i int) *int {
 	return &i
 }
 
-func dictString(d *dict.Dictionary) string {
+func dictString(d *Dictionary) string {
 	var b bytes.Buffer
 	b.WriteString("dictionary.Dictionary\n")
 

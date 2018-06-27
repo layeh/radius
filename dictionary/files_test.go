@@ -1,11 +1,9 @@
-package dictionary_test
+package dictionary
 
 import (
 	"errors"
 	"io"
 	"strings"
-
-	dict "layeh.com/radius/dictionary"
 )
 
 type MemoryFile struct {
@@ -32,7 +30,7 @@ func (m *MemoryFile) Name() string {
 
 type MemoryOpener []MemoryFile
 
-func (m MemoryOpener) OpenFile(name string) (dict.File, error) {
+func (m MemoryOpener) OpenFile(name string) (File, error) {
 	for _, file := range m {
 		if file.Filename == name {
 			return &file, nil
