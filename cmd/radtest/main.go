@@ -51,12 +51,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	var status string
-	if received.Code == radius.CodeAccessAccept {
-		status = "Accept"
-	} else {
-		status = "Reject"
-	}
+	status := received.Code.String()
 	if msg, err := ReplyMessage_LookupString(received); err == nil {
 		status += " (" + msg + ")"
 	}
