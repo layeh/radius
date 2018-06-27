@@ -310,4 +310,28 @@ func NewTag(tag byte, value Attribute) (Attribute, error) {
 	return a, nil
 }
 
+// TLV returns a components of a Type-Length-Value (TLV) attribute.
+func TLV(a Attribute) (tlvType byte, typValue Attribute, err error) {
+	if len(a) < 3 || len(a) > 255 || int(a[1]) != len(a) {
+		err = errors.New("invalid length")
+		return
+	}
+	tlvType = a[0]
+	typValue = make(Attribute, len(a)-2)
+	copy(typValue, a[2:])
+	return
+}
+
+// NewTLV returns a new TLV attribute.
+func NewTLV(tlvType byte, tlvValue Attribute) (Attribute, error) {
+	if len(tlvValue) < 1 || len(tlvValue) > 253 {
+		return nil, errors.New("invalid value length")
+	}
+	a := make(Attribute, 1+1+len(tlvValue))
+	a[0] = tlvType
+	a[1] = byte(1 + 1 + len(tlvValue))
+	copy(a, tlvValue)
+	return a, nil
+}
+
 // TODO: ipv6prefix
