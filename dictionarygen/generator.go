@@ -50,10 +50,10 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if len(attr.OID) != 1 {
 			invalid = true
 		}
-		if attr.Size != nil {
+		if attr.Size.Valid {
 			invalid = true
 		}
-		if attr.FlagEncrypt != nil && *attr.FlagEncrypt != 1 {
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != 1 {
 			invalid = true
 		}
 		switch attr.Type {
@@ -142,10 +142,10 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			if len(attr.OID) != 1 {
 				invalid = true
 			}
-			if attr.Size != nil {
+			if attr.Size.Valid {
 				invalid = true
 			}
-			if attr.FlagEncrypt != nil && *attr.FlagEncrypt != 1 {
+			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != 1 {
 				invalid = true
 			}
 			switch attr.Type {

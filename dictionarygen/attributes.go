@@ -22,7 +22,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value []byte) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
@@ -51,7 +51,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_AddString(p *radius.Packet, tag byte, value string) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
@@ -118,7 +118,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `		i = radius.Bytes(attr)`)
@@ -155,7 +155,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `		var up radius.Attribute`)
 		p(w, `		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
 		p(w, `		if err == nil {`)
@@ -196,7 +196,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	value = radius.Bytes(a)`)
@@ -225,7 +225,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	var b []byte`)
 		p(w, `	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
 		p(w, `	if err == nil {`)
@@ -244,7 +244,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value []byte) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
@@ -273,7 +273,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_SetString(p *radius.Packet, tag byte, value string) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt != nil && *attr.FlagEncrypt == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)

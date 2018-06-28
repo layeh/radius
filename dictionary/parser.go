@@ -319,8 +319,10 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 				Type: f[3],
 			}
 		}
-		attr.Size = new(int)
-		*attr.Size = int(size)
+		attr.Size = IntFlag{
+			Valid: true,
+			Int:   int(size),
+		}
 		attr.Type = AttributeOctets
 	case strings.EqualFold(f[3], "ipaddr"):
 		attr.Type = AttributeIPAddr
@@ -349,7 +351,7 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 		for _, f := range flags {
 			switch {
 			case strings.HasPrefix(f, "encrypt="):
-				if attr.FlagEncrypt != nil {
+				if attr.FlagEncrypt.Valid {
 					return nil, &DuplicateAttributeFlagError{
 						Flag: f,
 					}
@@ -361,24 +363,30 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 						Type: encryptTypeStr,
 					}
 				}
-				attr.FlagEncrypt = new(int)
-				*attr.FlagEncrypt = int(encryptType)
+				attr.FlagEncrypt = IntFlag{
+					Valid: true,
+					Int:   int(encryptType),
+				}
 			case f == "has_tag":
-				if attr.FlagHasTag != nil {
+				if attr.FlagHasTag.Valid {
 					return nil, &DuplicateAttributeFlagError{
 						Flag: f,
 					}
 				}
-				attr.FlagHasTag = new(bool)
-				*attr.FlagHasTag = true
+				attr.FlagHasTag = BoolFlag{
+					Valid: true,
+					Bool:  true,
+				}
 			case f == "concat":
-				if attr.FlagConcat != nil {
+				if attr.FlagConcat.Valid {
 					return nil, &DuplicateAttributeFlagError{
 						Flag: f,
 					}
 				}
-				attr.FlagConcat = new(bool)
-				*attr.FlagConcat = true
+				attr.FlagConcat = BoolFlag{
+					Valid: true,
+					Bool:  true,
+				}
 			default:
 				return nil, &UnknownAttributeFlagError{
 					Flag: f,

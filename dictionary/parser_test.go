@@ -53,7 +53,7 @@ func TestParser(t *testing.T) {
 				Name:        "User-Password",
 				OID:         OID{2},
 				Type:        AttributeOctets,
-				FlagEncrypt: newIntPtr(1),
+				FlagEncrypt: IntFlag{1, true},
 			},
 			{
 				Name: "Mode",
@@ -64,7 +64,7 @@ func TestParser(t *testing.T) {
 				Name: "ARAP-Challenge-Response",
 				OID:  OID{84},
 				Type: AttributeOctets,
-				Size: newIntPtr(8),
+				Size: IntFlag{8, true},
 			},
 		},
 		Values: []*Value{
@@ -99,10 +99,6 @@ func TestParser_recursiveinclude(t *testing.T) {
 	if _, ok := pErr.Inner.(*RecursiveIncludeError); !ok {
 		t.Fatalf("got %v, expected *RecursiveIncludeError", pErr.Inner)
 	}
-}
-
-func newIntPtr(i int) *int {
-	return &i
 }
 
 func dictString(d *Dictionary) string {

@@ -122,15 +122,15 @@ type Attribute struct {
 	OID  OID
 	Type AttributeType
 
-	Size *int
+	Size IntFlag
 
-	FlagEncrypt *int
-	FlagHasTag  *bool
-	FlagConcat  *bool
+	FlagEncrypt IntFlag
+	FlagHasTag  BoolFlag
+	FlagConcat  BoolFlag
 }
 
 func (a *Attribute) HasTag() bool {
-	return a.FlagHasTag != nil && *a.FlagHasTag
+	return a.FlagHasTag.Valid && a.FlagHasTag.Bool
 }
 
 func (a *Attribute) Equals(o *Attribute) bool {
@@ -145,17 +145,11 @@ func (a *Attribute) Equals(o *Attribute) bool {
 		return false
 	}
 
-	if (a.Size == nil && o.Size != nil) || (a.Size != nil && o.Size == nil) || (a.Size != nil && o.Size != nil && *a.Size != *o.Size) {
+	if a.Size != o.Size {
 		return false
 	}
 
-	if (a.FlagEncrypt == nil && o.FlagEncrypt != nil) || (a.FlagEncrypt != nil && o.FlagEncrypt == nil) || (a.FlagEncrypt != nil && o.FlagEncrypt != nil && *a.FlagEncrypt != *o.FlagEncrypt) {
-		return false
-	}
-	if (a.FlagHasTag == nil && o.FlagHasTag != nil) || (a.FlagHasTag != nil && o.FlagHasTag == nil) || (a.FlagHasTag != nil && o.FlagHasTag != nil && *a.FlagHasTag != *o.FlagHasTag) {
-		return false
-	}
-	if (a.FlagConcat == nil && o.FlagConcat != nil) || (a.FlagConcat != nil && o.FlagConcat == nil) || (a.FlagConcat != nil && o.FlagConcat != nil && *a.FlagConcat != *o.FlagConcat) {
+	if a.FlagEncrypt != o.FlagEncrypt || a.FlagHasTag != o.FlagHasTag || a.FlagConcat != o.FlagConcat {
 		return false
 	}
 
@@ -170,18 +164,18 @@ func (a *Attribute) GoString() string {
 	fmt.Fprintf(&b, "OID:%#v,", a.OID)
 	fmt.Fprintf(&b, "Type:%#v,", a.Type)
 
-	if a.Size != nil {
-		fmt.Fprintf(&b, "Size:dictionary.Int(%#v),", *(a.Size))
+	if a.Size.Valid {
+		fmt.Fprintf(&b, "Size:%#v,", a.Size)
 	}
 
-	if a.FlagEncrypt != nil {
-		fmt.Fprintf(&b, "FlagEncrypt:dictionary.Int(%#v),", *(a.FlagEncrypt))
+	if a.FlagEncrypt.Valid {
+		fmt.Fprintf(&b, "FlagEncrypt:%#v,", a.FlagEncrypt)
 	}
-	if a.FlagHasTag != nil {
-		fmt.Fprintf(&b, "FlagHasTag:dictionary.Bool(%#v),", *(a.FlagHasTag))
+	if a.FlagHasTag.Valid {
+		fmt.Fprintf(&b, "FlagHasTag:%#v,", a.FlagHasTag)
 	}
-	if a.FlagConcat != nil {
-		fmt.Fprintf(&b, "FlagConcat:dictionary.Bool(%#v),", *(a.FlagConcat))
+	if a.FlagConcat.Valid {
+		fmt.Fprintf(&b, "FlagConcat:%#v,", a.FlagConcat)
 	}
 
 	b.WriteString("}")
@@ -246,4 +240,14 @@ func (v *Vendor) GoString() string {
 
 	b.WriteString("}")
 	return b.String()
+}
+
+type IntFlag struct {
+	Int   int
+	Valid bool
+}
+
+type BoolFlag struct {
+	Bool  bool
+	Valid bool
 }
