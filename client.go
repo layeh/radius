@@ -61,30 +61,30 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	}
 	defer conn.Close()
 
-	if deadline, deadlineSet := ctx.Deadline(); deadlineSet {
-		conn.SetDeadline(deadline)
-	}
-
 	conn.Write(wire)
 
+	var cancel context.CancelFunc
+	ctx, cancel = context.WithCancel(ctx)
+	defer cancel()
+
+	var retryTimer <-chan time.Time
 	if c.Retry > 0 {
 		retry := time.NewTicker(c.Retry)
 		defer retry.Stop()
-		end := make(chan struct{})
-		defer close(end)
-		go func() {
-			for {
-				select {
-				case <-retry.C:
-					conn.Write(wire)
-				case <-ctx.Done():
-					return
-				case <-end:
-					return
-				}
-			}
-		}()
+		retryTimer = retry.C
 	}
+
+	go func() {
+		defer conn.Close()
+		for {
+			select {
+			case <-retryTimer:
+				conn.Write(wire)
+			case <-ctx.Done():
+				return
+			}
+		}
+	}()
 
 	var packetErrorCount int
 
@@ -92,6 +92,11 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	for {
 		n, err := conn.Read(incoming[:])
 		if err != nil {
+			select {
+			case <-ctx.Done():
+				return nil, ctx.Err()
+			default:
+			}
 			return nil, err
 		}
 

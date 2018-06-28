@@ -64,3 +64,31 @@ func TestClient_Exchange_retry(t *testing.T) {
 		t.Fatalf("response received in %d attemps; expecting 4", attempts)
 	}
 }
+
+func TestClient_Exchange_cancelled(t *testing.T) {
+	secret := []byte(`12345`)
+	handler := HandlerFunc(func(w ResponseWriter, r *Request) {
+		// ignore
+	})
+	server := newTestServer(handler, StaticSecretSource(secret))
+	defer server.Close()
+
+	ctx, cancel := context.WithCancel(context.Background())
+	go func() {
+		time.Sleep(time.Millisecond * 50)
+		cancel()
+	}()
+
+	req := New(CodeAccessRequest, secret)
+
+	client := Client{
+		Retry: time.Millisecond * 5,
+	}
+	resp, err := client.Exchange(ctx, req, server.Addr)
+	if resp != nil {
+		t.Fatalf("got non-nil response (%v); expected nil", resp)
+	}
+	if err != context.Canceled {
+		t.Fatalf("got error = %v; expecting context.Canceled", err)
+	}
+}
