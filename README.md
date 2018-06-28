@@ -28,11 +28,7 @@ func main() {
 		panic(err)
 	}
 
-	if response.Code == radius.CodeAccessAccept {
-		fmt.Println("Accepted")
-	} else {
-		fmt.Println("Denied")
-	}
+	fmt.Println("Code:", response.Code)
 }
 ```
 
