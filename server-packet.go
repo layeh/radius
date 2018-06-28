@@ -30,10 +30,16 @@ func (r *packetResponseWriter) Write(packet *Packet) error {
 type PacketServer struct {
 	// The address on which the server listens. Defaults to :1812.
 	Addr string
+
 	// The network on which the server listens. Defaults to udp.
-	Network      string
+	Network string
+
+	// The source from which the secret is obtained for parsing and validating
+	// the request.
 	SecretSource SecretSource
-	Handler      Handler
+
+	// Handler which is called to process the request.
+	Handler Handler
 
 	// Skip incoming packet authenticity validation.
 	// This should only be set to true for debugging purposes.
