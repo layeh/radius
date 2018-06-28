@@ -15,11 +15,11 @@ type packetResponseWriter struct {
 }
 
 func (r *packetResponseWriter) Write(packet *Packet) error {
-	raw, err := packet.Encode()
+	encoded, err := packet.Encode()
 	if err != nil {
 		return err
 	}
-	if _, err := r.conn.WriteTo(raw, r.addr); err != nil {
+	if _, err := r.conn.WriteTo(encoded, r.addr); err != nil {
 		return err
 	}
 	return nil
