@@ -106,3 +106,34 @@ func TestPacketServer_shutdown(t *testing.T) {
 		t.Fatalf("handlerState = %d; expecting 3", state)
 	}
 }
+
+func TestRequest_context(t *testing.T) {
+	req := &radius.Request{
+		Packet: &radius.Packet{},
+	}
+	if req.Context() != context.Background() {
+		t.Fatalf("req.Context() = %v; expecting context.Background()", req.Context())
+	}
+
+	req2 := req.WithContext(context.Background())
+	if req == req2 {
+		t.Fatal("expected WithContext requests to differ")
+	}
+	if req.Packet != req2.Packet {
+		t.Fatalf("expected WithContext request packets to be the same")
+	}
+
+	func() {
+		defer func() {
+			err := recover()
+			if err == nil {
+				t.Fatal("expected recover() to be non-nil")
+			}
+			errStr, ok := err.(string)
+			if !ok || errStr != "nil ctx" {
+				t.Fatalf("got recover() = %v; expected nil ctx", err)
+			}
+		}()
+		req.WithContext(nil)
+	}()
+}
