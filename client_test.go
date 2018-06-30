@@ -146,3 +146,19 @@ func TestClient_Exchange_nonauthenticPacket(t *testing.T) {
 		t.Fatalf("got error %T; expecting NonAuthenticResponseError", err)
 	}
 }
+
+func TestClient_Exchange_nilContext(t *testing.T) {
+	defer func() {
+		err := recover()
+		if err == nil {
+			t.Fatalf("got nil recover; expected value")
+		}
+		errStr, ok := err.(string)
+		if !ok || errStr != "nil context" {
+			panic(err)
+		}
+	}()
+
+	req := New(CodeAccessRequest, []byte(``))
+	Exchange(nil, req, "")
+}
