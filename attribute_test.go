@@ -1,9 +1,7 @@
-package radius_test
+package radius
 
 import (
 	"testing"
-
-	"layeh.com/radius"
 )
 
 func TestNewUserPassword_length(t *testing.T) {
@@ -23,7 +21,7 @@ func TestNewUserPassword_length(t *testing.T) {
 	ra := []byte(`0123456789abcdef`)
 
 	for _, x := range tbl {
-		attr, err := radius.NewUserPassword([]byte(x.Password), secret, ra)
+		attr, err := NewUserPassword([]byte(x.Password), secret, ra)
 		if err != nil {
 			t.Fatal(err)
 		}
