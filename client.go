@@ -60,6 +60,11 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 
 	conn, err := c.Dialer.DialContext(ctx, connNet, addr)
 	if err != nil {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		default:
+		}
 		return nil, err
 	}
 	defer conn.Close()

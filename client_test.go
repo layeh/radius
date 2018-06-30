@@ -2,7 +2,6 @@ package radius
 
 import (
 	"context"
-	"net"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -29,10 +28,8 @@ func TestClient_Exchange_expired(t *testing.T) {
 	if err == nil {
 		t.Fatal("got nil error; expected one")
 	}
-	if netErr, ok := err.(net.Error); !ok {
-		t.Fatal("err is not a net.Error")
-	} else if !netErr.Timeout() {
-		t.Fatal("got netErr.Timeout() = false; expected true")
+	if err != context.DeadlineExceeded {
+		t.Fatalf("got err = %v; expected context.DeadlineExceeded", err)
 	}
 }
 
