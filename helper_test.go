@@ -11,7 +11,7 @@ type TestServer struct {
 	serveErr error
 }
 
-func newTestServer(handler Handler, secretSource SecretSource) *TestServer {
+func NewTestServer(handler Handler, secretSource SecretSource) *TestServer {
 	addr, err := net.ResolveUDPAddr("udp", "localhost:0")
 	if err != nil {
 		panic(err)

@@ -13,7 +13,7 @@ func TestClient_Exchange_expired(t *testing.T) {
 	handler := HandlerFunc(func(w ResponseWriter, r *Request) {
 		// ignore
 	})
-	server := newTestServer(handler, StaticSecretSource([]byte(`12345`)))
+	server := NewTestServer(handler, StaticSecretSource([]byte(`12345`)))
 	defer server.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), -time.Hour)
@@ -46,7 +46,7 @@ func TestClient_Exchange_retry(t *testing.T) {
 			w.Write(r.Response(CodeAccessAccept))
 		}
 	})
-	server := newTestServer(handler, StaticSecretSource(secret))
+	server := NewTestServer(handler, StaticSecretSource(secret))
 	defer server.Close()
 
 	req := New(CodeAccessRequest, secret)
@@ -71,7 +71,7 @@ func TestClient_Exchange_cancelled(t *testing.T) {
 	handler := HandlerFunc(func(w ResponseWriter, r *Request) {
 		// ignore
 	})
-	server := newTestServer(handler, StaticSecretSource(secret))
+	server := NewTestServer(handler, StaticSecretSource(secret))
 	defer server.Close()
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -102,7 +102,7 @@ func TestClient_Exchange_invalidPacket(t *testing.T) {
 		// write bad data to client
 		server.l.WriteTo([]byte(`AAAA`), r.RemoteAddr)
 	})
-	server = newTestServer(handler, StaticSecretSource(secret))
+	server = NewTestServer(handler, StaticSecretSource(secret))
 	defer server.Close()
 
 	req := New(CodeAccessRequest, secret)
@@ -129,7 +129,7 @@ func TestClient_Exchange_nonauthenticPacket(t *testing.T) {
 		resp.Authenticator = [16]byte{}
 		w.Write(resp)
 	})
-	server = newTestServer(handler, StaticSecretSource(secret))
+	server = NewTestServer(handler, StaticSecretSource(secret))
 	defer server.Close()
 
 	req := New(CodeAccessRequest, secret)
