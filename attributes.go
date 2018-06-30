@@ -89,7 +89,7 @@ func (a Attributes) encodeTo(b []byte) {
 			continue
 		}
 		for _, attr := range attrs {
-			size := 2 + len(attr)
+			size := 1 + 1 + len(attr)
 			b[0] = byte(typ)
 			b[1] = byte(size)
 			copy(b[2:], attr)
