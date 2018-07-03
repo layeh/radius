@@ -976,42 +976,46 @@ func getTLVObject(w io.Writer, attr *dictionary.Attribute) {
 	p(w, `	}`)
 	for _, subAttr := range attr.Attributes {
 		p(w)
-		p(w, `  if val, ok := attributes[`, subType(ident, subAttr.Name), `]; ok {`)
 		if isFirst {
+			p(w, `  val, ok := attributes[`, subType(ident, subAttr.Name), `];`)
+			p(w, `	if !ok {`)
+			p(w, `    err = radius.ErrTLVAttribute`)
+			p(w, `	  return`)
+			p(w, `	}`)
 			isFirst = false
-			p(w, `    valuesLen = len(val)`)
-			p(w, `    values = make([]`, ident, `, valuesLen)`)
+			p(w, `  valuesLen = len(val)`)
+			p(w, `  values = make([]`, ident, `, valuesLen)`)
+		} else {
+			p(w, `  val, ok = attributes[`, subType(ident, subAttr.Name), `];`)
+			p(w, `	if !ok {`)
+			p(w, `    err = radius.ErrTLVAttribute`)
+			p(w, `	  return`)
+			p(w, `	}`)
 		}
-		p(w, `    if len(val) != valuesLen {`)
-		p(w, `      err = radius.ErrTLVAttribute`)
-		p(w, `    } else {`)
-		p(w, `      for i := range(val) {`)
+		p(w, `  if len(val) != valuesLen {`)
+		p(w, `    err = radius.ErrTLVAttribute`)
+		p(w, `	  return`)
+		p(w, `  }`)
+		p(w, `  for i := range(val) {`)
 		switch subAttr.Type {
 		case dictionary.AttributeString:
-			p(w, `        values[i].`, identifier(subAttr.Name), `= radius.String(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `= radius.String(val[i])`)
 		case dictionary.AttributeOctets:
-			p(w, `        values[i].`, identifier(subAttr.Name), `= radius.Bytes(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `= radius.Bytes(val[i])`)
 		case dictionary.AttributeIPAddr:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.IPAddr(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.IPAddr(val[i])`)
 		case dictionary.AttributeDate:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.Date(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.Date(val[i])`)
 		case dictionary.AttributeInteger:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.Integer(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.Integer(val[i])`)
 		case dictionary.AttributeIPv6Addr:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.IPv6Addr(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.IPv6Addr(val[i])`)
 		case dictionary.AttributeIFID:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.IFID(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.IFID(val[i])`)
 		case dictionary.AttributeInteger64:
-			p(w, `        values[i].`, identifier(subAttr.Name), `, err = radius.Integer64(val[i])`)
+			p(w, `    values[i].`, identifier(subAttr.Name), `, err = radius.Integer64(val[i])`)
 		}
-		p(w, `      }`)
-		p(w, `    }`)
-		p(w, `  } else {`)
-		p(w, `    err = radius.ErrTLVAttribute`)
-		p(w, `  }`)
-		p(w, `  if err != nil {`)
-		p(w, `    return`)
-		p(w, `  }`)
+		p(w, `  } `)
 	}
 	p(w, `  return`)
 	p(w, `}`)

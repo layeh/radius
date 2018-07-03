@@ -135,36 +135,32 @@ func setTestStruct(a radius.Attribute) (values []TestStruct, err error) {
 		return
 	}
 
-	if val, ok := attributes[TestStruct_Field1_Type]; ok {
-		valuesLen = len(val)
-		values = make([]TestStruct, valuesLen)
-		if len(val) != valuesLen {
-			err = radius.ErrTLVAttribute
-		} else {
-			for i := range val {
-				values[i].Field1 = radius.String(val[i])
-			}
-		}
-	} else {
+	val, ok := attributes[TestStruct_Field1_Type]
+	if !ok {
 		err = radius.ErrTLVAttribute
-	}
-	if err != nil {
 		return
+	}
+	valuesLen = len(val)
+	values = make([]TestStruct, valuesLen)
+	if len(val) != valuesLen {
+		err = radius.ErrTLVAttribute
+		return
+	}
+	for i := range val {
+		values[i].Field1 = radius.String(val[i])
 	}
 
-	if val, ok := attributes[TestStruct_Field2_Type]; ok {
-		if len(val) != valuesLen {
-			err = radius.ErrTLVAttribute
-		} else {
-			for i := range val {
-				values[i].Field2, err = radius.Integer64(val[i])
-			}
-		}
-	} else {
+	val, ok = attributes[TestStruct_Field2_Type]
+	if !ok {
 		err = radius.ErrTLVAttribute
-	}
-	if err != nil {
 		return
+	}
+	if len(val) != valuesLen {
+		err = radius.ErrTLVAttribute
+		return
+	}
+	for i := range val {
+		values[i].Field2, err = radius.Integer64(val[i])
 	}
 	return
 }
