@@ -2,6 +2,7 @@ package radius
 
 import (
 	"errors"
+	"sort"
 )
 
 // Type is the RADIUS attribute type.
@@ -84,11 +85,17 @@ func (a Attributes) Len() int {
 }
 
 func (a Attributes) encodeTo(b []byte) {
-	for typ, attrs := range a {
+	types := make([]int, 0, len(a))
+	for typ := range a {
+		types = append(types, int(typ))
+	}
+	sort.Ints(types)
+
+	for _, typ := range types {
 		if typ < 0 || typ > 255 {
 			continue
 		}
-		for _, attr := range attrs {
+		for _, attr := range a[Type(typ)] {
 			size := 1 + 1 + len(attr)
 			b[0] = byte(typ)
 			b[1] = byte(size)

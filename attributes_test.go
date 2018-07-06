@@ -61,3 +61,26 @@ func TestAttributes_all(t *testing.T) {
 		t.Fatalf("got %x; expecting %x", encoded[:n], expecting)
 	}
 }
+
+func TestAttributes_encodeTo_deterministic(t *testing.T) {
+	var base []byte
+
+	for i := 0; i < 10000; i++ {
+		a := make(Attributes)
+		a.Add(83, []byte(`C`))
+		a.Add(1, []byte(`A`))
+		a.Add(1, []byte(`A.A`))
+		a.Add(3, []byte(`C`))
+
+		encoded := make([]byte, MaxPacketLength)
+		a.encodeTo(encoded)
+
+		if base == nil {
+			base = encoded
+		} else {
+			if !bytes.Equal(base, encoded) {
+				t.Fatal("Attributes.encodeTo not deterministic")
+			}
+		}
+	}
+}
