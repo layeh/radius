@@ -2,6 +2,7 @@ package radius
 
 import (
 	"errors"
+	"sort"
 )
 
 // Type is the RADIUS attribute type.
@@ -84,10 +85,27 @@ func (a Attributes) Len() int {
 }
 
 func (a Attributes) encodeTo(b []byte) {
-	for typ, attrs := range a {
+
+	// Need to encode the attributes in a consistent way, so that
+	// HMAC MD5 hash can be generated consistently. As such, encode
+	// in sorted key order
+	keys := make([]int, len(a))
+	i := 0
+	for key, _ := range a {
+		keys[i] = int(key)
+		i += 1
+	}
+	sort.Ints(keys)
+
+	// Range the attributes in key sorted order
+	var typ Type
+	var attrs []Attribute
+	for _, key := range keys {
+		typ = Type(key)
 		if typ < 0 || typ > 255 {
 			continue
 		}
+		attrs = a[typ]
 		for _, attr := range attrs {
 			size := 1 + 1 + len(attr)
 			b[0] = byte(typ)
