@@ -1,4 +1,4 @@
-package radius_test
+package radius
 
 import (
 	"context"
@@ -7,9 +7,6 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"layeh.com/radius"
-	. "layeh.com/radius/rfc2865"
 )
 
 func TestPacketServer_basic(t *testing.T) {
@@ -23,15 +20,16 @@ func TestPacketServer_basic(t *testing.T) {
 	}
 
 	secret := []byte("123456790")
+	const UserNameType = 1
 
-	server := radius.PacketServer{
-		SecretSource: radius.StaticSecretSource(secret),
-		Handler: radius.HandlerFunc(func(w radius.ResponseWriter, r *radius.Request) {
-			username := UserName_GetString(r.Packet)
+	server := PacketServer{
+		SecretSource: StaticSecretSource(secret),
+		Handler: HandlerFunc(func(w ResponseWriter, r *Request) {
+			username := String(r.Get(UserNameType))
 			if username == "tim" {
-				w.Write(r.Response(radius.CodeAccessAccept))
+				w.Write(r.Response(CodeAccessAccept))
 			} else {
-				w.Write(r.Response(radius.CodeAccessReject))
+				w.Write(r.Response(CodeAccessReject))
 			}
 		}),
 	}
@@ -40,9 +38,10 @@ func TestPacketServer_basic(t *testing.T) {
 	go func() {
 		defer server.Shutdown(context.Background())
 
-		packet := radius.New(radius.CodeAccessRequest, secret)
-		UserName_SetString(packet, "tim")
-		client := radius.Client{
+		packet := New(CodeAccessRequest, secret)
+		username, _ := NewString("tim")
+		packet.Set(UserNameType, username)
+		client := Client{
 			Retry: time.Millisecond * 50,
 		}
 		response, err := client.Exchange(context.Background(), packet, pc.LocalAddr().String())
@@ -50,8 +49,8 @@ func TestPacketServer_basic(t *testing.T) {
 			clientErr = err
 			return
 		}
-		if response.Code != radius.CodeAccessAccept {
-			clientErr = fmt.Errorf("expected CodeAccessAccept, got %s\n", response.Code)
+		if response.Code != CodeAccessAccept {
+			clientErr = fmt.Errorf("expected CodeAccessAccept, got %s", response.Code)
 		}
 	}()
 
@@ -73,8 +72,8 @@ func TestPacketServer_shutdown(t *testing.T) {
 
 	handlerCalled := make(chan struct{})
 
-	var server *radius.TestServer
-	handler := radius.HandlerFunc(func(w radius.ResponseWriter, r *radius.Request) {
+	var server *TestServer
+	handler := HandlerFunc(func(w ResponseWriter, r *Request) {
 		close(handlerCalled)
 		atomic.AddInt32(&handlerState, 1)
 		<-r.Context().Done()
@@ -82,16 +81,16 @@ func TestPacketServer_shutdown(t *testing.T) {
 		time.Sleep(time.Millisecond * 15)
 		atomic.AddInt32(&handlerState, 1)
 	})
-	server = radius.NewTestServer(handler, radius.StaticSecretSource(secret))
+	server = NewTestServer(handler, StaticSecretSource(secret))
 	defer server.Close()
 
-	req := radius.New(radius.CodeAccessRequest, secret)
+	req := New(CodeAccessRequest, secret)
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	go func() {
-		client := radius.Client{
+		client := Client{
 			Retry:           time.Millisecond * 5,
 			MaxPacketErrors: 2,
 		}
@@ -108,8 +107,8 @@ func TestPacketServer_shutdown(t *testing.T) {
 }
 
 func TestRequest_context(t *testing.T) {
-	req := &radius.Request{
-		Packet: &radius.Packet{},
+	req := &Request{
+		Packet: &Packet{},
 	}
 	if req.Context() != context.Background() {
 		t.Fatalf("req.Context() = %v; expecting context.Background()", req.Context())
