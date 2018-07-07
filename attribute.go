@@ -192,7 +192,7 @@ func NewUserPassword(plaintext, secret, requestAuthenticator []byte) (Attribute,
 		return nil, errors.New("requestAuthenticator not 16-bytes")
 	}
 
-	chunks := len(plaintext) >> 4
+	chunks := (len(plaintext) + 16 - 1) / 16
 	if chunks == 0 {
 		chunks = 1
 	}
