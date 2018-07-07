@@ -54,7 +54,7 @@ func TestPacketServer_basic(t *testing.T) {
 		}
 	}()
 
-	if err := server.Serve(pc); err != nil {
+	if err := server.Serve(pc); err != ErrServerShutdown {
 		t.Fatal(err)
 	}
 
@@ -135,4 +135,53 @@ func TestRequest_context(t *testing.T) {
 		}()
 		req.WithContext(nil)
 	}()
+}
+
+type dummyPacketConn struct{}
+
+func (dummyPacketConn) ReadFrom(b []byte) (n int, addr net.Addr, err error) { panic("unimplemented") }
+func (dummyPacketConn) WriteTo(b []byte, addr net.Addr) (n int, err error)  { panic("unimplemented") }
+func (dummyPacketConn) Close() error                                        { panic("unimplemented") }
+func (dummyPacketConn) LocalAddr() net.Addr                                 { panic("unimplemented") }
+func (dummyPacketConn) SetDeadline(t time.Time) error                       { panic("unimplemented") }
+func (dummyPacketConn) SetReadDeadline(t time.Time) error                   { panic("unimplemented") }
+func (dummyPacketConn) SetWriteDeadline(t time.Time) error                  { panic("unimplemented") }
+
+func TestPacketServer_singleUse(t *testing.T) {
+	secret := []byte("12345")
+
+	serverCtx, serverCtxCancel := context.WithCancel(context.Background())
+
+	handlerReceived := make(chan struct{})
+	server := NewTestServer(HandlerFunc(func(w ResponseWriter, r *Request) {
+		close(handlerReceived)
+		<-serverCtx.Done()
+	}), StaticSecretSource(secret))
+
+	go func() {
+		packet := New(CodeAccessRequest, secret)
+		Exchange(serverCtx, packet, server.Addr)
+	}()
+
+	<-handlerReceived
+
+	shutdownCtx, shutdownCtxCancel := context.WithTimeout(context.Background(), time.Millisecond*25)
+	defer shutdownCtxCancel()
+	err := server.Server.Shutdown(shutdownCtx)
+	if err != context.DeadlineExceeded {
+		t.Fatalf("got err %v; expecting context.DeadlineExceeded", err)
+	}
+
+	err = server.Server.Serve(dummyPacketConn{})
+	if err != ErrServerShutdown {
+		t.Fatalf("got err %v; expecting ErrServerShutdown", err)
+	}
+
+	serverCtxCancel()
+	time.Sleep(time.Millisecond * 50) // racy otherwise
+
+	err = server.Server.Serve(dummyPacketConn{})
+	if err != ErrServerShutdown {
+		t.Fatalf("got err %v; expecting ErrServerShutdown", err)
+	}
 }
