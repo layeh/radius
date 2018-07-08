@@ -51,7 +51,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			invalid = true
 		}
 		if attr.Size.Valid {
-			invalid = true
+			if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets {
+				baseImports["errors"] = struct{}{}
+			} else {
+				invalid = true
+			}
 		}
 		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != dictionary.EncryptUserPassword && attr.FlagEncrypt.Int != dictionary.EncryptTunnelPassword {
 			invalid = true
@@ -146,7 +150,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				invalid = true
 			}
 			if attr.Size.Valid {
-				invalid = true
+				if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets {
+					baseImports["errors"] = struct{}{}
+				} else {
+					invalid = true
+				}
 			}
 			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != dictionary.EncryptUserPassword && attr.FlagEncrypt.Int != dictionary.EncryptTunnelPassword {
 				invalid = true

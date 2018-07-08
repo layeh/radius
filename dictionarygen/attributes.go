@@ -21,6 +21,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	} else {
 		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value []byte) (err error) {`)
 	}
+	if attr.Size.Valid {
+		p(w, `	if len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `		return`)
+		p(w, `	}`)
+	}
 	p(w, `	var a radius.Attribute`)
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
@@ -56,6 +62,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_AddString(p *radius.Packet, value string) (err error) {`)
 	} else {
 		p(w, `func `, ident, `_AddString(p *radius.Packet, tag byte, value string) (err error) {`)
+	}
+	if attr.Size.Valid {
+		p(w, `	if len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `		return`)
+		p(w, `	}`)
 	}
 	p(w, `	var a radius.Attribute`)
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
@@ -139,6 +151,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	} else {
 		p(w, `		i = radius.Bytes(attr)`)
 	}
+	if attr.Size.Valid {
+		p(w, `		if err == nil && len(i) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `			err = errors.New("invalid value length")`)
+		p(w, `		}`)
+	}
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
@@ -186,6 +203,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	} else {
 		p(w, `		i = radius.String(attr)`)
 	}
+	if attr.Size.Valid {
+		p(w, `		if err == nil && len(i) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `			err = errors.New("invalid value length")`)
+		p(w, `		}`)
+	}
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
@@ -224,6 +246,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	value = radius.Bytes(a)`)
+	}
+	if attr.Size.Valid {
+		p(w, `	if err == nil && len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `	}`)
 	}
 	p(w, `	return`)
 	p(w, `}`)
@@ -264,6 +291,11 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	} else {
 		p(w, `	value = radius.String(a)`)
 	}
+	if attr.Size.Valid {
+		p(w, `	if err == nil && len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `	}`)
+	}
 	p(w, `	return`)
 	p(w, `}`)
 
@@ -272,6 +304,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Set(p *radius.Packet, value []byte) (err error) {`)
 	} else {
 		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value []byte) (err error) {`)
+	}
+	if attr.Size.Valid {
+		p(w, `	if len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `		return`)
+		p(w, `	}`)
 	}
 	p(w, `	var a radius.Attribute`)
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
@@ -308,6 +346,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_SetString(p *radius.Packet, value string) (err error) {`)
 	} else {
 		p(w, `func `, ident, `_SetString(p *radius.Packet, tag byte, value string) (err error) {`)
+	}
+	if attr.Size.Valid {
+		p(w, `	if len(value) != `, strconv.Itoa(attr.Size.Int), ` {`)
+		p(w, `		err = errors.New("invalid value length")`)
+		p(w, `		return`)
+		p(w, `	}`)
 	}
 	p(w, `	var a radius.Attribute`)
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {

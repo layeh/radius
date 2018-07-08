@@ -3,6 +3,7 @@
 package rfc2869
 
 import (
+	"errors"
 	"strconv"
 	"time"
 
@@ -10,20 +11,23 @@ import (
 )
 
 const (
-	AcctInputGigawords_Type   radius.Type = 52
-	AcctOutputGigawords_Type  radius.Type = 53
-	EventTimestamp_Type       radius.Type = 55
-	ARAPZoneAccess_Type       radius.Type = 72
-	ARAPSecurity_Type         radius.Type = 73
-	ARAPSecurityData_Type     radius.Type = 74
-	PasswordRetry_Type        radius.Type = 75
-	Prompt_Type               radius.Type = 76
-	ConnectInfo_Type          radius.Type = 77
-	ConfigurationToken_Type   radius.Type = 78
-	MessageAuthenticator_Type radius.Type = 80
-	AcctInterimInterval_Type  radius.Type = 85
-	NASPortID_Type            radius.Type = 87
-	FramedPool_Type           radius.Type = 88
+	AcctInputGigawords_Type    radius.Type = 52
+	AcctOutputGigawords_Type   radius.Type = 53
+	EventTimestamp_Type        radius.Type = 55
+	ARAPPassword_Type          radius.Type = 70
+	ARAPFeatures_Type          radius.Type = 71
+	ARAPZoneAccess_Type        radius.Type = 72
+	ARAPSecurity_Type          radius.Type = 73
+	ARAPSecurityData_Type      radius.Type = 74
+	PasswordRetry_Type         radius.Type = 75
+	Prompt_Type                radius.Type = 76
+	ConnectInfo_Type           radius.Type = 77
+	ConfigurationToken_Type    radius.Type = 78
+	MessageAuthenticator_Type  radius.Type = 80
+	ARAPChallengeResponse_Type radius.Type = 84
+	AcctInterimInterval_Type   radius.Type = 85
+	NASPortID_Type             radius.Type = 87
+	FramedPool_Type            radius.Type = 88
 )
 
 type AcctInputGigawords uint32
@@ -181,6 +185,248 @@ func EventTimestamp_Set(p *radius.Packet, value time.Time) (err error) {
 	}
 	p.Set(EventTimestamp_Type, a)
 	return nil
+}
+
+func ARAPPassword_Add(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 16 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPPassword_Type, a)
+	return nil
+}
+
+func ARAPPassword_AddString(p *radius.Packet, value string) (err error) {
+	if len(value) != 16 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPPassword_Type, a)
+	return nil
+}
+
+func ARAPPassword_Get(p *radius.Packet) (value []byte) {
+	value, _ = ARAPPassword_Lookup(p)
+	return
+}
+
+func ARAPPassword_GetString(p *radius.Packet) (value string) {
+	return string(ARAPPassword_Get(p))
+}
+
+func ARAPPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range p.Attributes[ARAPPassword_Type] {
+		i = radius.Bytes(attr)
+		if err == nil && len(i) != 16 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPPassword_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range p.Attributes[ARAPPassword_Type] {
+		i = radius.String(attr)
+		if err == nil && len(i) != 16 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPPassword_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := p.Lookup(ARAPPassword_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	if err == nil && len(value) != 16 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPPassword_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := p.Lookup(ARAPPassword_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	if err == nil && len(value) != 16 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPPassword_Set(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 16 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPPassword_Type, a)
+	return
+}
+
+func ARAPPassword_SetString(p *radius.Packet, value string) (err error) {
+	if len(value) != 16 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPPassword_Type, a)
+	return
+}
+
+func ARAPFeatures_Add(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 14 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPFeatures_Type, a)
+	return nil
+}
+
+func ARAPFeatures_AddString(p *radius.Packet, value string) (err error) {
+	if len(value) != 14 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPFeatures_Type, a)
+	return nil
+}
+
+func ARAPFeatures_Get(p *radius.Packet) (value []byte) {
+	value, _ = ARAPFeatures_Lookup(p)
+	return
+}
+
+func ARAPFeatures_GetString(p *radius.Packet) (value string) {
+	return string(ARAPFeatures_Get(p))
+}
+
+func ARAPFeatures_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range p.Attributes[ARAPFeatures_Type] {
+		i = radius.Bytes(attr)
+		if err == nil && len(i) != 14 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPFeatures_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range p.Attributes[ARAPFeatures_Type] {
+		i = radius.String(attr)
+		if err == nil && len(i) != 14 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPFeatures_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := p.Lookup(ARAPFeatures_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	if err == nil && len(value) != 14 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPFeatures_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := p.Lookup(ARAPFeatures_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	if err == nil && len(value) != 14 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPFeatures_Set(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 14 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPFeatures_Type, a)
+	return
+}
+
+func ARAPFeatures_SetString(p *radius.Packet, value string) (err error) {
+	if len(value) != 14 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPFeatures_Type, a)
+	return
 }
 
 type ARAPZoneAccess uint32
@@ -790,6 +1036,127 @@ func MessageAuthenticator_SetString(p *radius.Packet, value string) (err error) 
 		return
 	}
 	p.Set(MessageAuthenticator_Type, a)
+	return
+}
+
+func ARAPChallengeResponse_Add(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 8 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPChallengeResponse_Type, a)
+	return nil
+}
+
+func ARAPChallengeResponse_AddString(p *radius.Packet, value string) (err error) {
+	if len(value) != 8 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Add(ARAPChallengeResponse_Type, a)
+	return nil
+}
+
+func ARAPChallengeResponse_Get(p *radius.Packet) (value []byte) {
+	value, _ = ARAPChallengeResponse_Lookup(p)
+	return
+}
+
+func ARAPChallengeResponse_GetString(p *radius.Packet) (value string) {
+	return string(ARAPChallengeResponse_Get(p))
+}
+
+func ARAPChallengeResponse_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range p.Attributes[ARAPChallengeResponse_Type] {
+		i = radius.Bytes(attr)
+		if err == nil && len(i) != 8 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPChallengeResponse_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range p.Attributes[ARAPChallengeResponse_Type] {
+		i = radius.String(attr)
+		if err == nil && len(i) != 8 {
+			err = errors.New("invalid value length")
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ARAPChallengeResponse_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := p.Lookup(ARAPChallengeResponse_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	if err == nil && len(value) != 8 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPChallengeResponse_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := p.Lookup(ARAPChallengeResponse_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	if err == nil && len(value) != 8 {
+		err = errors.New("invalid value length")
+	}
+	return
+}
+
+func ARAPChallengeResponse_Set(p *radius.Packet, value []byte) (err error) {
+	if len(value) != 8 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPChallengeResponse_Type, a)
+	return
+}
+
+func ARAPChallengeResponse_SetString(p *radius.Packet, value string) (err error) {
+	if len(value) != 8 {
+		err = errors.New("invalid value length")
+		return
+	}
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	p.Set(ARAPChallengeResponse_Type, a)
 	return
 }
 
