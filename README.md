@@ -1,4 +1,4 @@
-<img src="internal/radius.svg" width="200" align="right">
+<img src="internal/radius.svg" width="250" align="right">
 
 # radius [![GoDoc](https://godoc.org/layeh.com/radius?status.svg)](https://godoc.org/layeh.com/radius)
 
