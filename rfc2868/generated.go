@@ -3,6 +3,7 @@
 package rfc2868
 
 import (
+	"crypto/rand"
 	"strconv"
 
 	"layeh.com/radius"
@@ -13,6 +14,7 @@ const (
 	TunnelMediumType_Type     radius.Type = 65
 	TunnelClientEndpoint_Type radius.Type = 66
 	TunnelServerEndpoint_Type radius.Type = 67
+	TunnelPassword_Type       radius.Type = 69
 	TunnelPrivateGroupID_Type radius.Type = 81
 	TunnelAssignmentID_Type   radius.Type = 82
 	TunnelPreference_Type     radius.Type = 83
@@ -489,6 +491,166 @@ func TunnelServerEndpoint_SetString(p *radius.Packet, tag byte, value string) (e
 		return
 	}
 	p.Set(TunnelServerEndpoint_Type, a)
+	return
+}
+
+func TunnelPassword_Add(p *radius.Packet, tag byte, value []byte) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTag(tag, a)
+	if err != nil {
+		return
+	}
+	p.Add(TunnelPassword_Type, a)
+	return nil
+}
+
+func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTag(tag, a)
+	if err != nil {
+		return
+	}
+	p.Add(TunnelPassword_Type, a)
+	return nil
+}
+
+func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
+	tag, value, _ = TunnelPassword_Lookup(p)
+	return
+}
+
+func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
+	var valueBytes []byte
+	tag, valueBytes = TunnelPassword_Get(p)
+	value = string(valueBytes)
+	return
+}
+
+func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
+	var i []byte
+	var tag byte
+	for _, attr := range p.Attributes[TunnelPassword_Type] {
+		tag, attr, err = radius.Tag(attr)
+		if err != nil {
+			return
+		}
+		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+		tags = append(tags, tag)
+	}
+	return
+}
+
+func TunnelPassword_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
+	var i string
+	var tag byte
+	for _, attr := range p.Attributes[TunnelPassword_Type] {
+		tag, attr, err = radius.Tag(attr)
+		if err != nil {
+			return
+		}
+		var up []byte
+		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		if err == nil {
+			i = string(up)
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+		tags = append(tags, tag)
+	}
+	return
+}
+
+func TunnelPassword_Lookup(p *radius.Packet) (tag byte, value []byte, err error) {
+	a, ok := p.Lookup(TunnelPassword_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	tag, a, err = radius.Tag(a)
+	if err != nil {
+		return
+	}
+	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	return
+}
+
+func TunnelPassword_LookupString(p *radius.Packet) (tag byte, value string, err error) {
+	a, ok := p.Lookup(TunnelPassword_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	tag, a, err = radius.Tag(a)
+	if err != nil {
+		return
+	}
+	var b []byte
+	b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	if err == nil {
+		value = string(b)
+	}
+	return
+}
+
+func TunnelPassword_Set(p *radius.Packet, tag byte, value []byte) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTag(tag, a)
+	if err != nil {
+		return
+	}
+	p.Set(TunnelPassword_Type, a)
+	return
+}
+
+func TunnelPassword_SetString(p *radius.Packet, tag byte, value string) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	a, err = radius.NewTag(tag, a)
+	if err != nil {
+		return
+	}
+	p.Set(TunnelPassword_Type, a)
 	return
 }
 

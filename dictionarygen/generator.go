@@ -53,8 +53,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if attr.Size.Valid {
 			invalid = true
 		}
-		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != 1 {
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != dictionary.EncryptUserPassword && attr.FlagEncrypt.Int != dictionary.EncryptTunnelPassword {
 			invalid = true
+		}
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			baseImports["crypto/rand"] = struct{}{}
 		}
 		switch attr.Type {
 		case dictionary.AttributeString:
@@ -145,8 +148,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			if attr.Size.Valid {
 				invalid = true
 			}
-			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != 1 {
+			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int != dictionary.EncryptUserPassword && attr.FlagEncrypt.Int != dictionary.EncryptTunnelPassword {
 				invalid = true
+			}
+			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+				baseImports["crypto/rand"] = struct{}{}
 			}
 			switch attr.Type {
 			case dictionary.AttributeString:

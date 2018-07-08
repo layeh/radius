@@ -22,8 +22,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value []byte) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	var salt [2]byte`)
+		p(w, `	_, err = rand.Read(salt[:])`)
+		p(w, `	if err != nil {`)
+		p(w, `		return`)
+		p(w, `	}`)
+		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
 	}
@@ -51,8 +58,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_AddString(p *radius.Packet, tag byte, value string) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	var salt [2]byte`)
+		p(w, `	_, err = rand.Read(salt[:])`)
+		p(w, `	if err != nil {`)
+		p(w, `		return`)
+		p(w, `	}`)
+		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
 	}
@@ -118,8 +132,10 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `		i = radius.Bytes(attr)`)
 	}
@@ -155,9 +171,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
-		p(w, `		var up radius.Attribute`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
+		p(w, `		var up []byte`)
 		p(w, `		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
+		p(w, `		if err == nil {`)
+		p(w, `			i = string(up)`)
+		p(w, `		}`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `		var up []byte`)
+		p(w, `		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])`)
 		p(w, `		if err == nil {`)
 		p(w, `			i = string(up)`)
 		p(w, `		}`)
@@ -196,8 +218,10 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	value = radius.Bytes(a)`)
 	}
@@ -225,12 +249,18 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `			return`)
 		p(w, `		}`)
 	}
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	var b []byte`)
 		p(w, `	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
 		p(w, `	if err == nil {`)
 		p(w, `		value = string(b)`)
 		p(w, `	}`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `		var b []byte`)
+		p(w, `		b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])`)
+		p(w, `		if err == nil {`)
+		p(w, `			value = string(b)`)
+		p(w, `		}`)
 	} else {
 		p(w, `	value = radius.String(a)`)
 	}
@@ -244,8 +274,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value []byte) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	var salt [2]byte`)
+		p(w, `	_, err = rand.Read(salt[:])`)
+		p(w, `	if err != nil {`)
+		p(w, `		return`)
+		p(w, `	}`)
+		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
 	}
@@ -273,8 +310,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_SetString(p *radius.Packet, tag byte, value string) (err error) {`)
 	}
 	p(w, `	var a radius.Attribute`)
-	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == 1 {
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	var salt [2]byte`)
+		p(w, `	_, err = rand.Read(salt[:])`)
+		p(w, `	if err != nil {`)
+		p(w, `		return`)
+		p(w, `	}`)
+		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
 	}

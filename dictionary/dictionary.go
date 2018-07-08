@@ -117,6 +117,11 @@ func (o OID) String() string {
 	return string(b)
 }
 
+const (
+	EncryptUserPassword   = 1
+	EncryptTunnelPassword = 2
+)
+
 type Attribute struct {
 	Name string
 	OID  OID
