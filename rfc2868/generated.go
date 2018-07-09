@@ -68,7 +68,7 @@ func TunnelType_Add(p *radius.Packet, tag byte, value TunnelType) (err error) {
 		return
 	}
 	p.Add(TunnelType_Type, a)
-	return nil
+	return
 }
 
 func TunnelType_Get(p *radius.Packet) (tag byte, value TunnelType) {
@@ -120,7 +120,7 @@ func TunnelType_Set(p *radius.Packet, tag byte, value TunnelType) (err error) {
 		return
 	}
 	p.Set(TunnelType_Type, a)
-	return nil
+	return
 }
 
 type TunnelMediumType uint32
@@ -175,7 +175,7 @@ func TunnelMediumType_Add(p *radius.Packet, tag byte, value TunnelMediumType) (e
 		return
 	}
 	p.Add(TunnelMediumType_Type, a)
-	return nil
+	return
 }
 
 func TunnelMediumType_Get(p *radius.Packet) (tag byte, value TunnelMediumType) {
@@ -227,7 +227,7 @@ func TunnelMediumType_Set(p *radius.Packet, tag byte, value TunnelMediumType) (e
 		return
 	}
 	p.Set(TunnelMediumType_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientEndpoint_Add(p *radius.Packet, tag byte, value []byte) (err error) {
@@ -241,7 +241,7 @@ func TunnelClientEndpoint_Add(p *radius.Packet, tag byte, value []byte) (err err
 		return
 	}
 	p.Add(TunnelClientEndpoint_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientEndpoint_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -255,7 +255,7 @@ func TunnelClientEndpoint_AddString(p *radius.Packet, tag byte, value string) (e
 		return
 	}
 	p.Add(TunnelClientEndpoint_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -373,7 +373,7 @@ func TunnelServerEndpoint_Add(p *radius.Packet, tag byte, value []byte) (err err
 		return
 	}
 	p.Add(TunnelServerEndpoint_Type, a)
-	return nil
+	return
 }
 
 func TunnelServerEndpoint_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -387,7 +387,7 @@ func TunnelServerEndpoint_AddString(p *radius.Packet, tag byte, value string) (e
 		return
 	}
 	p.Add(TunnelServerEndpoint_Type, a)
-	return nil
+	return
 }
 
 func TunnelServerEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -510,7 +510,7 @@ func TunnelPassword_Add(p *radius.Packet, tag byte, value []byte) (err error) {
 		return
 	}
 	p.Add(TunnelPassword_Type, a)
-	return nil
+	return
 }
 
 func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -529,7 +529,7 @@ func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err err
 		return
 	}
 	p.Add(TunnelPassword_Type, a)
-	return nil
+	return
 }
 
 func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -665,7 +665,7 @@ func TunnelPrivateGroupID_Add(p *radius.Packet, tag byte, value []byte) (err err
 		return
 	}
 	p.Add(TunnelPrivateGroupID_Type, a)
-	return nil
+	return
 }
 
 func TunnelPrivateGroupID_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -679,7 +679,7 @@ func TunnelPrivateGroupID_AddString(p *radius.Packet, tag byte, value string) (e
 		return
 	}
 	p.Add(TunnelPrivateGroupID_Type, a)
-	return nil
+	return
 }
 
 func TunnelPrivateGroupID_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -797,7 +797,7 @@ func TunnelAssignmentID_Add(p *radius.Packet, tag byte, value []byte) (err error
 		return
 	}
 	p.Add(TunnelAssignmentID_Type, a)
-	return nil
+	return
 }
 
 func TunnelAssignmentID_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -811,7 +811,7 @@ func TunnelAssignmentID_AddString(p *radius.Packet, tag byte, value string) (err
 		return
 	}
 	p.Add(TunnelAssignmentID_Type, a)
-	return nil
+	return
 }
 
 func TunnelAssignmentID_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -936,7 +936,7 @@ func TunnelPreference_Add(p *radius.Packet, tag byte, value TunnelPreference) (e
 		return
 	}
 	p.Add(TunnelPreference_Type, a)
-	return nil
+	return
 }
 
 func TunnelPreference_Get(p *radius.Packet) (tag byte, value TunnelPreference) {
@@ -988,7 +988,7 @@ func TunnelPreference_Set(p *radius.Packet, tag byte, value TunnelPreference) (e
 		return
 	}
 	p.Set(TunnelPreference_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientAuthID_Add(p *radius.Packet, tag byte, value []byte) (err error) {
@@ -1002,7 +1002,7 @@ func TunnelClientAuthID_Add(p *radius.Packet, tag byte, value []byte) (err error
 		return
 	}
 	p.Add(TunnelClientAuthID_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientAuthID_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -1016,7 +1016,7 @@ func TunnelClientAuthID_AddString(p *radius.Packet, tag byte, value string) (err
 		return
 	}
 	p.Add(TunnelClientAuthID_Type, a)
-	return nil
+	return
 }
 
 func TunnelClientAuthID_Get(p *radius.Packet) (tag byte, value []byte) {
@@ -1134,7 +1134,7 @@ func TunnelServerAuthID_Add(p *radius.Packet, tag byte, value []byte) (err error
 		return
 	}
 	p.Add(TunnelServerAuthID_Type, a)
-	return nil
+	return
 }
 
 func TunnelServerAuthID_AddString(p *radius.Packet, tag byte, value string) (err error) {
@@ -1148,7 +1148,7 @@ func TunnelServerAuthID_AddString(p *radius.Packet, tag byte, value string) (err
 		return
 	}
 	p.Add(TunnelServerAuthID_Type, a)
-	return nil
+	return
 }
 
 func TunnelServerAuthID_Get(p *radius.Packet) (tag byte, value []byte) {

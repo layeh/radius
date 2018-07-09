@@ -25,7 +25,7 @@ func _Aruba_AddVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 		return
 	}
 	p.Add(rfc2865.VendorSpecific_Type, vsa)
-	return nil
+	return
 }
 
 func _Aruba_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
@@ -65,7 +65,7 @@ func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok 
 			vsa = vsa[int(vsaLen):]
 		}
 	}
-	return nil, false
+	return
 }
 
 func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {

@@ -53,7 +53,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -95,7 +95,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -420,7 +420,7 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -529,7 +529,7 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 }
@@ -562,7 +562,7 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -656,7 +656,7 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 }
@@ -689,7 +689,7 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -783,7 +783,7 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 }
@@ -861,7 +861,7 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Add(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 
@@ -973,7 +973,7 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
-		p(w, `	return nil`)
+		p(w, `	return`)
 	}
 	p(w, `}`)
 }

@@ -70,7 +70,7 @@ func (a ErrorCause) String() string {
 func ErrorCause_Add(p *radius.Packet, value ErrorCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(ErrorCause_Type, a)
-	return nil
+	return
 }
 
 func ErrorCause_Get(p *radius.Packet) (value ErrorCause) {
@@ -108,5 +108,5 @@ func ErrorCause_Lookup(p *radius.Packet) (value ErrorCause, err error) {
 func ErrorCause_Set(p *radius.Packet, value ErrorCause) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(ErrorCause_Type, a)
-	return nil
+	return
 }

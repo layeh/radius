@@ -23,7 +23,7 @@ func NASIPv6Address_Add(p *radius.Packet, value net.IP) (err error) {
 		return
 	}
 	p.Add(NASIPv6Address_Type, a)
-	return nil
+	return
 }
 
 func NASIPv6Address_Get(p *radius.Packet) (value net.IP) {
@@ -60,7 +60,7 @@ func NASIPv6Address_Set(p *radius.Packet, value net.IP) (err error) {
 		return
 	}
 	p.Set(NASIPv6Address_Type, a)
-	return nil
+	return
 }
 
 func FramedInterfaceID_Add(p *radius.Packet, value net.HardwareAddr) (err error) {
@@ -70,7 +70,7 @@ func FramedInterfaceID_Add(p *radius.Packet, value net.HardwareAddr) (err error)
 		return
 	}
 	p.Add(FramedInterfaceID_Type, a)
-	return nil
+	return
 }
 
 func FramedInterfaceID_Get(p *radius.Packet) (value net.HardwareAddr) {
@@ -107,7 +107,7 @@ func FramedInterfaceID_Set(p *radius.Packet, value net.HardwareAddr) (err error)
 		return
 	}
 	p.Set(FramedInterfaceID_Type, a)
-	return nil
+	return
 }
 
 func LoginIPv6Host_Add(p *radius.Packet, value net.IP) (err error) {
@@ -117,7 +117,7 @@ func LoginIPv6Host_Add(p *radius.Packet, value net.IP) (err error) {
 		return
 	}
 	p.Add(LoginIPv6Host_Type, a)
-	return nil
+	return
 }
 
 func LoginIPv6Host_Get(p *radius.Packet) (value net.IP) {
@@ -154,7 +154,7 @@ func LoginIPv6Host_Set(p *radius.Packet, value net.IP) (err error) {
 		return
 	}
 	p.Set(LoginIPv6Host_Type, a)
-	return nil
+	return
 }
 
 func FramedIPv6Route_Add(p *radius.Packet, value []byte) (err error) {
@@ -164,7 +164,7 @@ func FramedIPv6Route_Add(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	p.Add(FramedIPv6Route_Type, a)
-	return nil
+	return
 }
 
 func FramedIPv6Route_AddString(p *radius.Packet, value string) (err error) {
@@ -174,7 +174,7 @@ func FramedIPv6Route_AddString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	p.Add(FramedIPv6Route_Type, a)
-	return nil
+	return
 }
 
 func FramedIPv6Route_Get(p *radius.Packet) (value []byte) {
@@ -257,7 +257,7 @@ func FramedIPv6Pool_Add(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	p.Add(FramedIPv6Pool_Type, a)
-	return nil
+	return
 }
 
 func FramedIPv6Pool_AddString(p *radius.Packet, value string) (err error) {
@@ -267,7 +267,7 @@ func FramedIPv6Pool_AddString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	p.Add(FramedIPv6Pool_Type, a)
-	return nil
+	return
 }
 
 func FramedIPv6Pool_Get(p *radius.Packet) (value []byte) {

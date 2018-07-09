@@ -40,7 +40,7 @@ func AcctTunnelConnection_Add(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	p.Add(AcctTunnelConnection_Type, a)
-	return nil
+	return
 }
 
 func AcctTunnelConnection_AddString(p *radius.Packet, value string) (err error) {
@@ -50,7 +50,7 @@ func AcctTunnelConnection_AddString(p *radius.Packet, value string) (err error) 
 		return
 	}
 	p.Add(AcctTunnelConnection_Type, a)
-	return nil
+	return
 }
 
 func AcctTunnelConnection_Get(p *radius.Packet) (value []byte) {
@@ -140,7 +140,7 @@ func (a AcctTunnelPacketsLost) String() string {
 func AcctTunnelPacketsLost_Add(p *radius.Packet, value AcctTunnelPacketsLost) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Add(AcctTunnelPacketsLost_Type, a)
-	return nil
+	return
 }
 
 func AcctTunnelPacketsLost_Get(p *radius.Packet) (value AcctTunnelPacketsLost) {
@@ -178,5 +178,5 @@ func AcctTunnelPacketsLost_Lookup(p *radius.Packet) (value AcctTunnelPacketsLost
 func AcctTunnelPacketsLost_Set(p *radius.Packet, value AcctTunnelPacketsLost) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctTunnelPacketsLost_Type, a)
-	return nil
+	return
 }

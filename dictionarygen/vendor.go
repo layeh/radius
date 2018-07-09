@@ -21,7 +21,7 @@ func (g *Generator) genVendor(w io.Writer, vendor *dictionary.Vendor) {
 	p(w, `		return`)
 	p(w, `	}`)
 	p(w, `	p.Add(rfc2865.VendorSpecific_Type, vsa)`)
-	p(w, `	return nil`)
+	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
@@ -63,7 +63,7 @@ func (g *Generator) genVendor(w io.Writer, vendor *dictionary.Vendor) {
 	p(w, `			vsa = vsa[int(vsaLen):]`)
 	p(w, `		}`)
 	p(w, `	}`)
-	p(w, `	return nil, false`)
+	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)

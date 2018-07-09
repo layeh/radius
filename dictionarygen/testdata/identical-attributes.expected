@@ -17,7 +17,7 @@ func FirstName_Add(p *radius.Packet, value []byte) (err error) {
 		return
 	}
 	p.Add(FirstName_Type, a)
-	return nil
+	return
 }
 
 func FirstName_AddString(p *radius.Packet, value string) (err error) {
@@ -27,7 +27,7 @@ func FirstName_AddString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	p.Add(FirstName_Type, a)
-	return nil
+	return
 }
 
 func FirstName_Get(p *radius.Packet) (value []byte) {
