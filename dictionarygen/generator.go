@@ -63,6 +63,10 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
 			baseImports["crypto/rand"] = struct{}{}
 		}
+		if attr.FlagConcat.Valid && attr.FlagConcat.Bool && ((attr.Type != dictionary.AttributeOctets && attr.Type != dictionary.AttributeString) || attr.FlagEncrypt.Valid || attr.FlagHasTag.Valid || attr.Size.Valid) {
+			invalid = true
+		}
+
 		switch attr.Type {
 		case dictionary.AttributeString:
 		case dictionary.AttributeOctets:
@@ -161,6 +165,9 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			}
 			if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
 				baseImports["crypto/rand"] = struct{}{}
+			}
+			if attr.FlagConcat.Valid && attr.FlagConcat.Bool {
+				invalid = true
 			}
 			switch attr.Type {
 			case dictionary.AttributeString:
@@ -282,7 +289,11 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 	for _, attr := range attrs {
 		switch attr.Type {
 		case dictionary.AttributeString, dictionary.AttributeOctets:
-			g.genAttributeStringOctets(&w, attr, nil)
+			if attr.FlagConcat.Valid && attr.FlagConcat.Bool {
+				g.genAttributeStringOctetsConcat(&w, attr)
+			} else {
+				g.genAttributeStringOctets(&w, attr, nil)
+			}
 		case dictionary.AttributeIPAddr:
 			g.genAttributeIPAddr(&w, attr, nil, net.IPv4len)
 		case dictionary.AttributeIPv6Addr:

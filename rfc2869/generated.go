@@ -23,6 +23,7 @@ const (
 	Prompt_Type                radius.Type = 76
 	ConnectInfo_Type           radius.Type = 77
 	ConfigurationToken_Type    radius.Type = 78
+	EAPMessage_Type            radius.Type = 79
 	MessageAuthenticator_Type  radius.Type = 80
 	ARAPChallengeResponse_Type radius.Type = 84
 	AcctInterimInterval_Type   radius.Type = 85
@@ -943,6 +944,89 @@ func ConfigurationToken_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	p.Set(ConfigurationToken_Type, a)
+	return
+}
+
+func EAPMessage_Get(p *radius.Packet) (value []byte) {
+	value, _ = EAPMessage_Lookup(p)
+	return
+}
+
+func EAPMessage_GetString(p *radius.Packet) (value string) {
+	return string(EAPMessage_Get(p))
+}
+
+func EAPMessage_Lookup(p *radius.Packet) (value []byte, err error) {
+	var i []byte
+	var valid bool
+	for _, attr := range p.Attributes[EAPMessage_Type] {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		value = append(value, i...)
+		valid = true
+	}
+	if !valid {
+		err = radius.ErrNoAttribute
+	}
+	return
+}
+
+func EAPMessage_LookupString(p *radius.Packet) (value string, err error) {
+	var i string
+	var valid bool
+	for _, attr := range p.Attributes[EAPMessage_Type] {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		value += i
+		valid = true
+	}
+	if !valid {
+		err = radius.ErrNoAttribute
+	}
+	return
+}
+
+func EAPMessage_Set(p *radius.Packet, value []byte) (err error) {
+	const maximumChunkSize = 253
+	var attrs []radius.Attribute
+	for len(value) > 0 {
+		var a radius.Attribute
+		n := len(value)
+		if n > maximumChunkSize {
+			n = maximumChunkSize
+		}
+		a, err = radius.NewBytes(value[:n])
+		if err != nil {
+			return
+		}
+		attrs = append(attrs, a)
+		value = value[n:]
+	}
+	p.Attributes[EAPMessage_Type] = attrs
+	return
+}
+
+func EAPMessage_SetString(p *radius.Packet, value string) (err error) {
+	const maximumChunkSize = 253
+	var attrs []radius.Attribute
+	for len(value) > 0 {
+		var a radius.Attribute
+		n := len(value)
+		if n > maximumChunkSize {
+			n = maximumChunkSize
+		}
+		a, err = radius.NewString(value[:n])
+		if err != nil {
+			return
+		}
+		attrs = append(attrs, a)
+		value = value[n:]
+	}
+	p.Attributes[EAPMessage_Type] = attrs
 	return
 }
 
