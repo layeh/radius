@@ -264,9 +264,7 @@ func TunnelClientEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelClientEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelClientEndpoint_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelClientEndpoint_LookupString(p)
 	return
 }
 
@@ -396,9 +394,7 @@ func TunnelServerEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelServerEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelServerEndpoint_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelServerEndpoint_LookupString(p)
 	return
 }
 
@@ -538,9 +534,7 @@ func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelPassword_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelPassword_LookupString(p)
 	return
 }
 
@@ -688,9 +682,7 @@ func TunnelPrivateGroupID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelPrivateGroupID_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelPrivateGroupID_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelPrivateGroupID_LookupString(p)
 	return
 }
 
@@ -820,9 +812,7 @@ func TunnelAssignmentID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelAssignmentID_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelAssignmentID_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelAssignmentID_LookupString(p)
 	return
 }
 
@@ -1025,9 +1015,7 @@ func TunnelClientAuthID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelClientAuthID_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelClientAuthID_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelClientAuthID_LookupString(p)
 	return
 }
 
@@ -1157,9 +1145,7 @@ func TunnelServerAuthID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelServerAuthID_GetString(p *radius.Packet) (tag byte, value string) {
-	var valueBytes []byte
-	tag, valueBytes = TunnelServerAuthID_Get(p)
-	value = string(valueBytes)
+	_, value, _ = TunnelServerAuthID_LookupString(p)
 	return
 }
 

@@ -36,7 +36,8 @@ func FirstName_Get(p *radius.Packet) (value []byte) {
 }
 
 func FirstName_GetString(p *radius.Packet) (value string) {
-	return string(FirstName_Get(p))
+	value, _ = FirstName_LookupString(p)
+	return
 }
 
 func FirstName_Gets(p *radius.Packet) (values [][]byte, err error) {

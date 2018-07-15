@@ -113,14 +113,12 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w)
 	if !attr.HasTag() {
 		p(w, `func `, ident, `_GetString(p *radius.Packet) (value string) {`)
-		p(w, `	return string(`, ident, `_Get(p))`)
+		p(w, `	value, _ = `, ident, `_LookupString(p)`)
 	} else {
 		p(w, `func `, ident, `_GetString(p *radius.Packet) (tag byte, value string) {`)
-		p(w, `	var valueBytes []byte`)
-		p(w, `	tag, valueBytes = `, ident, `_Get(p)`)
-		p(w, `	value = string(valueBytes)`)
-		p(w, `	return`)
+		p(w, `	_, value, _ = `, ident, `_LookupString(p)`)
 	}
+	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
@@ -395,7 +393,8 @@ func (g *Generator) genAttributeStringOctetsConcat(w io.Writer, attr *dictionary
 
 	p(w)
 	p(w, `func `, ident, `_GetString(p *radius.Packet) (value string) {`)
-	p(w, `	return string(`, ident, `_Get(p))`)
+	p(w, `	value, _ = `, ident, `_LookupString(p)`)
+	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)

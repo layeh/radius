@@ -79,7 +79,8 @@ func UserName_Get(p *radius.Packet) (value []byte) {
 }
 
 func UserName_GetString(p *radius.Packet) (value string) {
-	return string(UserName_Get(p))
+	value, _ = UserName_LookupString(p)
+	return
 }
 
 func UserName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -172,7 +173,8 @@ func UserPassword_Get(p *radius.Packet) (value []byte) {
 }
 
 func UserPassword_GetString(p *radius.Packet) (value string) {
-	return string(UserPassword_Get(p))
+	value, _ = UserPassword_LookupString(p)
+	return
 }
 
 func UserPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -273,7 +275,8 @@ func CHAPPassword_Get(p *radius.Packet) (value []byte) {
 }
 
 func CHAPPassword_GetString(p *radius.Packet) (value string) {
-	return string(CHAPPassword_Get(p))
+	value, _ = CHAPPassword_LookupString(p)
+	return
 }
 
 func CHAPPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -781,7 +784,8 @@ func FilterID_Get(p *radius.Packet) (value []byte) {
 }
 
 func FilterID_GetString(p *radius.Packet) (value string) {
-	return string(FilterID_Get(p))
+	value, _ = FilterID_LookupString(p)
+	return
 }
 
 func FilterID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1183,7 +1187,8 @@ func ReplyMessage_Get(p *radius.Packet) (value []byte) {
 }
 
 func ReplyMessage_GetString(p *radius.Packet) (value string) {
-	return string(ReplyMessage_Get(p))
+	value, _ = ReplyMessage_LookupString(p)
+	return
 }
 
 func ReplyMessage_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1276,7 +1281,8 @@ func CallbackNumber_Get(p *radius.Packet) (value []byte) {
 }
 
 func CallbackNumber_GetString(p *radius.Packet) (value string) {
-	return string(CallbackNumber_Get(p))
+	value, _ = CallbackNumber_LookupString(p)
+	return
 }
 
 func CallbackNumber_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1369,7 +1375,8 @@ func CallbackID_Get(p *radius.Packet) (value []byte) {
 }
 
 func CallbackID_GetString(p *radius.Packet) (value string) {
-	return string(CallbackID_Get(p))
+	value, _ = CallbackID_LookupString(p)
+	return
 }
 
 func CallbackID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1462,7 +1469,8 @@ func FramedRoute_Get(p *radius.Packet) (value []byte) {
 }
 
 func FramedRoute_GetString(p *radius.Packet) (value string) {
-	return string(FramedRoute_Get(p))
+	value, _ = FramedRoute_LookupString(p)
+	return
 }
 
 func FramedRoute_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1602,7 +1610,8 @@ func State_Get(p *radius.Packet) (value []byte) {
 }
 
 func State_GetString(p *radius.Packet) (value string) {
-	return string(State_Get(p))
+	value, _ = State_LookupString(p)
+	return
 }
 
 func State_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1695,7 +1704,8 @@ func Class_Get(p *radius.Packet) (value []byte) {
 }
 
 func Class_GetString(p *radius.Packet) (value string) {
-	return string(Class_Get(p))
+	value, _ = Class_LookupString(p)
+	return
 }
 
 func Class_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1961,7 +1971,8 @@ func CalledStationID_Get(p *radius.Packet) (value []byte) {
 }
 
 func CalledStationID_GetString(p *radius.Packet) (value string) {
-	return string(CalledStationID_Get(p))
+	value, _ = CalledStationID_LookupString(p)
+	return
 }
 
 func CalledStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2054,7 +2065,8 @@ func CallingStationID_Get(p *radius.Packet) (value []byte) {
 }
 
 func CallingStationID_GetString(p *radius.Packet) (value string) {
-	return string(CallingStationID_Get(p))
+	value, _ = CallingStationID_LookupString(p)
+	return
 }
 
 func CallingStationID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2147,7 +2159,8 @@ func NASIdentifier_Get(p *radius.Packet) (value []byte) {
 }
 
 func NASIdentifier_GetString(p *radius.Packet) (value string) {
-	return string(NASIdentifier_Get(p))
+	value, _ = NASIdentifier_LookupString(p)
+	return
 }
 
 func NASIdentifier_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2240,7 +2253,8 @@ func ProxyState_Get(p *radius.Packet) (value []byte) {
 }
 
 func ProxyState_GetString(p *radius.Packet) (value string) {
-	return string(ProxyState_Get(p))
+	value, _ = ProxyState_LookupString(p)
+	return
 }
 
 func ProxyState_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2333,7 +2347,8 @@ func LoginLATService_Get(p *radius.Packet) (value []byte) {
 }
 
 func LoginLATService_GetString(p *radius.Packet) (value string) {
-	return string(LoginLATService_Get(p))
+	value, _ = LoginLATService_LookupString(p)
+	return
 }
 
 func LoginLATService_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2426,7 +2441,8 @@ func LoginLATNode_Get(p *radius.Packet) (value []byte) {
 }
 
 func LoginLATNode_GetString(p *radius.Packet) (value string) {
-	return string(LoginLATNode_Get(p))
+	value, _ = LoginLATNode_LookupString(p)
+	return
 }
 
 func LoginLATNode_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2519,7 +2535,8 @@ func LoginLATGroup_Get(p *radius.Packet) (value []byte) {
 }
 
 func LoginLATGroup_GetString(p *radius.Packet) (value string) {
-	return string(LoginLATGroup_Get(p))
+	value, _ = LoginLATGroup_LookupString(p)
+	return
 }
 
 func LoginLATGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2722,7 +2739,8 @@ func FramedAppleTalkZone_Get(p *radius.Packet) (value []byte) {
 }
 
 func FramedAppleTalkZone_GetString(p *radius.Packet) (value string) {
-	return string(FramedAppleTalkZone_Get(p))
+	value, _ = FramedAppleTalkZone_LookupString(p)
+	return
 }
 
 func FramedAppleTalkZone_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2815,7 +2833,8 @@ func CHAPChallenge_Get(p *radius.Packet) (value []byte) {
 }
 
 func CHAPChallenge_GetString(p *radius.Packet) (value string) {
-	return string(CHAPChallenge_Get(p))
+	value, _ = CHAPChallenge_LookupString(p)
+	return
 }
 
 func CHAPChallenge_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -3062,7 +3081,8 @@ func LoginLATPort_Get(p *radius.Packet) (value []byte) {
 }
 
 func LoginLATPort_GetString(p *radius.Packet) (value string) {
-	return string(LoginLATPort_Get(p))
+	value, _ = LoginLATPort_LookupString(p)
+	return
 }
 
 func LoginLATPort_Gets(p *radius.Packet) (values [][]byte, err error) {

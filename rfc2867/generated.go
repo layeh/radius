@@ -59,7 +59,8 @@ func AcctTunnelConnection_Get(p *radius.Packet) (value []byte) {
 }
 
 func AcctTunnelConnection_GetString(p *radius.Packet) (value string) {
-	return string(AcctTunnelConnection_Get(p))
+	value, _ = AcctTunnelConnection_LookupString(p)
+	return
 }
 
 func AcctTunnelConnection_Gets(p *radius.Packet) (values [][]byte, err error) {

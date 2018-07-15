@@ -285,7 +285,8 @@ func AcctSessionID_Get(p *radius.Packet) (value []byte) {
 }
 
 func AcctSessionID_GetString(p *radius.Packet) (value string) {
-	return string(AcctSessionID_Get(p))
+	value, _ = AcctSessionID_LookupString(p)
+	return
 }
 
 func AcctSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -705,7 +706,8 @@ func AcctMultiSessionID_Get(p *radius.Packet) (value []byte) {
 }
 
 func AcctMultiSessionID_GetString(p *radius.Packet) (value string) {
-	return string(AcctMultiSessionID_Get(p))
+	value, _ = AcctMultiSessionID_LookupString(p)
+	return
 }
 
 func AcctMultiSessionID_Gets(p *radius.Packet) (values [][]byte, err error) {

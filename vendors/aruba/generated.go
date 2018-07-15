@@ -120,7 +120,8 @@ func ArubaUserRole_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaUserRole_GetString(p *radius.Packet) (value string) {
-	return string(ArubaUserRole_Get(p))
+	value, _ = ArubaUserRole_LookupString(p)
+	return
 }
 
 func ArubaUserRole_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -315,7 +316,8 @@ func ArubaAdminRole_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAdminRole_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAdminRole_Get(p))
+	value, _ = ArubaAdminRole_LookupString(p)
+	return
 }
 
 func ArubaAdminRole_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -404,7 +406,8 @@ func ArubaEssidName_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaEssidName_GetString(p *radius.Packet) (value string) {
-	return string(ArubaEssidName_Get(p))
+	value, _ = ArubaEssidName_LookupString(p)
+	return
 }
 
 func ArubaEssidName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -493,7 +496,8 @@ func ArubaLocationID_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaLocationID_GetString(p *radius.Packet) (value string) {
-	return string(ArubaLocationID_Get(p))
+	value, _ = ArubaLocationID_LookupString(p)
+	return
 }
 
 func ArubaLocationID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -582,7 +586,8 @@ func ArubaPortIdentifier_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaPortIdentifier_GetString(p *radius.Packet) (value string) {
-	return string(ArubaPortIdentifier_Get(p))
+	value, _ = ArubaPortIdentifier_LookupString(p)
+	return
 }
 
 func ArubaPortIdentifier_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -671,7 +676,8 @@ func ArubaMMSUserTemplate_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMMSUserTemplate_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMMSUserTemplate_Get(p))
+	value, _ = ArubaMMSUserTemplate_LookupString(p)
+	return
 }
 
 func ArubaMMSUserTemplate_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -760,7 +766,8 @@ func ArubaNamedUserVlan_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaNamedUserVlan_GetString(p *radius.Packet) (value string) {
-	return string(ArubaNamedUserVlan_Get(p))
+	value, _ = ArubaNamedUserVlan_LookupString(p)
+	return
 }
 
 func ArubaNamedUserVlan_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -849,7 +856,8 @@ func ArubaAPGroup_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAPGroup_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAPGroup_Get(p))
+	value, _ = ArubaAPGroup_LookupString(p)
+	return
 }
 
 func ArubaAPGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -938,7 +946,8 @@ func ArubaFramedIPv6Address_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaFramedIPv6Address_GetString(p *radius.Packet) (value string) {
-	return string(ArubaFramedIPv6Address_Get(p))
+	value, _ = ArubaFramedIPv6Address_LookupString(p)
+	return
 }
 
 func ArubaFramedIPv6Address_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1027,7 +1036,8 @@ func ArubaDeviceType_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaDeviceType_GetString(p *radius.Packet) (value string) {
-	return string(ArubaDeviceType_Get(p))
+	value, _ = ArubaDeviceType_LookupString(p)
+	return
 }
 
 func ArubaDeviceType_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1169,7 +1179,8 @@ func ArubaMdpsDeviceUdid_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceUdid_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceUdid_Get(p))
+	value, _ = ArubaMdpsDeviceUdid_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceUdid_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1258,7 +1269,8 @@ func ArubaMdpsDeviceImei_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceImei_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceImei_Get(p))
+	value, _ = ArubaMdpsDeviceImei_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceImei_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1347,7 +1359,8 @@ func ArubaMdpsDeviceIccid_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceIccid_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceIccid_Get(p))
+	value, _ = ArubaMdpsDeviceIccid_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceIccid_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1489,7 +1502,8 @@ func ArubaMdpsDeviceName_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceName_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceName_Get(p))
+	value, _ = ArubaMdpsDeviceName_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1578,7 +1592,8 @@ func ArubaMdpsDeviceProduct_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceProduct_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceProduct_Get(p))
+	value, _ = ArubaMdpsDeviceProduct_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceProduct_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1667,7 +1682,8 @@ func ArubaMdpsDeviceVersion_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceVersion_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceVersion_Get(p))
+	value, _ = ArubaMdpsDeviceVersion_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceVersion_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1756,7 +1772,8 @@ func ArubaMdpsDeviceSerial_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceSerial_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceSerial_Get(p))
+	value, _ = ArubaMdpsDeviceSerial_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceSerial_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1845,7 +1862,8 @@ func ArubaCPPMRole_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaCPPMRole_GetString(p *radius.Packet) (value string) {
-	return string(ArubaCPPMRole_Get(p))
+	value, _ = ArubaCPPMRole_LookupString(p)
+	return
 }
 
 func ArubaCPPMRole_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1934,7 +1952,8 @@ func ArubaAirGroupUserName_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAirGroupUserName_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAirGroupUserName_Get(p))
+	value, _ = ArubaAirGroupUserName_LookupString(p)
+	return
 }
 
 func ArubaAirGroupUserName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2023,7 +2042,8 @@ func ArubaAirGroupSharedUser_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAirGroupSharedUser_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAirGroupSharedUser_Get(p))
+	value, _ = ArubaAirGroupSharedUser_LookupString(p)
+	return
 }
 
 func ArubaAirGroupSharedUser_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2112,7 +2132,8 @@ func ArubaAirGroupSharedRole_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAirGroupSharedRole_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAirGroupSharedRole_Get(p))
+	value, _ = ArubaAirGroupSharedRole_LookupString(p)
+	return
 }
 
 func ArubaAirGroupSharedRole_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2254,7 +2275,8 @@ func ArubaAuthSurvivability_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAuthSurvivability_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAuthSurvivability_Get(p))
+	value, _ = ArubaAuthSurvivability_LookupString(p)
+	return
 }
 
 func ArubaAuthSurvivability_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2343,7 +2365,8 @@ func ArubaASUserName_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaASUserName_GetString(p *radius.Packet) (value string) {
-	return string(ArubaASUserName_Get(p))
+	value, _ = ArubaASUserName_LookupString(p)
+	return
 }
 
 func ArubaASUserName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2432,7 +2455,8 @@ func ArubaASCredentialHash_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaASCredentialHash_GetString(p *radius.Packet) (value string) {
-	return string(ArubaASCredentialHash_Get(p))
+	value, _ = ArubaASCredentialHash_LookupString(p)
+	return
 }
 
 func ArubaASCredentialHash_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2521,7 +2545,8 @@ func ArubaWorkSpaceAppName_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaWorkSpaceAppName_GetString(p *radius.Packet) (value string) {
-	return string(ArubaWorkSpaceAppName_Get(p))
+	value, _ = ArubaWorkSpaceAppName_LookupString(p)
+	return
 }
 
 func ArubaWorkSpaceAppName_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2610,7 +2635,8 @@ func ArubaMdpsProvisioningSettings_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsProvisioningSettings_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsProvisioningSettings_Get(p))
+	value, _ = ArubaMdpsProvisioningSettings_LookupString(p)
+	return
 }
 
 func ArubaMdpsProvisioningSettings_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2699,7 +2725,8 @@ func ArubaMdpsDeviceProfile_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaMdpsDeviceProfile_GetString(p *radius.Packet) (value string) {
-	return string(ArubaMdpsDeviceProfile_Get(p))
+	value, _ = ArubaMdpsDeviceProfile_LookupString(p)
+	return
 }
 
 func ArubaMdpsDeviceProfile_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2833,7 +2860,8 @@ func ArubaAirGroupSharedGroup_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaAirGroupSharedGroup_GetString(p *radius.Packet) (value string) {
-	return string(ArubaAirGroupSharedGroup_Get(p))
+	value, _ = ArubaAirGroupSharedGroup_LookupString(p)
+	return
 }
 
 func ArubaAirGroupSharedGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -2922,7 +2950,8 @@ func ArubaUserGroup_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaUserGroup_GetString(p *radius.Packet) (value string) {
-	return string(ArubaUserGroup_Get(p))
+	value, _ = ArubaUserGroup_LookupString(p)
+	return
 }
 
 func ArubaUserGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -3011,7 +3040,8 @@ func ArubaNetworkSSOToken_Get(p *radius.Packet) (value []byte) {
 }
 
 func ArubaNetworkSSOToken_GetString(p *radius.Packet) (value string) {
-	return string(ArubaNetworkSSOToken_Get(p))
+	value, _ = ArubaNetworkSSOToken_LookupString(p)
+	return
 }
 
 func ArubaNetworkSSOToken_Gets(p *radius.Packet) (values [][]byte, err error) {

@@ -183,7 +183,8 @@ func FramedIPv6Route_Get(p *radius.Packet) (value []byte) {
 }
 
 func FramedIPv6Route_GetString(p *radius.Packet) (value string) {
-	return string(FramedIPv6Route_Get(p))
+	value, _ = FramedIPv6Route_LookupString(p)
+	return
 }
 
 func FramedIPv6Route_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -276,7 +277,8 @@ func FramedIPv6Pool_Get(p *radius.Packet) (value []byte) {
 }
 
 func FramedIPv6Pool_GetString(p *radius.Packet) (value string) {
-	return string(FramedIPv6Pool_Get(p))
+	value, _ = FramedIPv6Pool_LookupString(p)
+	return
 }
 
 func FramedIPv6Pool_Gets(p *radius.Packet) (values [][]byte, err error) {

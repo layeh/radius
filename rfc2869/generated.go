@@ -222,7 +222,8 @@ func ARAPPassword_Get(p *radius.Packet) (value []byte) {
 }
 
 func ARAPPassword_GetString(p *radius.Packet) (value string) {
-	return string(ARAPPassword_Get(p))
+	value, _ = ARAPPassword_LookupString(p)
+	return
 }
 
 func ARAPPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -343,7 +344,8 @@ func ARAPFeatures_Get(p *radius.Packet) (value []byte) {
 }
 
 func ARAPFeatures_GetString(p *radius.Packet) (value string) {
-	return string(ARAPFeatures_Get(p))
+	value, _ = ARAPFeatures_LookupString(p)
+	return
 }
 
 func ARAPFeatures_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -576,7 +578,8 @@ func ARAPSecurityData_Get(p *radius.Packet) (value []byte) {
 }
 
 func ARAPSecurityData_GetString(p *radius.Packet) (value string) {
-	return string(ARAPSecurityData_Get(p))
+	value, _ = ARAPSecurityData_LookupString(p)
+	return
 }
 
 func ARAPSecurityData_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -787,7 +790,8 @@ func ConnectInfo_Get(p *radius.Packet) (value []byte) {
 }
 
 func ConnectInfo_GetString(p *radius.Packet) (value string) {
-	return string(ConnectInfo_Get(p))
+	value, _ = ConnectInfo_LookupString(p)
+	return
 }
 
 func ConnectInfo_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -880,7 +884,8 @@ func ConfigurationToken_Get(p *radius.Packet) (value []byte) {
 }
 
 func ConfigurationToken_GetString(p *radius.Packet) (value string) {
-	return string(ConfigurationToken_Get(p))
+	value, _ = ConfigurationToken_LookupString(p)
+	return
 }
 
 func ConfigurationToken_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -953,7 +958,8 @@ func EAPMessage_Get(p *radius.Packet) (value []byte) {
 }
 
 func EAPMessage_GetString(p *radius.Packet) (value string) {
-	return string(EAPMessage_Get(p))
+	value, _ = EAPMessage_LookupString(p)
+	return
 }
 
 func EAPMessage_Lookup(p *radius.Packet) (value []byte, err error) {
@@ -1056,7 +1062,8 @@ func MessageAuthenticator_Get(p *radius.Packet) (value []byte) {
 }
 
 func MessageAuthenticator_GetString(p *radius.Packet) (value string) {
-	return string(MessageAuthenticator_Get(p))
+	value, _ = MessageAuthenticator_LookupString(p)
+	return
 }
 
 func MessageAuthenticator_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1157,7 +1164,8 @@ func ARAPChallengeResponse_Get(p *radius.Packet) (value []byte) {
 }
 
 func ARAPChallengeResponse_GetString(p *radius.Packet) (value string) {
-	return string(ARAPChallengeResponse_Get(p))
+	value, _ = ARAPChallengeResponse_LookupString(p)
+	return
 }
 
 func ARAPChallengeResponse_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1325,7 +1333,8 @@ func NASPortID_Get(p *radius.Packet) (value []byte) {
 }
 
 func NASPortID_GetString(p *radius.Packet) (value string) {
-	return string(NASPortID_Get(p))
+	value, _ = NASPortID_LookupString(p)
+	return
 }
 
 func NASPortID_Gets(p *radius.Packet) (values [][]byte, err error) {
@@ -1418,7 +1427,8 @@ func FramedPool_Get(p *radius.Packet) (value []byte) {
 }
 
 func FramedPool_GetString(p *radius.Packet) (value string) {
-	return string(FramedPool_Get(p))
+	value, _ = FramedPool_LookupString(p)
+	return
 }
 
 func FramedPool_Gets(p *radius.Packet) (values [][]byte, err error) {
