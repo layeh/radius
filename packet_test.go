@@ -33,9 +33,6 @@ func Test_RFC2865_7_1(t *testing.T) {
 	if p.Identifier != 0 {
 		t.Fatal("expecting Identifier = 0")
 	}
-	if p.Len() != 4 {
-		t.Fatal("expecting 4 attributes")
-	}
 	if rfc2865.UserName_GetString(p) != "nemo" {
 		t.Fatal("expecting User-Name = nemo")
 	}
