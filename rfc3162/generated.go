@@ -63,6 +63,10 @@ func NASIPv6Address_Set(p *radius.Packet, value net.IP) (err error) {
 	return
 }
 
+func NASIPv6Address_Del(p *radius.Packet) {
+	p.Attributes.Del(NASIPv6Address_Type)
+}
+
 func FramedInterfaceID_Add(p *radius.Packet, value net.HardwareAddr) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIFID(value)
@@ -110,6 +114,10 @@ func FramedInterfaceID_Set(p *radius.Packet, value net.HardwareAddr) (err error)
 	return
 }
 
+func FramedInterfaceID_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedInterfaceID_Type)
+}
+
 func LoginIPv6Host_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPv6Addr(value)
@@ -155,6 +163,10 @@ func LoginIPv6Host_Set(p *radius.Packet, value net.IP) (err error) {
 	}
 	p.Set(LoginIPv6Host_Type, a)
 	return
+}
+
+func LoginIPv6Host_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginIPv6Host_Type)
 }
 
 func FramedIPv6Route_Add(p *radius.Packet, value []byte) (err error) {
@@ -251,6 +263,10 @@ func FramedIPv6Route_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func FramedIPv6Route_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPv6Route_Type)
+}
+
 func FramedIPv6Pool_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -343,4 +359,8 @@ func FramedIPv6Pool_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(FramedIPv6Pool_Type, a)
 	return
+}
+
+func FramedIPv6Pool_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPv6Pool_Type)
 }

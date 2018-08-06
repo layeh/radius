@@ -127,6 +127,10 @@ func AcctTunnelConnection_SetString(p *radius.Packet, value string) (err error) 
 	return
 }
 
+func AcctTunnelConnection_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctTunnelConnection_Type)
+}
+
 type AcctTunnelPacketsLost uint32
 
 var AcctTunnelPacketsLost_Strings = map[AcctTunnelPacketsLost]string{}
@@ -180,4 +184,8 @@ func AcctTunnelPacketsLost_Set(p *radius.Packet, value AcctTunnelPacketsLost) (e
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctTunnelPacketsLost_Type, a)
 	return
+}
+
+func AcctTunnelPacketsLost_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctTunnelPacketsLost_Type)
 }

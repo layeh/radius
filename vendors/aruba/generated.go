@@ -96,6 +96,36 @@ func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 	return _Aruba_AddVendor(p, typ, attr)
 }
 
+func _Aruba_DelVendor(p *radius.Packet, typ byte) {
+vsaLoop:
+	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
+		attr := p.Attributes[rfc2865.VendorSpecific_Type][i]
+		vendorID, vsa, err := radius.VendorSpecific(attr)
+		if err != nil || vendorID != _Aruba_VendorID {
+			continue
+		}
+		offset := 0
+		for len(vsa[offset:]) >= 3 {
+			vsaTyp, vsaLen := vsa[offset], vsa[offset+1]
+			if int(vsaLen) > len(vsa) || vsaLen < 3 {
+				continue vsaLoop
+			}
+			if vsaTyp == typ {
+				copy(vsa[offset:], vsa[offset+int(vsaLen):])
+				vsa = vsa[:len(vsa)-int(vsaLen)]
+			} else {
+				offset += int(vsaLen)
+			}
+		}
+		if offset == 0 {
+			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+1:]...)
+		} else {
+			i++
+		}
+	}
+	return
+}
+
 func ArubaUserRole_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -186,6 +216,10 @@ func ArubaUserRole_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 1, a)
 }
 
+func ArubaUserRole_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 1)
+}
+
 type ArubaUserVlan uint32
 
 var ArubaUserVlan_Strings = map[ArubaUserVlan]string{}
@@ -239,6 +273,10 @@ func ArubaUserVlan_Set(p *radius.Packet, value ArubaUserVlan) (err error) {
 	return _Aruba_SetVendor(p, 2, a)
 }
 
+func ArubaUserVlan_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 2)
+}
+
 type ArubaPrivAdminUser uint32
 
 var ArubaPrivAdminUser_Strings = map[ArubaPrivAdminUser]string{}
@@ -290,6 +328,10 @@ func ArubaPrivAdminUser_Lookup(p *radius.Packet) (value ArubaPrivAdminUser, err 
 func ArubaPrivAdminUser_Set(p *radius.Packet, value ArubaPrivAdminUser) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 3, a)
+}
+
+func ArubaPrivAdminUser_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 3)
 }
 
 func ArubaAdminRole_Add(p *radius.Packet, value []byte) (err error) {
@@ -382,6 +424,10 @@ func ArubaAdminRole_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 4, a)
 }
 
+func ArubaAdminRole_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 4)
+}
+
 func ArubaEssidName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -470,6 +516,10 @@ func ArubaEssidName_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 5, a)
+}
+
+func ArubaEssidName_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 5)
 }
 
 func ArubaLocationID_Add(p *radius.Packet, value []byte) (err error) {
@@ -562,6 +612,10 @@ func ArubaLocationID_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 6, a)
 }
 
+func ArubaLocationID_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 6)
+}
+
 func ArubaPortIdentifier_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -650,6 +704,10 @@ func ArubaPortIdentifier_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 7, a)
+}
+
+func ArubaPortIdentifier_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 7)
 }
 
 func ArubaMMSUserTemplate_Add(p *radius.Packet, value []byte) (err error) {
@@ -742,6 +800,10 @@ func ArubaMMSUserTemplate_SetString(p *radius.Packet, value string) (err error) 
 	return _Aruba_SetVendor(p, 8, a)
 }
 
+func ArubaMMSUserTemplate_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 8)
+}
+
 func ArubaNamedUserVlan_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -830,6 +892,10 @@ func ArubaNamedUserVlan_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 9, a)
+}
+
+func ArubaNamedUserVlan_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 9)
 }
 
 func ArubaAPGroup_Add(p *radius.Packet, value []byte) (err error) {
@@ -922,6 +988,10 @@ func ArubaAPGroup_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 10, a)
 }
 
+func ArubaAPGroup_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 10)
+}
+
 func ArubaFramedIPv6Address_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1010,6 +1080,10 @@ func ArubaFramedIPv6Address_SetString(p *radius.Packet, value string) (err error
 		return
 	}
 	return _Aruba_SetVendor(p, 11, a)
+}
+
+func ArubaFramedIPv6Address_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 11)
 }
 
 func ArubaDeviceType_Add(p *radius.Packet, value []byte) (err error) {
@@ -1102,6 +1176,10 @@ func ArubaDeviceType_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 12, a)
 }
 
+func ArubaDeviceType_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 12)
+}
+
 type ArubaNoDHCPFingerprint uint32
 
 var ArubaNoDHCPFingerprint_Strings = map[ArubaNoDHCPFingerprint]string{}
@@ -1153,6 +1231,10 @@ func ArubaNoDHCPFingerprint_Lookup(p *radius.Packet) (value ArubaNoDHCPFingerpri
 func ArubaNoDHCPFingerprint_Set(p *radius.Packet, value ArubaNoDHCPFingerprint) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 14, a)
+}
+
+func ArubaNoDHCPFingerprint_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 14)
 }
 
 func ArubaMdpsDeviceUdid_Add(p *radius.Packet, value []byte) (err error) {
@@ -1245,6 +1327,10 @@ func ArubaMdpsDeviceUdid_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 15, a)
 }
 
+func ArubaMdpsDeviceUdid_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 15)
+}
+
 func ArubaMdpsDeviceImei_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1333,6 +1419,10 @@ func ArubaMdpsDeviceImei_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 16, a)
+}
+
+func ArubaMdpsDeviceImei_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 16)
 }
 
 func ArubaMdpsDeviceIccid_Add(p *radius.Packet, value []byte) (err error) {
@@ -1425,6 +1515,10 @@ func ArubaMdpsDeviceIccid_SetString(p *radius.Packet, value string) (err error) 
 	return _Aruba_SetVendor(p, 17, a)
 }
 
+func ArubaMdpsDeviceIccid_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 17)
+}
+
 type ArubaMdpsMaxDevices uint32
 
 var ArubaMdpsMaxDevices_Strings = map[ArubaMdpsMaxDevices]string{}
@@ -1476,6 +1570,10 @@ func ArubaMdpsMaxDevices_Lookup(p *radius.Packet) (value ArubaMdpsMaxDevices, er
 func ArubaMdpsMaxDevices_Set(p *radius.Packet, value ArubaMdpsMaxDevices) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 18, a)
+}
+
+func ArubaMdpsMaxDevices_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 18)
 }
 
 func ArubaMdpsDeviceName_Add(p *radius.Packet, value []byte) (err error) {
@@ -1568,6 +1666,10 @@ func ArubaMdpsDeviceName_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 19, a)
 }
 
+func ArubaMdpsDeviceName_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 19)
+}
+
 func ArubaMdpsDeviceProduct_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1656,6 +1758,10 @@ func ArubaMdpsDeviceProduct_SetString(p *radius.Packet, value string) (err error
 		return
 	}
 	return _Aruba_SetVendor(p, 20, a)
+}
+
+func ArubaMdpsDeviceProduct_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 20)
 }
 
 func ArubaMdpsDeviceVersion_Add(p *radius.Packet, value []byte) (err error) {
@@ -1748,6 +1854,10 @@ func ArubaMdpsDeviceVersion_SetString(p *radius.Packet, value string) (err error
 	return _Aruba_SetVendor(p, 21, a)
 }
 
+func ArubaMdpsDeviceVersion_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 21)
+}
+
 func ArubaMdpsDeviceSerial_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1836,6 +1946,10 @@ func ArubaMdpsDeviceSerial_SetString(p *radius.Packet, value string) (err error)
 		return
 	}
 	return _Aruba_SetVendor(p, 22, a)
+}
+
+func ArubaMdpsDeviceSerial_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 22)
 }
 
 func ArubaCPPMRole_Add(p *radius.Packet, value []byte) (err error) {
@@ -1928,6 +2042,10 @@ func ArubaCPPMRole_SetString(p *radius.Packet, value string) (err error) {
 	return _Aruba_SetVendor(p, 23, a)
 }
 
+func ArubaCPPMRole_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 23)
+}
+
 func ArubaAirGroupUserName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2016,6 +2134,10 @@ func ArubaAirGroupUserName_SetString(p *radius.Packet, value string) (err error)
 		return
 	}
 	return _Aruba_SetVendor(p, 24, a)
+}
+
+func ArubaAirGroupUserName_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 24)
 }
 
 func ArubaAirGroupSharedUser_Add(p *radius.Packet, value []byte) (err error) {
@@ -2108,6 +2230,10 @@ func ArubaAirGroupSharedUser_SetString(p *radius.Packet, value string) (err erro
 	return _Aruba_SetVendor(p, 25, a)
 }
 
+func ArubaAirGroupSharedUser_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 25)
+}
+
 func ArubaAirGroupSharedRole_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2198,6 +2324,10 @@ func ArubaAirGroupSharedRole_SetString(p *radius.Packet, value string) (err erro
 	return _Aruba_SetVendor(p, 26, a)
 }
 
+func ArubaAirGroupSharedRole_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 26)
+}
+
 type ArubaAirGroupDeviceType uint32
 
 var ArubaAirGroupDeviceType_Strings = map[ArubaAirGroupDeviceType]string{}
@@ -2249,6 +2379,10 @@ func ArubaAirGroupDeviceType_Lookup(p *radius.Packet) (value ArubaAirGroupDevice
 func ArubaAirGroupDeviceType_Set(p *radius.Packet, value ArubaAirGroupDeviceType) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 27, a)
+}
+
+func ArubaAirGroupDeviceType_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 27)
 }
 
 func ArubaAuthSurvivability_Add(p *radius.Packet, value []byte) (err error) {
@@ -2341,6 +2475,10 @@ func ArubaAuthSurvivability_SetString(p *radius.Packet, value string) (err error
 	return _Aruba_SetVendor(p, 28, a)
 }
 
+func ArubaAuthSurvivability_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 28)
+}
+
 func ArubaASUserName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2429,6 +2567,10 @@ func ArubaASUserName_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 29, a)
+}
+
+func ArubaASUserName_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 29)
 }
 
 func ArubaASCredentialHash_Add(p *radius.Packet, value []byte) (err error) {
@@ -2521,6 +2663,10 @@ func ArubaASCredentialHash_SetString(p *radius.Packet, value string) (err error)
 	return _Aruba_SetVendor(p, 30, a)
 }
 
+func ArubaASCredentialHash_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 30)
+}
+
 func ArubaWorkSpaceAppName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2609,6 +2755,10 @@ func ArubaWorkSpaceAppName_SetString(p *radius.Packet, value string) (err error)
 		return
 	}
 	return _Aruba_SetVendor(p, 31, a)
+}
+
+func ArubaWorkSpaceAppName_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 31)
 }
 
 func ArubaMdpsProvisioningSettings_Add(p *radius.Packet, value []byte) (err error) {
@@ -2701,6 +2851,10 @@ func ArubaMdpsProvisioningSettings_SetString(p *radius.Packet, value string) (er
 	return _Aruba_SetVendor(p, 32, a)
 }
 
+func ArubaMdpsProvisioningSettings_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 32)
+}
+
 func ArubaMdpsDeviceProfile_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2791,6 +2945,10 @@ func ArubaMdpsDeviceProfile_SetString(p *radius.Packet, value string) (err error
 	return _Aruba_SetVendor(p, 33, a)
 }
 
+func ArubaMdpsDeviceProfile_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 33)
+}
+
 func ArubaAPIPAddress_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -2834,6 +2992,10 @@ func ArubaAPIPAddress_Set(p *radius.Packet, value net.IP) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 34, a)
+}
+
+func ArubaAPIPAddress_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 34)
 }
 
 func ArubaAirGroupSharedGroup_Add(p *radius.Packet, value []byte) (err error) {
@@ -2926,6 +3088,10 @@ func ArubaAirGroupSharedGroup_SetString(p *radius.Packet, value string) (err err
 	return _Aruba_SetVendor(p, 35, a)
 }
 
+func ArubaAirGroupSharedGroup_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 35)
+}
+
 func ArubaUserGroup_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -3014,6 +3180,10 @@ func ArubaUserGroup_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _Aruba_SetVendor(p, 36, a)
+}
+
+func ArubaUserGroup_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 36)
 }
 
 func ArubaNetworkSSOToken_Add(p *radius.Packet, value []byte) (err error) {
@@ -3106,6 +3276,10 @@ func ArubaNetworkSSOToken_SetString(p *radius.Packet, value string) (err error) 
 	return _Aruba_SetVendor(p, 37, a)
 }
 
+func ArubaNetworkSSOToken_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 37)
+}
+
 type ArubaAirGroupVersion uint32
 
 var ArubaAirGroupVersion_Strings = map[ArubaAirGroupVersion]string{}
@@ -3157,6 +3331,10 @@ func ArubaAirGroupVersion_Lookup(p *radius.Packet) (value ArubaAirGroupVersion, 
 func ArubaAirGroupVersion_Set(p *radius.Packet, value ArubaAirGroupVersion) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 38, a)
+}
+
+func ArubaAirGroupVersion_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 38)
 }
 
 type ArubaAuthSurvMethod uint32
@@ -3212,6 +3390,10 @@ func ArubaAuthSurvMethod_Set(p *radius.Packet, value ArubaAuthSurvMethod) (err e
 	return _Aruba_SetVendor(p, 39, a)
 }
 
+func ArubaAuthSurvMethod_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 39)
+}
+
 type ArubaPortBounceHost uint32
 
 var ArubaPortBounceHost_Strings = map[ArubaPortBounceHost]string{}
@@ -3263,4 +3445,8 @@ func ArubaPortBounceHost_Lookup(p *radius.Packet) (value ArubaPortBounceHost, er
 func ArubaPortBounceHost_Set(p *radius.Packet, value ArubaPortBounceHost) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _Aruba_SetVendor(p, 40, a)
+}
+
+func ArubaPortBounceHost_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 40)
 }

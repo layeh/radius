@@ -95,6 +95,36 @@ func _WISPr_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 	return _WISPr_AddVendor(p, typ, attr)
 }
 
+func _WISPr_DelVendor(p *radius.Packet, typ byte) {
+vsaLoop:
+	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
+		attr := p.Attributes[rfc2865.VendorSpecific_Type][i]
+		vendorID, vsa, err := radius.VendorSpecific(attr)
+		if err != nil || vendorID != _WISPr_VendorID {
+			continue
+		}
+		offset := 0
+		for len(vsa[offset:]) >= 3 {
+			vsaTyp, vsaLen := vsa[offset], vsa[offset+1]
+			if int(vsaLen) > len(vsa) || vsaLen < 3 {
+				continue vsaLoop
+			}
+			if vsaTyp == typ {
+				copy(vsa[offset:], vsa[offset+int(vsaLen):])
+				vsa = vsa[:len(vsa)-int(vsaLen)]
+			} else {
+				offset += int(vsaLen)
+			}
+		}
+		if offset == 0 {
+			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+1:]...)
+		} else {
+			i++
+		}
+	}
+	return
+}
+
 func WISPrLocationID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -183,6 +213,10 @@ func WISPrLocationID_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _WISPr_SetVendor(p, 1, a)
+}
+
+func WISPrLocationID_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 1)
 }
 
 func WISPrLocationName_Add(p *radius.Packet, value []byte) (err error) {
@@ -275,6 +309,10 @@ func WISPrLocationName_SetString(p *radius.Packet, value string) (err error) {
 	return _WISPr_SetVendor(p, 2, a)
 }
 
+func WISPrLocationName_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 2)
+}
+
 func WISPrLogoffURL_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -363,6 +401,10 @@ func WISPrLogoffURL_SetString(p *radius.Packet, value string) (err error) {
 		return
 	}
 	return _WISPr_SetVendor(p, 3, a)
+}
+
+func WISPrLogoffURL_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 3)
 }
 
 func WISPrRedirectionURL_Add(p *radius.Packet, value []byte) (err error) {
@@ -455,6 +497,10 @@ func WISPrRedirectionURL_SetString(p *radius.Packet, value string) (err error) {
 	return _WISPr_SetVendor(p, 4, a)
 }
 
+func WISPrRedirectionURL_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 4)
+}
+
 type WISPrBandwidthMinUp uint32
 
 var WISPrBandwidthMinUp_Strings = map[WISPrBandwidthMinUp]string{}
@@ -506,6 +552,10 @@ func WISPrBandwidthMinUp_Lookup(p *radius.Packet) (value WISPrBandwidthMinUp, er
 func WISPrBandwidthMinUp_Set(p *radius.Packet, value WISPrBandwidthMinUp) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _WISPr_SetVendor(p, 5, a)
+}
+
+func WISPrBandwidthMinUp_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 5)
 }
 
 type WISPrBandwidthMinDown uint32
@@ -561,6 +611,10 @@ func WISPrBandwidthMinDown_Set(p *radius.Packet, value WISPrBandwidthMinDown) (e
 	return _WISPr_SetVendor(p, 6, a)
 }
 
+func WISPrBandwidthMinDown_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 6)
+}
+
 type WISPrBandwidthMaxUp uint32
 
 var WISPrBandwidthMaxUp_Strings = map[WISPrBandwidthMaxUp]string{}
@@ -614,6 +668,10 @@ func WISPrBandwidthMaxUp_Set(p *radius.Packet, value WISPrBandwidthMaxUp) (err e
 	return _WISPr_SetVendor(p, 7, a)
 }
 
+func WISPrBandwidthMaxUp_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 7)
+}
+
 type WISPrBandwidthMaxDown uint32
 
 var WISPrBandwidthMaxDown_Strings = map[WISPrBandwidthMaxDown]string{}
@@ -665,6 +723,10 @@ func WISPrBandwidthMaxDown_Lookup(p *radius.Packet) (value WISPrBandwidthMaxDown
 func WISPrBandwidthMaxDown_Set(p *radius.Packet, value WISPrBandwidthMaxDown) (err error) {
 	a := radius.NewInteger(uint32(value))
 	return _WISPr_SetVendor(p, 8, a)
+}
+
+func WISPrBandwidthMaxDown_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 8)
 }
 
 func WISPrSessionTerminateTime_Add(p *radius.Packet, value []byte) (err error) {
@@ -757,6 +819,10 @@ func WISPrSessionTerminateTime_SetString(p *radius.Packet, value string) (err er
 	return _WISPr_SetVendor(p, 9, a)
 }
 
+func WISPrSessionTerminateTime_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 9)
+}
+
 func WISPrSessionTerminateEndOfDay_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -847,6 +913,10 @@ func WISPrSessionTerminateEndOfDay_SetString(p *radius.Packet, value string) (er
 	return _WISPr_SetVendor(p, 10, a)
 }
 
+func WISPrSessionTerminateEndOfDay_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 10)
+}
+
 func WISPrBillingClassOfService_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -935,4 +1005,8 @@ func WISPrBillingClassOfService_SetString(p *radius.Packet, value string) (err e
 		return
 	}
 	return _WISPr_SetVendor(p, 11, a)
+}
+
+func WISPrBillingClassOfService_Del(p *radius.Packet) {
+	_WISPr_DelVendor(p, 11)
 }

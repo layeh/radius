@@ -103,3 +103,7 @@ func FirstName_SetString(p *radius.Packet, value string) (err error) {
 	p.Set(FirstName_Type, a)
 	return
 }
+
+func FirstName_Del(p *radius.Packet) {
+	p.Attributes.Del(FirstName_Type)
+}

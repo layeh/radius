@@ -380,6 +380,15 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	return`)
 	}
 	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
+	}
+	p(w, `}`)
 }
 
 func (g *Generator) genAttributeStringOctetsConcat(w io.Writer, attr *dictionary.Attribute) {
@@ -473,6 +482,11 @@ func (g *Generator) genAttributeStringOctetsConcat(w io.Writer, attr *dictionary
 	p(w, `	}`)
 	p(w, `	p.Attributes[`, ident, `_Type] = attrs`)
 	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	p(w, `	p.Attributes.Del(`, ident, `_Type)`)
 	p(w, `}`)
 }
 
@@ -624,6 +638,15 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 		p(w, `	return`)
 	}
 	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
+	}
+	p(w, `}`)
 }
 
 func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
@@ -751,6 +774,15 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	return`)
 	}
 	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
+	}
+	p(w, `}`)
 }
 
 func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
@@ -876,6 +908,15 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
 		p(w, `	return`)
+	}
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
 	}
 	p(w, `}`)
 }
@@ -1066,6 +1107,15 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	} else {
 		p(w, `	p.Set(`, ident, `_Type, a)`)
 		p(w, `	return`)
+	}
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
 	}
 	p(w, `}`)
 }

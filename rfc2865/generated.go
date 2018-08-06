@@ -147,6 +147,10 @@ func UserName_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func UserName_Del(p *radius.Packet) {
+	p.Attributes.Del(UserName_Type)
+}
+
 func UserPassword_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
@@ -249,6 +253,10 @@ func UserPassword_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func UserPassword_Del(p *radius.Packet) {
+	p.Attributes.Del(UserPassword_Type)
+}
+
 func CHAPPassword_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -343,6 +351,10 @@ func CHAPPassword_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func CHAPPassword_Del(p *radius.Packet) {
+	p.Attributes.Del(CHAPPassword_Type)
+}
+
 func NASIPAddress_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -388,6 +400,10 @@ func NASIPAddress_Set(p *radius.Packet, value net.IP) (err error) {
 	}
 	p.Set(NASIPAddress_Type, a)
 	return
+}
+
+func NASIPAddress_Del(p *radius.Packet) {
+	p.Attributes.Del(NASIPAddress_Type)
 }
 
 type NASPort uint32
@@ -443,6 +459,10 @@ func NASPort_Set(p *radius.Packet, value NASPort) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(NASPort_Type, a)
 	return
+}
+
+func NASPort_Del(p *radius.Packet) {
+	p.Attributes.Del(NASPort_Type)
 }
 
 type ServiceType uint32
@@ -526,6 +546,10 @@ func ServiceType_Set(p *radius.Packet, value ServiceType) (err error) {
 	return
 }
 
+func ServiceType_Del(p *radius.Packet) {
+	p.Attributes.Del(ServiceType_Type)
+}
+
 type FramedProtocol uint32
 
 const (
@@ -597,6 +621,10 @@ func FramedProtocol_Set(p *radius.Packet, value FramedProtocol) (err error) {
 	return
 }
 
+func FramedProtocol_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedProtocol_Type)
+}
+
 func FramedIPAddress_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -644,6 +672,10 @@ func FramedIPAddress_Set(p *radius.Packet, value net.IP) (err error) {
 	return
 }
 
+func FramedIPAddress_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPAddress_Type)
+}
+
 func FramedIPNetmask_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -689,6 +721,10 @@ func FramedIPNetmask_Set(p *radius.Packet, value net.IP) (err error) {
 	}
 	p.Set(FramedIPNetmask_Type, a)
 	return
+}
+
+func FramedIPNetmask_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPNetmask_Type)
 }
 
 type FramedRouting uint32
@@ -756,6 +792,10 @@ func FramedRouting_Set(p *radius.Packet, value FramedRouting) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(FramedRouting_Type, a)
 	return
+}
+
+func FramedRouting_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedRouting_Type)
 }
 
 func FilterID_Add(p *radius.Packet, value []byte) (err error) {
@@ -852,6 +892,10 @@ func FilterID_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func FilterID_Del(p *radius.Packet) {
+	p.Attributes.Del(FilterID_Type)
+}
+
 type FramedMTU uint32
 
 var FramedMTU_Strings = map[FramedMTU]string{}
@@ -905,6 +949,10 @@ func FramedMTU_Set(p *radius.Packet, value FramedMTU) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(FramedMTU_Type, a)
 	return
+}
+
+func FramedMTU_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedMTU_Type)
 }
 
 type FramedCompression uint32
@@ -974,6 +1022,10 @@ func FramedCompression_Set(p *radius.Packet, value FramedCompression) (err error
 	return
 }
 
+func FramedCompression_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedCompression_Type)
+}
+
 func LoginIPHost_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -1019,6 +1071,10 @@ func LoginIPHost_Set(p *radius.Packet, value net.IP) (err error) {
 	}
 	p.Set(LoginIPHost_Type, a)
 	return
+}
+
+func LoginIPHost_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginIPHost_Type)
 }
 
 type LoginService uint32
@@ -1096,6 +1152,10 @@ func LoginService_Set(p *radius.Packet, value LoginService) (err error) {
 	return
 }
 
+func LoginService_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginService_Type)
+}
+
 type LoginTCPPort uint32
 
 const (
@@ -1159,6 +1219,10 @@ func LoginTCPPort_Set(p *radius.Packet, value LoginTCPPort) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(LoginTCPPort_Type, a)
 	return
+}
+
+func LoginTCPPort_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginTCPPort_Type)
 }
 
 func ReplyMessage_Add(p *radius.Packet, value []byte) (err error) {
@@ -1255,6 +1319,10 @@ func ReplyMessage_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func ReplyMessage_Del(p *radius.Packet) {
+	p.Attributes.Del(ReplyMessage_Type)
+}
+
 func CallbackNumber_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1347,6 +1415,10 @@ func CallbackNumber_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(CallbackNumber_Type, a)
 	return
+}
+
+func CallbackNumber_Del(p *radius.Packet) {
+	p.Attributes.Del(CallbackNumber_Type)
 }
 
 func CallbackID_Add(p *radius.Packet, value []byte) (err error) {
@@ -1443,6 +1515,10 @@ func CallbackID_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func CallbackID_Del(p *radius.Packet) {
+	p.Attributes.Del(CallbackID_Type)
+}
+
 func FramedRoute_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1537,6 +1613,10 @@ func FramedRoute_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func FramedRoute_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedRoute_Type)
+}
+
 func FramedIPXNetwork_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPAddr(value)
@@ -1582,6 +1662,10 @@ func FramedIPXNetwork_Set(p *radius.Packet, value net.IP) (err error) {
 	}
 	p.Set(FramedIPXNetwork_Type, a)
 	return
+}
+
+func FramedIPXNetwork_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPXNetwork_Type)
 }
 
 func State_Add(p *radius.Packet, value []byte) (err error) {
@@ -1678,6 +1762,10 @@ func State_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func State_Del(p *radius.Packet) {
+	p.Attributes.Del(State_Type)
+}
+
 func Class_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -1772,6 +1860,10 @@ func Class_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func Class_Del(p *radius.Packet) {
+	p.Attributes.Del(Class_Type)
+}
+
 type SessionTimeout uint32
 
 var SessionTimeout_Strings = map[SessionTimeout]string{}
@@ -1827,6 +1919,10 @@ func SessionTimeout_Set(p *radius.Packet, value SessionTimeout) (err error) {
 	return
 }
 
+func SessionTimeout_Del(p *radius.Packet) {
+	p.Attributes.Del(SessionTimeout_Type)
+}
+
 type IdleTimeout uint32
 
 var IdleTimeout_Strings = map[IdleTimeout]string{}
@@ -1880,6 +1976,10 @@ func IdleTimeout_Set(p *radius.Packet, value IdleTimeout) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(IdleTimeout_Type, a)
 	return
+}
+
+func IdleTimeout_Del(p *radius.Packet) {
+	p.Attributes.Del(IdleTimeout_Type)
 }
 
 type TerminationAction uint32
@@ -1943,6 +2043,10 @@ func TerminationAction_Set(p *radius.Packet, value TerminationAction) (err error
 	a := radius.NewInteger(uint32(value))
 	p.Set(TerminationAction_Type, a)
 	return
+}
+
+func TerminationAction_Del(p *radius.Packet) {
+	p.Attributes.Del(TerminationAction_Type)
 }
 
 func CalledStationID_Add(p *radius.Packet, value []byte) (err error) {
@@ -2039,6 +2143,10 @@ func CalledStationID_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func CalledStationID_Del(p *radius.Packet) {
+	p.Attributes.Del(CalledStationID_Type)
+}
+
 func CallingStationID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2131,6 +2239,10 @@ func CallingStationID_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(CallingStationID_Type, a)
 	return
+}
+
+func CallingStationID_Del(p *radius.Packet) {
+	p.Attributes.Del(CallingStationID_Type)
 }
 
 func NASIdentifier_Add(p *radius.Packet, value []byte) (err error) {
@@ -2227,6 +2339,10 @@ func NASIdentifier_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func NASIdentifier_Del(p *radius.Packet) {
+	p.Attributes.Del(NASIdentifier_Type)
+}
+
 func ProxyState_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2319,6 +2435,10 @@ func ProxyState_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(ProxyState_Type, a)
 	return
+}
+
+func ProxyState_Del(p *radius.Packet) {
+	p.Attributes.Del(ProxyState_Type)
 }
 
 func LoginLATService_Add(p *radius.Packet, value []byte) (err error) {
@@ -2415,6 +2535,10 @@ func LoginLATService_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func LoginLATService_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginLATService_Type)
+}
+
 func LoginLATNode_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2507,6 +2631,10 @@ func LoginLATNode_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(LoginLATNode_Type, a)
 	return
+}
+
+func LoginLATNode_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginLATNode_Type)
 }
 
 func LoginLATGroup_Add(p *radius.Packet, value []byte) (err error) {
@@ -2603,6 +2731,10 @@ func LoginLATGroup_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func LoginLATGroup_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginLATGroup_Type)
+}
+
 type FramedAppleTalkLink uint32
 
 var FramedAppleTalkLink_Strings = map[FramedAppleTalkLink]string{}
@@ -2658,6 +2790,10 @@ func FramedAppleTalkLink_Set(p *radius.Packet, value FramedAppleTalkLink) (err e
 	return
 }
 
+func FramedAppleTalkLink_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedAppleTalkLink_Type)
+}
+
 type FramedAppleTalkNetwork uint32
 
 var FramedAppleTalkNetwork_Strings = map[FramedAppleTalkNetwork]string{}
@@ -2711,6 +2847,10 @@ func FramedAppleTalkNetwork_Set(p *radius.Packet, value FramedAppleTalkNetwork) 
 	a := radius.NewInteger(uint32(value))
 	p.Set(FramedAppleTalkNetwork_Type, a)
 	return
+}
+
+func FramedAppleTalkNetwork_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedAppleTalkNetwork_Type)
 }
 
 func FramedAppleTalkZone_Add(p *radius.Packet, value []byte) (err error) {
@@ -2807,6 +2947,10 @@ func FramedAppleTalkZone_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func FramedAppleTalkZone_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedAppleTalkZone_Type)
+}
+
 func CHAPChallenge_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -2899,6 +3043,10 @@ func CHAPChallenge_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(CHAPChallenge_Type, a)
 	return
+}
+
+func CHAPChallenge_Del(p *radius.Packet) {
+	p.Attributes.Del(CHAPChallenge_Type)
 }
 
 type NASPortType uint32
@@ -3000,6 +3148,10 @@ func NASPortType_Set(p *radius.Packet, value NASPortType) (err error) {
 	return
 }
 
+func NASPortType_Del(p *radius.Packet) {
+	p.Attributes.Del(NASPortType_Type)
+}
+
 type PortLimit uint32
 
 var PortLimit_Strings = map[PortLimit]string{}
@@ -3053,6 +3205,10 @@ func PortLimit_Set(p *radius.Packet, value PortLimit) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(PortLimit_Type, a)
 	return
+}
+
+func PortLimit_Del(p *radius.Packet) {
+	p.Attributes.Del(PortLimit_Type)
 }
 
 func LoginLATPort_Add(p *radius.Packet, value []byte) (err error) {
@@ -3147,4 +3303,8 @@ func LoginLATPort_SetString(p *radius.Packet, value string) (err error) {
 	}
 	p.Set(LoginLATPort_Type, a)
 	return
+}
+
+func LoginLATPort_Del(p *radius.Packet) {
+	p.Attributes.Del(LoginLATPort_Type)
 }

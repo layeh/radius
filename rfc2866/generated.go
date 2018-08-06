@@ -94,6 +94,10 @@ func AcctStatusType_Set(p *radius.Packet, value AcctStatusType) (err error) {
 	return
 }
 
+func AcctStatusType_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctStatusType_Type)
+}
+
 type AcctDelayTime uint32
 
 var AcctDelayTime_Strings = map[AcctDelayTime]string{}
@@ -147,6 +151,10 @@ func AcctDelayTime_Set(p *radius.Packet, value AcctDelayTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctDelayTime_Type, a)
 	return
+}
+
+func AcctDelayTime_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctDelayTime_Type)
 }
 
 type AcctInputOctets uint32
@@ -204,6 +212,10 @@ func AcctInputOctets_Set(p *radius.Packet, value AcctInputOctets) (err error) {
 	return
 }
 
+func AcctInputOctets_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctInputOctets_Type)
+}
+
 type AcctOutputOctets uint32
 
 var AcctOutputOctets_Strings = map[AcctOutputOctets]string{}
@@ -257,6 +269,10 @@ func AcctOutputOctets_Set(p *radius.Packet, value AcctOutputOctets) (err error) 
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputOctets_Type, a)
 	return
+}
+
+func AcctOutputOctets_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctOutputOctets_Type)
 }
 
 func AcctSessionID_Add(p *radius.Packet, value []byte) (err error) {
@@ -353,6 +369,10 @@ func AcctSessionID_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func AcctSessionID_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctSessionID_Type)
+}
+
 type AcctAuthentic uint32
 
 const (
@@ -420,6 +440,10 @@ func AcctAuthentic_Set(p *radius.Packet, value AcctAuthentic) (err error) {
 	return
 }
 
+func AcctAuthentic_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctAuthentic_Type)
+}
+
 type AcctSessionTime uint32
 
 var AcctSessionTime_Strings = map[AcctSessionTime]string{}
@@ -473,6 +497,10 @@ func AcctSessionTime_Set(p *radius.Packet, value AcctSessionTime) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctSessionTime_Type, a)
 	return
+}
+
+func AcctSessionTime_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctSessionTime_Type)
 }
 
 type AcctInputPackets uint32
@@ -530,6 +558,10 @@ func AcctInputPackets_Set(p *radius.Packet, value AcctInputPackets) (err error) 
 	return
 }
 
+func AcctInputPackets_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctInputPackets_Type)
+}
+
 type AcctOutputPackets uint32
 
 var AcctOutputPackets_Strings = map[AcctOutputPackets]string{}
@@ -583,6 +615,10 @@ func AcctOutputPackets_Set(p *radius.Packet, value AcctOutputPackets) (err error
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctOutputPackets_Type, a)
 	return
+}
+
+func AcctOutputPackets_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctOutputPackets_Type)
 }
 
 type AcctTerminateCause uint32
@@ -680,6 +716,10 @@ func AcctTerminateCause_Set(p *radius.Packet, value AcctTerminateCause) (err err
 	return
 }
 
+func AcctTerminateCause_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctTerminateCause_Type)
+}
+
 func AcctMultiSessionID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)
@@ -774,6 +814,10 @@ func AcctMultiSessionID_SetString(p *radius.Packet, value string) (err error) {
 	return
 }
 
+func AcctMultiSessionID_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctMultiSessionID_Type)
+}
+
 type AcctLinkCount uint32
 
 var AcctLinkCount_Strings = map[AcctLinkCount]string{}
@@ -827,4 +871,8 @@ func AcctLinkCount_Set(p *radius.Packet, value AcctLinkCount) (err error) {
 	a := radius.NewInteger(uint32(value))
 	p.Set(AcctLinkCount_Type, a)
 	return
+}
+
+func AcctLinkCount_Del(p *radius.Packet) {
+	p.Attributes.Del(AcctLinkCount_Type)
 }

@@ -110,3 +110,7 @@ func ErrorCause_Set(p *radius.Packet, value ErrorCause) (err error) {
 	p.Set(ErrorCause_Type, a)
 	return
 }
+
+func ErrorCause_Del(p *radius.Packet) {
+	p.Attributes.Del(ErrorCause_Type)
+}
