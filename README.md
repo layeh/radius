@@ -18,7 +18,7 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"layeh.com/radius"
 	. "layeh.com/radius/rfc2865"
@@ -30,10 +30,49 @@ func main() {
 	UserPassword_SetString(packet, "12345")
 	response, err := radius.Exchange(context.Background(), packet, "localhost:1812")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println("Code:", response.Code)
+	log.Println("Code:", response.Code)
+}
+```
+
+## Server example
+
+```go
+package main
+
+import (
+	"log"
+
+	"layeh.com/radius"
+	. "layeh.com/radius/rfc2865"
+)
+
+func main() {
+	handler := func(w radius.ResponseWriter, r *radius.Request) {
+		username := UserName_GetString(r.Packet)
+		password := UserPassword_GetString(r.Packet)
+
+		var code radius.Code
+		if username == "tim" && password == "12345" {
+			code = radius.CodeAccessAccept
+		} else {
+			code = radius.CodeAccessReject
+		}
+		log.Printf("Writing %v to %v", code, r.RemoteAddr)
+		w.Write(r.Response(code))
+	}
+
+	server := radius.PacketServer{
+		Handler:      radius.HandlerFunc(handler),
+		SecretSource: radius.StaticSecretSource([]byte(`secret`)),
+	}
+
+	log.Printf("Starting server on :1812")
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
 ```
 

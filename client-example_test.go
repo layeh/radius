@@ -2,7 +2,7 @@ package radius_test
 
 import (
 	"context"
-	"fmt"
+	"log"
 
 	"layeh.com/radius"
 	. "layeh.com/radius/rfc2865"
@@ -19,8 +19,8 @@ func Example_client() {
 	UserPassword_SetString(packet, Password)
 	response, err := radius.Exchange(context.Background(), packet, "localhost:1812")
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 
-	fmt.Println("Code:", response.Code)
+	log.Println("Code:", response.Code)
 }
