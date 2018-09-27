@@ -8,8 +8,8 @@ import (
 )
 
 var (
-	Username = "tim"
-	Password = "12345"
+	ServerUsername = "tim"
+	ServerPassword = "12345"
 )
 
 func Example_packetServer() {
@@ -18,7 +18,7 @@ func Example_packetServer() {
 		password := UserPassword_GetString(r.Packet)
 
 		var code radius.Code
-		if username == Username && password == Password {
+		if username == ServerUsername && password == ServerPassword {
 			code = radius.CodeAccessAccept
 		} else {
 			code = radius.CodeAccessReject
