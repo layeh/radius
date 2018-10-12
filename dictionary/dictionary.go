@@ -58,7 +58,14 @@ const (
 	AttributeInteger64
 
 	AttributeVSA
-	// TODO: non-standard types?
+
+	AttributeEther
+	AttributeABinary
+	AttributeByte
+	AttributeShort
+	AttributeSigned
+	AttributeTLV
+	AttributeIPv4Prefix
 )
 
 func (t AttributeType) String() string {
@@ -81,8 +88,24 @@ func (t AttributeType) String() string {
 		return "ifid"
 	case AttributeInteger64:
 		return "integer64"
+
 	case AttributeVSA:
 		return "vsa"
+
+	case AttributeEther:
+		return "ether"
+	case AttributeABinary:
+		return "abinary"
+	case AttributeByte:
+		return "byte"
+	case AttributeShort:
+		return "short"
+	case AttributeSigned:
+		return "signed"
+	case AttributeTLV:
+		return "tlv"
+	case AttributeIPv4Prefix:
+		return "ipv4prefix"
 	}
 	return "AttributeType(" + strconv.Itoa(int(t)) + ")"
 }

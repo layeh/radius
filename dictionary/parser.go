@@ -340,6 +340,20 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 		attr.Type = AttributeInteger64
 	case strings.EqualFold(f[3], "vsa"):
 		attr.Type = AttributeVSA
+	case strings.EqualFold(f[3], "ether"):
+		attr.Type = AttributeEther
+	case strings.EqualFold(f[3], "abinary"):
+		attr.Type = AttributeABinary
+	case strings.EqualFold(f[3], "byte"):
+		attr.Type = AttributeByte
+	case strings.EqualFold(f[3], "short"):
+		attr.Type = AttributeShort
+	case strings.EqualFold(f[3], "signed"):
+		attr.Type = AttributeSigned
+	case strings.EqualFold(f[3], "tlv"):
+		attr.Type = AttributeTLV
+	case strings.EqualFold(f[3], "ipv4prefix"):
+		attr.Type = AttributeIPv4Prefix
 	default:
 		return nil, &UnknownAttributeTypeError{
 			Type: f[3],
