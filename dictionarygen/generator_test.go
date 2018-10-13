@@ -25,6 +25,9 @@ func TestTestData(t *testing.T) {
 		Err           string
 	}{
 		{
+			Name: "extended",
+		},
+		{
 			Name: "identical-attributes",
 			InitParser: func(p *dictionary.Parser) {
 				p.IgnoreIdenticalAttributes = true

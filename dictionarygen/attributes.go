@@ -1119,3 +1119,135 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	p(w, `}`)
 }
+
+
+func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
+	ident := identifier(attr.Name)
+	var vendorIdent string
+	if vendor != nil {
+		vendorIdent = identifier(vendor.Name)
+	}
+
+	p(w)
+	if !attr.HasTag() {
+		p(w, `func `, ident, `_Add(p *radius.Packet, value byte) (err error) {`)
+	} else {
+		p(w, `func `, ident, `_Add(p *radius.Packet, tag, value byte) (err error) {`)
+	}
+	p(w, `	a := radius.Attribute{value}`)
+	if attr.HasTag() {
+		p(w, `		a, err = radius.NewTag(tag, a)`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
+	}
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
+	} else {
+		p(w, `	p.Add(`, ident, `_Type, a)`)
+		p(w, `	return`)
+	}
+	p(w, `}`)
+
+	p(w)
+	if !attr.HasTag() {
+		p(w, `func `, ident, `_Get(p *radius.Packet) (value byte) {`)
+		p(w, `	value, _ = `, ident, `_Lookup(p)`)
+	} else {
+		p(w, `func `, ident, `_Get(p *radius.Packet) (tag, value byte) {`)
+		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
+	}
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	if !attr.HasTag() {
+		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []byte, err error) {`)
+	} else {
+		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags, values []byte, err error) {`)
+	}
+	if attr.HasTag() {
+		p(w, `	var tag byte`)
+	}
+	if vendor != nil {
+		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
+	} else {
+		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
+	}
+	if attr.HasTag() {
+		p(w, `		tag, attr, err = radius.Tag(attr)`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
+	}
+	p(w, `		if len(attr) != 1 {`)
+	p(w, `			err = errors.New("invalid byte")`)
+	p(w, `			return`)
+	p(w, `		}`)
+	p(w, `		values = append(values, attr[0])`)
+	if attr.HasTag() {
+		p(w, `		tags = append(tags, tag)`)
+	}
+	p(w, `	}`)
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	if !attr.HasTag() {
+		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value byte, err error) {`)
+	} else {
+		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag, value byte, err error) {`)
+	}
+	if vendor != nil {
+		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	a, ok  := p.Lookup(`, ident, `_Type)`)
+	}
+	p(w, `	if !ok {`)
+	p(w, `		err = radius.ErrNoAttribute`)
+	p(w, `		return`)
+	p(w, `	}`)
+	if attr.HasTag() {
+		p(w, `		tag, a, err = radius.Tag(a)`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
+	}
+	p(w, `	if len(a) != 1 {`)
+	p(w, `		err = errors.New("invalid byte")`)
+	p(w, `		return`)
+	p(w, `	}`)
+	p(w, `	value = a[0]`)
+	p(w, `	return`)
+	p(w, `}`)
+
+	p(w)
+	if !attr.HasTag() {
+		p(w, `func `, ident, `_Set(p *radius.Packet, value byte) (err error) {`)
+	} else {
+		p(w, `func `, ident, `_Set(p *radius.Packet, tag, value byte) (err error) {`)
+	}
+	p(w, `	a := radius.Attribute{value}`)
+	if attr.HasTag() {
+		p(w, `		tag, a, err = radius.Tag(a)`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
+	}
+	if vendor != nil {
+		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
+	} else {
+		p(w, `	p.Set(`, ident, `_Type, a)`)
+		p(w, `	return`)
+	}
+	p(w, `}`)
+
+	p(w)
+	p(w, `func `, ident, `_Del(p *radius.Packet) {`)
+	if vendor != nil {
+		p(w, `	_`, vendorIdent, `_DelVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
+	} else {
+		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
+	}
+	p(w, `}`)
+}
