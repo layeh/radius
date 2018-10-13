@@ -556,6 +556,12 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
+	if attr.HasTag() {
+		p(w, `		tag, attr, err = radius.Tag(attr)`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
+	}
 	if length == net.IPv4len {
 		p(w, `		i, err = radius.IPAddr(attr)`)
 	} else {
@@ -564,12 +570,6 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
-	if attr.HasTag() {
-		p(w, `		i, err = radius.NewTag(tag, i)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	p(w, `		values = append(values, i)`)
 	if attr.HasTag() {
 		p(w, `		tags = append(tags, tag)`)
