@@ -1,0 +1,4 @@
+VENDOR Test 32473
+BEGIN-VENDOR Test
+ATTRIBUTE Test-Vendor-Name 5 string
+END-VENDOR Test

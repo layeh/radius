@@ -1,0 +1,8 @@
+ATTRIBUTE User-Name 1 string
+ATTRIBUTE User-Password 2 octets encrypt=1
+
+ATTRIBUTE Mode 127 integer
+VALUE Mode Full 1
+VALUE Mode Half 2
+
+ATTRIBUTE ARAP-Challenge-Response 84 octets[8]

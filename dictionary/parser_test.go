@@ -34,10 +34,12 @@ func TestParseOID(t *testing.T) {
 
 func TestParser(t *testing.T) {
 	parser := Parser{
-		Opener: files,
+		Opener: &FileSystemOpener{
+			Root: "testdata",
+		},
 	}
 
-	d, err := parser.ParseFile("simple.dict")
+	d, err := parser.ParseFile("simple.dictionary")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,10 +90,12 @@ func TestParser(t *testing.T) {
 
 func TestParser_recursiveinclude(t *testing.T) {
 	parser := Parser{
-		Opener: files,
+		Opener: &FileSystemOpener{
+			Root: "testdata",
+		},
 	}
 
-	d, err := parser.ParseFile("recursive_1.dict")
+	d, err := parser.ParseFile("recursive_1.dictionary")
 	pErr, ok := err.(*ParseError)
 	if !ok || pErr == nil || d != nil {
 		t.Fatalf("got %v, expected *ParseError", pErr)

@@ -6,34 +6,17 @@ import (
 )
 
 func TestMerge(t *testing.T) {
-	files := []MemoryFile{
-		{
-			Filename: "dict1",
-			Contents: `
-VENDOR Test 32473
-BEGIN-VENDOR Test
-ATTRIBUTE Test-Vendor-Name 5 string
-END-VENDOR Test`,
-		},
-		{
-			Filename: "dict2",
-			Contents: `
-VENDOR Test 32473
-BEGIN-VENDOR Test
-ATTRIBUTE Test-Vendor-Int 10 integer
-END-VENDOR Test`,
-		},
-	}
-
 	parser := &Parser{
-		Opener: MemoryOpener(files),
+		Opener: &FileSystemOpener{
+			Root: "testdata",
+		},
 	}
-	d1, err := parser.ParseFile("dict1")
+	d1, err := parser.ParseFile("merge_1.dictionary")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	d2, err := parser.ParseFile("dict2")
+	d2, err := parser.ParseFile("merge_2.dictionary")
 	if err != nil {
 		t.Fatal(err)
 	}

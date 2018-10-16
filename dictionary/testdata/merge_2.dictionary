@@ -1,0 +1,4 @@
+VENDOR Test 32473
+BEGIN-VENDOR Test
+ATTRIBUTE Test-Vendor-Int 10 integer
+END-VENDOR Test

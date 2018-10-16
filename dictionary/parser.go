@@ -20,9 +20,13 @@ type Opener interface {
 }
 
 type FileSystemOpener struct {
+	Root string
 }
 
 func (f *FileSystemOpener) OpenFile(name string) (File, error) {
+	if !filepath.IsAbs(name) {
+		name = filepath.Join(f.Root, name)
+	}
 	absPath, err := filepath.Abs(name)
 	if err != nil {
 		return nil, err
