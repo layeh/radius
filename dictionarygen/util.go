@@ -27,6 +27,10 @@ var firstCharacterReplacements = map[byte]string{
 	'9': "Nine",
 }
 
+var characterReplacer = strings.NewReplacer(
+	`+`, `Plus`,
+)
+
 func identifier(name string) string {
 	if len(name) == 0 {
 		return ""
@@ -35,6 +39,8 @@ func identifier(name string) string {
 	if replacement, ok := firstCharacterReplacements[name[0]]; ok {
 		name = replacement + name[1:]
 	}
+
+	name = characterReplacer.Replace(name)
 
 	fields := strings.FieldsFunc(name, func(r rune) bool {
 		return !unicode.IsNumber(r) && !unicode.IsLetter(r)

@@ -37,6 +37,9 @@ func TestTestData(t *testing.T) {
 			Name: "identifier-collision",
 			Err:  "conflicting identifier between First_Name (200) and First-Name (201)",
 		},
+		{
+			Name: "value-collision",
+		},
 	}
 
 	for _, tt := range tbl {
@@ -121,21 +124,46 @@ func generateGoDoc(source []byte) ([]byte, error) {
 		Mode:     printer.TabIndent,
 	}
 
-	fmt.Fprintf(&b, "Constants:\n")
-	for _, c := range d.Consts {
-		if err := printCfg.Fprint(&b, fs, c.Decl); err != nil {
-			return nil, err
+	if len(d.Consts) > 0 {
+		fmt.Fprintf(&b, "Constants:\n")
+		for _, c := range d.Consts {
+			if err := printCfg.Fprint(&b, fs, c.Decl); err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(&b, "\n")
 		}
-		fmt.Fprintf(&b, "\n")
 	}
 
-	fmt.Fprintf(&b, "Functions:\n")
-	for _, fn := range d.Funcs {
-		fmt.Fprintf(&b, "\t")
-		if err := printCfg.Fprint(&b, fs, fn.Decl); err != nil {
-			return nil, err
+	if len(d.Types) > 0 {
+		fmt.Fprintf(&b, "Types:\n")
+		for _, t := range d.Types {
+			if err := printCfg.Fprint(&b, fs, t.Decl); err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(&b, "\n")
+
+			if len(t.Consts) > 0 {
+				printCfg.Indent = 2
+				for _, c := range t.Consts {
+					if err := printCfg.Fprint(&b, fs, c.Decl); err != nil {
+						return nil, err
+					}
+				}
+				printCfg.Indent = 1
+				fmt.Fprintf(&b, "\n")
+			}
 		}
-		fmt.Fprintf(&b, "\n")
+	}
+
+	if len(d.Funcs) > 0 {
+		fmt.Fprintf(&b, "Functions:\n")
+		for _, fn := range d.Funcs {
+			fmt.Fprintf(&b, "\t")
+			if err := printCfg.Fprint(&b, fs, fn.Decl); err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(&b, "\n")
+		}
 	}
 
 	return b.Bytes(), nil

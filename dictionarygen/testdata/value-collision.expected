@@ -1,0 +1,14 @@
+Constants:
+	const (
+		DSLTransmissionSystem_Type radius.Type = 100
+	)
+Types:
+	type DSLTransmissionSystem uint32
+		const (
+			DSLTransmissionSystem_Value_ADSL2	DSLTransmissionSystem	= 2
+			DSLTransmissionSystem_Value_ADSL2Plus	DSLTransmissionSystem	= 3
+		)
+Functions:
+		func DSLTransmissionSystem_Add(p *radius.Packet, value DSLTransmissionSystem) (err error)
+		func DSLTransmissionSystem_Del(p *radius.Packet)
+		func DSLTransmissionSystem_Set(p *radius.Packet, value DSLTransmissionSystem) (err error)
