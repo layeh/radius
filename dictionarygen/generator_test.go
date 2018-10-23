@@ -152,6 +152,17 @@ func generateGoDoc(source []byte) ([]byte, error) {
 				printCfg.Indent = 1
 				fmt.Fprintf(&b, "\n")
 			}
+
+			if len(t.Methods) > 0 {
+				printCfg.Indent = 2
+				for _, c := range t.Methods {
+					if err := printCfg.Fprint(&b, fs, c.Decl); err != nil {
+						return nil, err
+					}
+				}
+				printCfg.Indent = 1
+				fmt.Fprintf(&b, "\n")
+			}
 		}
 	}
 

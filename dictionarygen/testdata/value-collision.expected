@@ -8,6 +8,7 @@ Types:
 			DSLTransmissionSystem_Value_ADSL2	DSLTransmissionSystem	= 2
 			DSLTransmissionSystem_Value_ADSL2Plus	DSLTransmissionSystem	= 3
 		)
+		func (a DSLTransmissionSystem) String() string
 Functions:
 		func DSLTransmissionSystem_Add(p *radius.Packet, value DSLTransmissionSystem) (err error)
 		func DSLTransmissionSystem_Del(p *radius.Packet)
