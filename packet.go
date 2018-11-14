@@ -97,7 +97,7 @@ func (p *Packet) Encode() ([]byte, error) {
 	p.Attributes.encodeTo(b[20:])
 
 	switch p.Code {
-	case CodeAccessRequest:
+	case CodeAccessRequest, CodeStatusServer:
 		copy(b[4:20], p.Authenticator[:])
 	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge, CodeDisconnectRequest, CodeDisconnectACK, CodeDisconnectNAK, CodeCoARequest, CodeCoAACK, CodeCoANAK:
 		hash := md5.New()
@@ -143,7 +143,7 @@ func IsAuthenticRequest(request, secret []byte) bool {
 	}
 
 	switch Code(request[0]) {
-	case CodeAccessRequest:
+	case CodeAccessRequest, CodeStatusServer:
 		return true
 	case CodeAccountingRequest, CodeDisconnectRequest, CodeCoARequest:
 		hash := md5.New()

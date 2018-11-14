@@ -2,12 +2,14 @@ package radius_test
 
 import (
 	"bytes"
+	"encoding/hex"
 	"net"
 	"strings"
 	"testing"
 
 	"layeh.com/radius"
 	"layeh.com/radius/rfc2865"
+	"layeh.com/radius/rfc2869"
 )
 
 func Test_RFC2865_7_1(t *testing.T) {
@@ -168,6 +170,49 @@ func Test_RFC2865_7_2(t *testing.T) {
 	}
 	if rfc2865.FramedMTU_Get(p) != 1500 {
 		t.Fatal("expecting Framed-MTU = 1500")
+	}
+}
+
+func Test_RFC5997_6_1(t *testing.T) {
+	secret := []byte(`xyzzy5461`)
+
+	request := []byte{
+		0x0c, 0xda, 0x00, 0x26, 0x8a, 0x54, 0xf4, 0x68, 0x6f, 0xb3, 0x94, 0xc5, 0x28, 0x66, 0xe3, 0x02,
+		0x18, 0x5d, 0x06, 0x23, 0x50, 0x12, 0x5a, 0x66, 0x5e, 0x2e, 0x1e, 0x84, 0x11, 0xf3, 0xe2, 0x43,
+		0x82, 0x20, 0x97, 0xc8, 0x4f, 0xa3,
+	}
+	p, err := radius.Parse(request, secret)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if p.Code != radius.CodeStatusServer {
+		t.Fatalf("expecting Code = Status-Server")
+	}
+	if p.Identifier != 218 {
+		t.Fatalf("expecting ID = 218")
+	}
+	if hex.EncodeToString(rfc2869.MessageAuthenticator_Get(p)) != "5a665e2e1e8411f3e243822097c84fa3" {
+		t.Fatalf("expecting Message-Authenticator = 5a665e2e1e8411f3e243822097c84fa3")
+	}
+	if encoded, err := p.Encode(); err != nil || !bytes.Equal(request, encoded) {
+		t.Fatal("got error or mismatched encodeded")
+	}
+
+	resp := p.Response(radius.CodeAccessAccept)
+	if resp.Code != radius.CodeAccessAccept {
+		t.Fatalf("expecting Code = Access-Accept")
+	}
+	if resp.Identifier != 218 {
+		t.Fatalf("expecting ID = 218")
+	}
+
+	response, err := resp.Encode()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !radius.IsAuthenticResponse(response, request, secret) {
+		t.Fatalf("non-authentic response")
 	}
 }
 
