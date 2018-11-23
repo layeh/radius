@@ -9,13 +9,14 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 
 	"layeh.com/radius/dictionary"
 	"layeh.com/radius/dictionarygen"
 )
 
 func main() {
-	resp, err := http.Get(`https://support.arubanetworks.com/ToolsResources/tabid/76/DMXModule/514/Command/Core_Download/Default.aspx?EntryId=156`)
+	resp, err := http.Get(`http://support.arubanetworks.com/ToolsResources/tabid/76/DMXModule/514/Command/Core_Download/Method/attachment/Default.aspx?EntryId=31244`)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -24,6 +25,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if err := ioutil.WriteFile("main.dictionary", body, 0644); err != nil {
+		log.Fatal(err)
+	}
+	defer os.Remove("main.dictionary")
 
 	parser := dictionary.Parser{
 		Opener: restrictedOpener{

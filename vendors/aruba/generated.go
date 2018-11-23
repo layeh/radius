@@ -2330,7 +2330,15 @@ func ArubaAirGroupSharedRole_Del(p *radius.Packet) {
 
 type ArubaAirGroupDeviceType uint32
 
-var ArubaAirGroupDeviceType_Strings = map[ArubaAirGroupDeviceType]string{}
+const (
+	ArubaAirGroupDeviceType_Value_PersonalDevice ArubaAirGroupDeviceType = 1
+	ArubaAirGroupDeviceType_Value_SharedDevice   ArubaAirGroupDeviceType = 2
+)
+
+var ArubaAirGroupDeviceType_Strings = map[ArubaAirGroupDeviceType]string{
+	ArubaAirGroupDeviceType_Value_PersonalDevice: "Personal-Device",
+	ArubaAirGroupDeviceType_Value_SharedDevice:   "Shared-Device",
+}
 
 func (a ArubaAirGroupDeviceType) String() string {
 	if str, ok := ArubaAirGroupDeviceType_Strings[a]; ok {
@@ -3282,7 +3290,15 @@ func ArubaNetworkSSOToken_Del(p *radius.Packet) {
 
 type ArubaAirGroupVersion uint32
 
-var ArubaAirGroupVersion_Strings = map[ArubaAirGroupVersion]string{}
+const (
+	ArubaAirGroupVersion_Value_AirGroupV1 ArubaAirGroupVersion = 1
+	ArubaAirGroupVersion_Value_AirGroupV2 ArubaAirGroupVersion = 2
+)
+
+var ArubaAirGroupVersion_Strings = map[ArubaAirGroupVersion]string{
+	ArubaAirGroupVersion_Value_AirGroupV1: "AirGroup-v1",
+	ArubaAirGroupVersion_Value_AirGroupV2: "AirGroup-v2",
+}
 
 func (a ArubaAirGroupVersion) String() string {
 	if str, ok := ArubaAirGroupVersion_Strings[a]; ok {
@@ -3335,63 +3351,6 @@ func ArubaAirGroupVersion_Set(p *radius.Packet, value ArubaAirGroupVersion) (err
 
 func ArubaAirGroupVersion_Del(p *radius.Packet) {
 	_Aruba_DelVendor(p, 38)
-}
-
-type ArubaAuthSurvMethod uint32
-
-var ArubaAuthSurvMethod_Strings = map[ArubaAuthSurvMethod]string{}
-
-func (a ArubaAuthSurvMethod) String() string {
-	if str, ok := ArubaAuthSurvMethod_Strings[a]; ok {
-		return str
-	}
-	return "ArubaAuthSurvMethod(" + strconv.FormatUint(uint64(a), 10) + ")"
-}
-
-func ArubaAuthSurvMethod_Add(p *radius.Packet, value ArubaAuthSurvMethod) (err error) {
-	a := radius.NewInteger(uint32(value))
-	return _Aruba_AddVendor(p, 39, a)
-}
-
-func ArubaAuthSurvMethod_Get(p *radius.Packet) (value ArubaAuthSurvMethod) {
-	value, _ = ArubaAuthSurvMethod_Lookup(p)
-	return
-}
-
-func ArubaAuthSurvMethod_Gets(p *radius.Packet) (values []ArubaAuthSurvMethod, err error) {
-	var i uint32
-	for _, attr := range _Aruba_GetsVendor(p, 39) {
-		i, err = radius.Integer(attr)
-		if err != nil {
-			return
-		}
-		values = append(values, ArubaAuthSurvMethod(i))
-	}
-	return
-}
-
-func ArubaAuthSurvMethod_Lookup(p *radius.Packet) (value ArubaAuthSurvMethod, err error) {
-	a, ok := _Aruba_LookupVendor(p, 39)
-	if !ok {
-		err = radius.ErrNoAttribute
-		return
-	}
-	var i uint32
-	i, err = radius.Integer(a)
-	if err != nil {
-		return
-	}
-	value = ArubaAuthSurvMethod(i)
-	return
-}
-
-func ArubaAuthSurvMethod_Set(p *radius.Packet, value ArubaAuthSurvMethod) (err error) {
-	a := radius.NewInteger(uint32(value))
-	return _Aruba_SetVendor(p, 39, a)
-}
-
-func ArubaAuthSurvMethod_Del(p *radius.Packet) {
-	_Aruba_DelVendor(p, 39)
 }
 
 type ArubaPortBounceHost uint32
@@ -3449,4 +3408,147 @@ func ArubaPortBounceHost_Set(p *radius.Packet, value ArubaPortBounceHost) (err e
 
 func ArubaPortBounceHost_Del(p *radius.Packet) {
 	_Aruba_DelVendor(p, 40)
+}
+
+func ArubaCaleaServerIP_Add(p *radius.Packet, value net.IP) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPAddr(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 41, a)
+}
+
+func ArubaCaleaServerIP_Get(p *radius.Packet) (value net.IP) {
+	value, _ = ArubaCaleaServerIP_Lookup(p)
+	return
+}
+
+func ArubaCaleaServerIP_Gets(p *radius.Packet) (values []net.IP, err error) {
+	var i net.IP
+	for _, attr := range _Aruba_GetsVendor(p, 41) {
+		i, err = radius.IPAddr(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaCaleaServerIP_Lookup(p *radius.Packet) (value net.IP, err error) {
+	a, ok := _Aruba_LookupVendor(p, 41)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value, err = radius.IPAddr(a)
+	return
+}
+
+func ArubaCaleaServerIP_Set(p *radius.Packet, value net.IP) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPAddr(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 41, a)
+}
+
+func ArubaCaleaServerIP_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 41)
+}
+
+func ArubaAdminPath_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 42, a)
+}
+
+func ArubaAdminPath_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 42, a)
+}
+
+func ArubaAdminPath_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaAdminPath_Lookup(p)
+	return
+}
+
+func ArubaAdminPath_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaAdminPath_LookupString(p)
+	return
+}
+
+func ArubaAdminPath_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 42) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaAdminPath_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 42) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaAdminPath_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 42)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaAdminPath_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 42)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaAdminPath_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 42, a)
+}
+
+func ArubaAdminPath_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 42, a)
+}
+
+func ArubaAdminPath_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 42)
 }
