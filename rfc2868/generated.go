@@ -63,9 +63,10 @@ func (a TunnelType) String() string {
 
 func TunnelType_Add(p *radius.Packet, tag byte, value TunnelType) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Add(TunnelType_Type, a)
 	return
@@ -78,11 +79,11 @@ func TunnelType_Get(p *radius.Packet) (tag byte, value TunnelType) {
 
 func TunnelType_Gets(p *radius.Packet) (tags []byte, values []TunnelType, err error) {
 	var i uint32
-	var tag byte
 	for _, attr := range p.Attributes[TunnelType_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr[0] = 0x00
 		}
 		i, err = radius.Integer(attr)
 		if err != nil {
@@ -100,9 +101,9 @@ func TunnelType_Lookup(p *radius.Packet) (tag byte, value TunnelType, err error)
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
@@ -115,9 +116,10 @@ func TunnelType_Lookup(p *radius.Packet) (tag byte, value TunnelType, err error)
 
 func TunnelType_Set(p *radius.Packet, tag byte, value TunnelType) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Set(TunnelType_Type, a)
 	return
@@ -174,9 +176,10 @@ func (a TunnelMediumType) String() string {
 
 func TunnelMediumType_Add(p *radius.Packet, tag byte, value TunnelMediumType) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Add(TunnelMediumType_Type, a)
 	return
@@ -189,11 +192,11 @@ func TunnelMediumType_Get(p *radius.Packet) (tag byte, value TunnelMediumType) {
 
 func TunnelMediumType_Gets(p *radius.Packet) (tags []byte, values []TunnelMediumType, err error) {
 	var i uint32
-	var tag byte
 	for _, attr := range p.Attributes[TunnelMediumType_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr[0] = 0x00
 		}
 		i, err = radius.Integer(attr)
 		if err != nil {
@@ -211,9 +214,9 @@ func TunnelMediumType_Lookup(p *radius.Packet) (tag byte, value TunnelMediumType
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
@@ -226,9 +229,10 @@ func TunnelMediumType_Lookup(p *radius.Packet) (tag byte, value TunnelMediumType
 
 func TunnelMediumType_Set(p *radius.Packet, tag byte, value TunnelMediumType) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Set(TunnelMediumType_Type, a)
 	return
@@ -244,9 +248,8 @@ func TunnelClientEndpoint_Add(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelClientEndpoint_Type, a)
 	return
@@ -258,9 +261,8 @@ func TunnelClientEndpoint_AddString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelClientEndpoint_Type, a)
 	return
@@ -278,11 +280,11 @@ func TunnelClientEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelClientEndpoint_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelClientEndpoint_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -296,11 +298,11 @@ func TunnelClientEndpoint_Gets(p *radius.Packet) (tags []byte, values [][]byte, 
 
 func TunnelClientEndpoint_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelClientEndpoint_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -318,9 +320,9 @@ func TunnelClientEndpoint_Lookup(p *radius.Packet) (tag byte, value []byte, err 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -332,9 +334,9 @@ func TunnelClientEndpoint_LookupString(p *radius.Packet) (tag byte, value string
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -346,9 +348,8 @@ func TunnelClientEndpoint_Set(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelClientEndpoint_Type, a)
 	return
@@ -360,9 +361,8 @@ func TunnelClientEndpoint_SetString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelClientEndpoint_Type, a)
 	return
@@ -378,9 +378,8 @@ func TunnelServerEndpoint_Add(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelServerEndpoint_Type, a)
 	return
@@ -392,9 +391,8 @@ func TunnelServerEndpoint_AddString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelServerEndpoint_Type, a)
 	return
@@ -412,11 +410,11 @@ func TunnelServerEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelServerEndpoint_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelServerEndpoint_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -430,11 +428,11 @@ func TunnelServerEndpoint_Gets(p *radius.Packet) (tags []byte, values [][]byte, 
 
 func TunnelServerEndpoint_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelServerEndpoint_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -452,9 +450,9 @@ func TunnelServerEndpoint_Lookup(p *radius.Packet) (tag byte, value []byte, err 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -466,9 +464,9 @@ func TunnelServerEndpoint_LookupString(p *radius.Packet) (tag byte, value string
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -480,9 +478,8 @@ func TunnelServerEndpoint_Set(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelServerEndpoint_Type, a)
 	return
@@ -494,9 +491,8 @@ func TunnelServerEndpoint_SetString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelServerEndpoint_Type, a)
 	return
@@ -517,9 +513,8 @@ func TunnelPassword_Add(p *radius.Packet, tag byte, value []byte) (err error) {
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelPassword_Type, a)
 	return
@@ -536,9 +531,8 @@ func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelPassword_Type, a)
 	return
@@ -556,11 +550,11 @@ func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelPassword_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
 		if err != nil {
@@ -574,11 +568,11 @@ func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err er
 
 func TunnelPassword_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelPassword_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		var up []byte
 		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
@@ -600,9 +594,9 @@ func TunnelPassword_Lookup(p *radius.Packet) (tag byte, value []byte, err error)
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
 	return
@@ -614,9 +608,9 @@ func TunnelPassword_LookupString(p *radius.Packet) (tag byte, value string, err 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	var b []byte
 	b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
@@ -637,9 +631,8 @@ func TunnelPassword_Set(p *radius.Packet, tag byte, value []byte) (err error) {
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelPassword_Type, a)
 	return
@@ -656,9 +649,8 @@ func TunnelPassword_SetString(p *radius.Packet, tag byte, value string) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelPassword_Type, a)
 	return
@@ -674,9 +666,8 @@ func TunnelPrivateGroupID_Add(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelPrivateGroupID_Type, a)
 	return
@@ -688,9 +679,8 @@ func TunnelPrivateGroupID_AddString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelPrivateGroupID_Type, a)
 	return
@@ -708,11 +698,11 @@ func TunnelPrivateGroupID_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelPrivateGroupID_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelPrivateGroupID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -726,11 +716,11 @@ func TunnelPrivateGroupID_Gets(p *radius.Packet) (tags []byte, values [][]byte, 
 
 func TunnelPrivateGroupID_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelPrivateGroupID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -748,9 +738,9 @@ func TunnelPrivateGroupID_Lookup(p *radius.Packet) (tag byte, value []byte, err 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -762,9 +752,9 @@ func TunnelPrivateGroupID_LookupString(p *radius.Packet) (tag byte, value string
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -776,9 +766,8 @@ func TunnelPrivateGroupID_Set(p *radius.Packet, tag byte, value []byte) (err err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelPrivateGroupID_Type, a)
 	return
@@ -790,9 +779,8 @@ func TunnelPrivateGroupID_SetString(p *radius.Packet, tag byte, value string) (e
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelPrivateGroupID_Type, a)
 	return
@@ -808,9 +796,8 @@ func TunnelAssignmentID_Add(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelAssignmentID_Type, a)
 	return
@@ -822,9 +809,8 @@ func TunnelAssignmentID_AddString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelAssignmentID_Type, a)
 	return
@@ -842,11 +828,11 @@ func TunnelAssignmentID_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelAssignmentID_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelAssignmentID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -860,11 +846,11 @@ func TunnelAssignmentID_Gets(p *radius.Packet) (tags []byte, values [][]byte, er
 
 func TunnelAssignmentID_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelAssignmentID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -882,9 +868,9 @@ func TunnelAssignmentID_Lookup(p *radius.Packet) (tag byte, value []byte, err er
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -896,9 +882,9 @@ func TunnelAssignmentID_LookupString(p *radius.Packet) (tag byte, value string, 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -910,9 +896,8 @@ func TunnelAssignmentID_Set(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelAssignmentID_Type, a)
 	return
@@ -924,9 +909,8 @@ func TunnelAssignmentID_SetString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelAssignmentID_Type, a)
 	return
@@ -949,9 +933,10 @@ func (a TunnelPreference) String() string {
 
 func TunnelPreference_Add(p *radius.Packet, tag byte, value TunnelPreference) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Add(TunnelPreference_Type, a)
 	return
@@ -964,11 +949,11 @@ func TunnelPreference_Get(p *radius.Packet) (tag byte, value TunnelPreference) {
 
 func TunnelPreference_Gets(p *radius.Packet) (tags []byte, values []TunnelPreference, err error) {
 	var i uint32
-	var tag byte
 	for _, attr := range p.Attributes[TunnelPreference_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr[0] = 0x00
 		}
 		i, err = radius.Integer(attr)
 		if err != nil {
@@ -986,9 +971,9 @@ func TunnelPreference_Lookup(p *radius.Packet) (tag byte, value TunnelPreference
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a[0] = 0x00
 	}
 	var i uint32
 	i, err = radius.Integer(a)
@@ -1001,9 +986,10 @@ func TunnelPreference_Lookup(p *radius.Packet) (tag byte, value TunnelPreference
 
 func TunnelPreference_Set(p *radius.Packet, tag byte, value TunnelPreference) (err error) {
 	a := radius.NewInteger(uint32(value))
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag >= 0x01 && tag <= 0x1F {
+		a[0] = tag
+	} else {
+		a[0] = 0x00
 	}
 	p.Set(TunnelPreference_Type, a)
 	return
@@ -1019,9 +1005,8 @@ func TunnelClientAuthID_Add(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelClientAuthID_Type, a)
 	return
@@ -1033,9 +1018,8 @@ func TunnelClientAuthID_AddString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelClientAuthID_Type, a)
 	return
@@ -1053,11 +1037,11 @@ func TunnelClientAuthID_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelClientAuthID_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelClientAuthID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -1071,11 +1055,11 @@ func TunnelClientAuthID_Gets(p *radius.Packet) (tags []byte, values [][]byte, er
 
 func TunnelClientAuthID_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelClientAuthID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -1093,9 +1077,9 @@ func TunnelClientAuthID_Lookup(p *radius.Packet) (tag byte, value []byte, err er
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -1107,9 +1091,9 @@ func TunnelClientAuthID_LookupString(p *radius.Packet) (tag byte, value string, 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -1121,9 +1105,8 @@ func TunnelClientAuthID_Set(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelClientAuthID_Type, a)
 	return
@@ -1135,9 +1118,8 @@ func TunnelClientAuthID_SetString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelClientAuthID_Type, a)
 	return
@@ -1153,9 +1135,8 @@ func TunnelServerAuthID_Add(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelServerAuthID_Type, a)
 	return
@@ -1167,9 +1148,8 @@ func TunnelServerAuthID_AddString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Add(TunnelServerAuthID_Type, a)
 	return
@@ -1187,11 +1167,11 @@ func TunnelServerAuthID_GetString(p *radius.Packet) (tag byte, value string) {
 
 func TunnelServerAuthID_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
-	var tag byte
 	for _, attr := range p.Attributes[TunnelServerAuthID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.Bytes(attr)
 		if err != nil {
@@ -1205,11 +1185,11 @@ func TunnelServerAuthID_Gets(p *radius.Packet) (tags []byte, values [][]byte, er
 
 func TunnelServerAuthID_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
-	var tag byte
 	for _, attr := range p.Attributes[TunnelServerAuthID_Type] {
-		tag, attr, err = radius.Tag(attr)
-		if err != nil {
-			return
+		var tag byte
+		if len(attr) >= 1 && attr[0] <= 0x1F {
+			tag = attr[0]
+			attr = attr[1:]
 		}
 		i = radius.String(attr)
 		if err != nil {
@@ -1227,9 +1207,9 @@ func TunnelServerAuthID_Lookup(p *radius.Packet) (tag byte, value []byte, err er
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.Bytes(a)
 	return
@@ -1241,9 +1221,9 @@ func TunnelServerAuthID_LookupString(p *radius.Packet) (tag byte, value string, 
 		err = radius.ErrNoAttribute
 		return
 	}
-	tag, a, err = radius.Tag(a)
-	if err != nil {
-		return
+	if len(a) >= 1 && a[0] <= 0x1F {
+		tag = a[0]
+		a = a[1:]
 	}
 	value = radius.String(a)
 	return
@@ -1255,9 +1235,8 @@ func TunnelServerAuthID_Set(p *radius.Packet, tag byte, value []byte) (err error
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelServerAuthID_Type, a)
 	return
@@ -1269,9 +1248,8 @@ func TunnelServerAuthID_SetString(p *radius.Packet, tag byte, value string) (err
 	if err != nil {
 		return
 	}
-	a, err = radius.NewTag(tag, a)
-	if err != nil {
-		return
+	if tag <= 0x1F {
+		a = append(radius.Attribute{tag}, a...)
 	}
 	p.Set(TunnelServerAuthID_Type, a)
 	return

@@ -44,9 +44,8 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `	a, err = radius.NewTag(tag, a)`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
+		p(w, `	if tag <= 0x1F {`)
+		p(w, `		a = append(radius.Attribute{tag}, a...)`)
 		p(w, `	}`)
 	}
 	if vendor != nil {
@@ -86,9 +85,8 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `	a, err = radius.NewTag(tag, a)`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
+		p(w, `	if tag <= 0x1F {`)
+		p(w, `		a = append(radius.Attribute{tag}, a...)`)
 		p(w, `	}`)
 	}
 	if vendor != nil {
@@ -128,18 +126,16 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {`)
 	}
 	p(w, `	var i []byte`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
 	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
+		p(w, `		var tag byte`)
+		p(w, `		if len(attr) >= 1 && attr[0] <= 0x1F {`)
+		p(w, `			tag = attr[0]`)
+		p(w, `			attr = attr[1:]`)
 		p(w, `		}`)
 	}
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
@@ -172,18 +168,16 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `func `, ident, `_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {`)
 	}
 	p(w, `	var i string`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
 	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
+		p(w, `		var tag byte`)
+		p(w, `		if len(attr) >= 1 && attr[0] <= 0x1F {`)
+		p(w, `			tag = attr[0]`)
+		p(w, `			attr = attr[1:]`)
 		p(w, `		}`)
 	}
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
@@ -233,10 +227,10 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
+		p(w, `	if len(a) >= 1 && a[0] <= 0x1F {`)
+		p(w, `		tag = a[0]`)
+		p(w, `		a = a[1:]`)
+		p(w, `	}`)
 	}
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
@@ -269,10 +263,10 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
+		p(w, `	if len(a) >= 1 && a[0] <= 0x1F {`)
+		p(w, `		tag = a[0]`)
+		p(w, `		a = a[1:]`)
+		p(w, `	}`)
 	}
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	var b []byte`)
@@ -326,10 +320,9 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
+		p(w, `	if tag <= 0x1F {`)
+		p(w, `		a = append(radius.Attribute{tag}, a...)`)
+		p(w, `	}`)
 	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
@@ -368,10 +361,9 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
+		p(w, `	if tag <= 0x1F {`)
+		p(w, `		a = append(radius.Attribute{tag}, a...)`)
+		p(w, `	}`)
 	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
@@ -502,11 +494,7 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	}
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Add(p *radius.Packet, value net.IP) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value net.IP) (err error) {`)
-	}
+	p(w, `func `, ident, `_Add(p *radius.Packet, value net.IP) (err error) {`)
 	p(w, `	var a radius.Attribute`)
 	if length == net.IPv4len {
 		p(w, `	a, err = radius.NewIPAddr(value)`)
@@ -516,12 +504,6 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -531,36 +513,18 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value net.IP) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
-	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value net.IP) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
-	}
+	p(w, `func `, ident, `_Get(p *radius.Packet) (value net.IP) {`)
+	p(w, `	value, _ = `, ident, `_Lookup(p)`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.IP, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values []net.IP, err error) {`)
-	}
+	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.IP, err error) {`)
 	p(w, `	var i net.IP`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
-	}
-	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
 	}
 	if length == net.IPv4len {
 		p(w, `		i, err = radius.IPAddr(attr)`)
@@ -571,19 +535,12 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `			return`)
 	p(w, `		}`)
 	p(w, `		values = append(values, i)`)
-	if attr.HasTag() {
-		p(w, `		tags = append(tags, tag)`)
-	}
 	p(w, `	}`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.IP, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value net.IP, err error) {`)
-	}
+	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.IP, err error) {`)
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
 	} else {
@@ -593,12 +550,6 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if length == net.IPv4len {
 		p(w, `	value, err = radius.IPAddr(a)`)
 	} else {
@@ -608,15 +559,8 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Set(p *radius.Packet, value net.IP) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value net.IP) (err error) {`)
-	}
+	p(w, `func `, ident, `_Set(p *radius.Packet, value net.IP) (err error) {`)
 	p(w, `	var a radius.Attribute`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if length == net.IPv4len {
 		p(w, `	a, err = radius.NewIPAddr(value)`)
 	} else {
@@ -625,12 +569,6 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -657,22 +595,12 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 	}
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Add(p *radius.Packet, value net.HardwareAddr) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value net.HardwareAddr) (err error) {`)
-	}
+	p(w, `func `, ident, `_Add(p *radius.Packet, value net.HardwareAddr) (err error) {`)
 	p(w, `	var a radius.Attribute`)
 	p(w, `	a, err = radius.NewIFID(value)`)
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -693,44 +621,24 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.HardwareAddr, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values []net.HardwareAddr, err error) {`)
-	}
+	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.HardwareAddr, err error) {`)
 	p(w, `	var i net.HardwareAddr`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
-	}
-	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
 	}
 	p(w, `		i, err = radius.IFID(attr)`)
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
 	p(w, `		values = append(values, i)`)
-	if attr.HasTag() {
-		p(w, `		tags = append(tags, tag)`)
-	}
 	p(w, `	}`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.HardwareAddr, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value net.HardwareAddr, err error) {`)
-	}
+	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.HardwareAddr, err error) {`)
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
 	} else {
@@ -740,33 +648,17 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	p(w, `	value, err = radius.IFID(a)`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Set(p *radius.Packet, value net.HardwareAddr) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value net.HardwareAddr) (err error) {`)
-	}
+	p(w, `func `, ident, `_Set(p *radius.Packet, value net.HardwareAddr) (err error) {`)
 	p(w, `	var a radius.Attribute`)
 	p(w, `	a, err = radius.NewIFID(value)`)
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -793,22 +685,12 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 	}
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Add(p *radius.Packet, value time.Time) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Add(p *radius.Packet, tag byte, value time.Time) (err error) {`)
-	}
+	p(w, `func `, ident, `_Add(p *radius.Packet, value time.Time) (err error) {`)
 	p(w, `	var a radius.Attribute`)
 	p(w, `	a, err = radius.NewDate(value)`)
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -818,55 +700,30 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value time.Time) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
-	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value time.Time) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
-	}
+	p(w, `func `, ident, `_Get(p *radius.Packet) (value time.Time) {`)
+	p(w, `	value, _ = `, ident, `_Lookup(p)`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []time.Time, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values []time.Time, err error) {`)
-	}
+	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []time.Time, err error) {`)
 	p(w, `	var i time.Time`)
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
-	}
-	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
 	}
 	p(w, `		i, err = radius.Date(attr)`)
 	p(w, `		if err != nil {`)
 	p(w, `			return`)
 	p(w, `		}`)
 	p(w, `		values = append(values, i)`)
-	if attr.HasTag() {
-		p(w, `		tags = append(tags, tag)`)
-	}
 	p(w, `	}`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value time.Time, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value time.Time, err error) {`)
-	}
+	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value time.Time, err error) {`)
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
 	} else {
@@ -876,33 +733,17 @@ func (g *Generator) genAttributeDate(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	p(w, `	value, err = radius.Date(a)`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Set(p *radius.Packet, value time.Time) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Set(p *radius.Packet, tag byte, value time.Time) (err error) {`)
-	}
+	p(w, `func `, ident, `_Set(p *radius.Packet, value time.Time) (err error) {`)
 	p(w, `	var a radius.Attribute`)
 	p(w, `	a, err = radius.NewDate(value)`)
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -985,9 +826,10 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `	a := radius.NewInteger(uint32(value))`)
 	}
 	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
+		p(w, `		if tag >= 0x01 && tag <= 0x1F {`)
+		p(w, `			a[0] = tag`)
+		p(w, `		} else {`)
+		p(w, `			a[0] = 0x00`)
 		p(w, `		}`)
 	}
 	if vendor != nil {
@@ -1020,18 +862,16 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	} else { // 32
 		p(w, `	var i uint32`)
 	}
-	if attr.HasTag() {
-		p(w, `	var tag byte`)
-	}
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
 	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
+		p(w, `		var tag byte`)
+		p(w, `		if len(attr) >= 1 && attr[0] <= 0x1F {`)
+		p(w, `			tag = attr[0]`)
+		p(w, `			attr[0] = 0x00`)
 		p(w, `		}`)
 	}
 	if bitsize == 64 {
@@ -1066,10 +906,10 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w, `		return`)
 	p(w, `	}`)
 	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
+		p(w, `	if len(a) >= 1 && a[0] <= 0x1F {`)
+		p(w, `		tag = a[0]`)
+		p(w, `		a[0] = 0x00`)
+		p(w, `	}`)
 	}
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
@@ -1097,9 +937,10 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `	a := radius.NewInteger(uint32(value))`)
 	}
 	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
+		p(w, `		if tag >= 0x01 && tag <= 0x1F {`)
+		p(w, `			a[0] = tag`)
+		p(w, `		} else {`)
+		p(w, `			a[0] = 0x00`)
 		p(w, `		}`)
 	}
 	if vendor != nil {
@@ -1129,18 +970,8 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 	}
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Add(p *radius.Packet, value byte) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Add(p *radius.Packet, tag, value byte) (err error) {`)
-	}
+	p(w, `func `, ident, `_Add(p *radius.Packet, value byte) (err error) {`)
 	p(w, `	a := radius.Attribute{value}`)
-	if attr.HasTag() {
-		p(w, `		a, err = radius.NewTag(tag, a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -1150,22 +981,13 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value byte) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
-	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag, value byte) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
-	}
+	p(w, `func `, ident, `_Get(p *radius.Packet) (value byte) {`)
+	p(w, `	value, _ = `, ident, `_Lookup(p)`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []byte, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags, values []byte, err error) {`)
-	}
+	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []byte, err error) {`)
 	if attr.HasTag() {
 		p(w, `	var tag byte`)
 	}
@@ -1174,30 +996,17 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 	} else {
 		p(w, `	for _, attr := range p.Attributes[`, ident, `_Type] {`)
 	}
-	if attr.HasTag() {
-		p(w, `		tag, attr, err = radius.Tag(attr)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	p(w, `		if len(attr) != 1 {`)
 	p(w, `			err = errors.New("invalid byte")`)
 	p(w, `			return`)
 	p(w, `		}`)
 	p(w, `		values = append(values, attr[0])`)
-	if attr.HasTag() {
-		p(w, `		tags = append(tags, tag)`)
-	}
 	p(w, `	}`)
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value byte, err error) {`)
-	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag, value byte, err error) {`)
-	}
+	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value byte, err error) {`)
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
 	} else {
@@ -1207,12 +1016,6 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	p(w, `	if len(a) != 1 {`)
 	p(w, `		err = errors.New("invalid byte")`)
 	p(w, `		return`)
@@ -1222,18 +1025,8 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Set(p *radius.Packet, value byte) (err error) {`)
-	} else {
-		p(w, `func `, ident, `_Set(p *radius.Packet, tag, value byte) (err error) {`)
-	}
+	p(w, `func `, ident, `_Set(p *radius.Packet, value byte) (err error) {`)
 	p(w, `	a := radius.Attribute{value}`)
-	if attr.HasTag() {
-		p(w, `		tag, a, err = radius.Tag(a)`)
-		p(w, `		if err != nil {`)
-		p(w, `			return`)
-		p(w, `		}`)
-	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {

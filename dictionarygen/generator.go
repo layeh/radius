@@ -66,6 +66,9 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if attr.FlagConcat.Valid && attr.FlagConcat.Bool && ((attr.Type != dictionary.AttributeOctets && attr.Type != dictionary.AttributeString) || attr.FlagEncrypt.Valid || attr.FlagHasTag.Valid || attr.Size.Valid) {
 			invalid = true
 		}
+		if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeInteger) {
+			invalid = true
+		}
 
 		switch attr.Type {
 		case dictionary.AttributeString:
@@ -171,6 +174,10 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			if attr.FlagConcat.Valid && attr.FlagConcat.Bool {
 				invalid = true
 			}
+			if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeInteger) {
+				invalid = true
+			}
+
 			switch attr.Type {
 			case dictionary.AttributeString:
 			case dictionary.AttributeOctets:

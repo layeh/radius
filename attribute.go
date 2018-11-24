@@ -284,32 +284,6 @@ func NewInteger64(i uint64) Attribute {
 	return Attribute(v)
 }
 
-// Tag returns the components of a tagged attribute.
-func Tag(a Attribute) (tag byte, value Attribute, err error) {
-	switch len(a) {
-	case 0:
-		err = errors.New("invalid length")
-	case 1:
-		tag = a[0]
-	default:
-		tag = a[0]
-		value = make(Attribute, len(a)-1)
-		copy(value, a[1:])
-	}
-	return
-}
-
-// NewTag returns a new tagged attribute.
-func NewTag(tag byte, value Attribute) (Attribute, error) {
-	if len(value) > 252 {
-		return nil, errors.New("invalid value length")
-	}
-	a := make(Attribute, 1+len(value))
-	a[0] = tag
-	copy(a[1:], value)
-	return a, nil
-}
-
 // TLV returns a components of a Type-Length-Value (TLV) attribute.
 func TLV(a Attribute) (tlvType byte, typValue Attribute, err error) {
 	if len(a) < 3 || len(a) > 255 || int(a[1]) != len(a) {
