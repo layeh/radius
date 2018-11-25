@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"layeh.com/radius"
-	. "layeh.com/radius/rfc2865"
+	"layeh.com/radius/rfc2865"
 )
 
 var (
@@ -15,8 +15,8 @@ var (
 
 func Example_client() {
 	packet := radius.New(radius.CodeAccessRequest, []byte(`secret`))
-	UserName_SetString(packet, ClientUsername)
-	UserPassword_SetString(packet, ClientPassword)
+	rfc2865.UserName_SetString(packet, ClientUsername)
+	rfc2865.UserPassword_SetString(packet, ClientPassword)
 	response, err := radius.Exchange(context.Background(), packet, "localhost:1812")
 	if err != nil {
 		log.Fatal(err)

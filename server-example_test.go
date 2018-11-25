@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"layeh.com/radius"
-	. "layeh.com/radius/rfc2865"
+	"layeh.com/radius/rfc2865"
 )
 
 var (
@@ -14,8 +14,8 @@ var (
 
 func Example_packetServer() {
 	handler := func(w radius.ResponseWriter, r *radius.Request) {
-		username := UserName_GetString(r.Packet)
-		password := UserPassword_GetString(r.Packet)
+		username := rfc2865.UserName_GetString(r.Packet)
+		password := rfc2865.UserPassword_GetString(r.Packet)
 
 		var code radius.Code
 		if username == ServerUsername && password == ServerPassword {
