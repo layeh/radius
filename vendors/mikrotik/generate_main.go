@@ -4,67 +4,47 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"errors"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 
-	"golang.org/x/net/html"
 	"layeh.com/radius/dictionary"
 	"layeh.com/radius/dictionarygen"
 )
 
-const (
-	Init = iota
-	FoundPre
-	Discarding
-)
+type ParseResponse struct {
+	Text map[string]string `json:"text"`
+}
+
+type APIResponse struct {
+	Parse *ParseResponse `json:"parse"`
+}
+
+var dictRe = regexp.MustCompile(`(?ms)^<pre>$(.*)^</pre>$`)
 
 func main() {
-	resp, err := http.Get(`https://wiki.mikrotik.com/wiki/Manual:RADIUS_Client/vendor_dictionary`)
+	resp, err := http.Get(`https://wiki.mikrotik.com/api.php?page=Manual:RADIUS_Client/vendor_dictionary&action=parse&format=json`)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
-	// the dictionary is inside a <pre> tag, so... tokenize it out
-	var extractedBody bytes.Buffer
-	var state int
-
-	tokenizer := html.NewTokenizer(resp.Body)
-	for {
-		tokenType := tokenizer.Next()
-		if tokenType == html.ErrorToken {
-			err := tokenizer.Err()
-			if err == io.EOF {
-				break
-			} else {
-				log.Fatal(err)
-			}
-		}
-
-		switch state {
-		case Init:
-			if tokenType == html.StartTagToken {
-				token := tokenizer.Token()
-				if token.Data == "pre" {
-					state = FoundPre
-				}
-			}
-
-		case FoundPre:
-			if tokenType == html.TextToken {
-				extractedBody.WriteString(tokenizer.Token().Data)
-			} else {
-				state = Discarding
-			}
-		}
+	decoder := json.NewDecoder(resp.Body)
+	var apiResponse APIResponse
+	if err := decoder.Decode(&apiResponse); err != nil {
+		log.Fatal(err)
 	}
+
+	pageContents := apiResponse.Parse.Text["*"]
+	dictContents := dictRe.FindStringSubmatch(pageContents)[1]
 
 	parser := dictionary.Parser{
 		Opener: restrictedOpener{
-			"main.dictionary": extractedBody.Bytes(),
+			"main.dictionary": []byte(dictContents),
 		},
 	}
 	dict, err := parser.ParseFile("main.dictionary")
