@@ -285,14 +285,14 @@ func NewInteger64(i uint64) Attribute {
 }
 
 // TLV returns a components of a Type-Length-Value (TLV) attribute.
-func TLV(a Attribute) (tlvType byte, typValue Attribute, err error) {
+func TLV(a Attribute) (tlvType byte, tlvValue Attribute, err error) {
 	if len(a) < 3 || len(a) > 255 || int(a[1]) != len(a) {
 		err = errors.New("invalid length")
 		return
 	}
 	tlvType = a[0]
-	typValue = make(Attribute, len(a)-2)
-	copy(typValue, a[2:])
+	tlvValue = make(Attribute, len(a)-2)
+	copy(tlvValue, a[2:])
 	return
 }
 
