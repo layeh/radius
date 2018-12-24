@@ -85,7 +85,11 @@ func (p *Packet) Response(code Code) *Packet {
 // encoded packet is too long (due to its Attributes), or if the packet has an
 // unknown Code.
 func (p *Packet) Encode() ([]byte, error) {
-	size := 20 + p.Attributes.wireSize()
+	attributesSize := p.Attributes.wireSize()
+	if attributesSize == -1 {
+		return nil, errors.New("invalid packet attribute length")
+	}
+	size := 20 + attributesSize
 	if size > MaxPacketLength {
 		return nil, errors.New("encoded packet is too long")
 	}

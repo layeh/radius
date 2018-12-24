@@ -296,6 +296,14 @@ func TestParse_invalid(t *testing.T) {
 	}
 }
 
+func TestPacket_longAttribute(t *testing.T) {
+	p := radius.New(radius.CodeAccessRequest, []byte(`12345`))
+	p.Add(1, bytes.Repeat([]byte(`a`), 1000))
+	if _, err := p.Encode(); err == nil {
+		t.Fatalf("expecting error, got none")
+	}
+}
+
 // RADIUSPacketsEqual returns if two RADIUS packets are equal, ignoring the
 // order of attributes of different types.
 func RADIUSPacketsEqual(a, b []byte) bool {

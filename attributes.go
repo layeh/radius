@@ -86,6 +86,9 @@ func (a Attributes) encodeTo(b []byte) {
 
 	for _, typ := range types {
 		for _, attr := range a[Type(typ)] {
+			if len(attr) > 255 {
+				continue
+			}
 			size := 1 + 1 + len(attr)
 			b[0] = byte(typ)
 			b[1] = byte(size)
@@ -101,6 +104,9 @@ func (a Attributes) wireSize() (bytes int) {
 			continue
 		}
 		for _, attr := range attrs {
+			if len(attr) > 255 {
+				return -1
+			}
 			// type field + length field + value field
 			bytes += 1 + 1 + len(attr)
 		}
