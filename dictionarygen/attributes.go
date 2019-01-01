@@ -610,13 +610,8 @@ func (g *Generator) genAttributeIFID(w io.Writer, attr *dictionary.Attribute, ve
 	p(w, `}`)
 
 	p(w)
-	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value net.HardwareAddr) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
-	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value net.HardwareAddr) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
-	}
+	p(w, `func `, ident, `_Get(p *radius.Packet) (value net.HardwareAddr) {`)
+	p(w, `	value, _ = `, ident, `_Lookup(p)`)
 	p(w, `	return`)
 	p(w, `}`)
 
