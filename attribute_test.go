@@ -3,6 +3,8 @@ package radius
 import (
 	"bytes"
 	"crypto/rand"
+	"encoding/hex"
+	"net"
 	"testing"
 )
 
@@ -72,4 +74,64 @@ func TestTunnelPassword(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestIPv6Prefix(t *testing.T) {
+	tests := []struct {
+		Mask     string
+		Expected string
+	}{
+		{
+			Mask:     "3a00::/8",
+			Expected: "00083a",
+		},
+		{
+			Mask:     "3A11::/4",
+			Expected: "000430",
+		},
+		{
+			Mask:     "3F11::/5",
+			Expected: "000538",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Mask, func(t *testing.T) {
+			_, network, err := net.ParseCIDR(tt.Mask)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			attr, err := NewIPv6Prefix(network)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if enc := hex.EncodeToString([]byte(attr)); tt.Expected != enc {
+				t.Fatalf("got %s, expected %s", enc, tt.Expected)
+			}
+
+			ipNet, err := IPv6Prefix(attr)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !ipNetEquals(network, ipNet) {
+				t.Fatalf("got %v, expected %v", ipNet, network)
+			}
+		})
+	}
+}
+
+func ipNetEquals(a, b *net.IPNet) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+
+	if a.Mask.String() != b.Mask.String() {
+		return false
+	}
+	return a.IP.Equal(b.IP)
 }

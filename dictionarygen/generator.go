@@ -73,7 +73,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		switch attr.Type {
 		case dictionary.AttributeString:
 		case dictionary.AttributeOctets:
-		case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIFID:
+		case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIPv6Prefix, dictionary.AttributeIFID:
 			baseImports["net"] = struct{}{}
 		case dictionary.AttributeDate:
 			baseImports["time"] = struct{}{}
@@ -181,7 +181,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			switch attr.Type {
 			case dictionary.AttributeString:
 			case dictionary.AttributeOctets:
-			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIFID:
+			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIPv6Prefix, dictionary.AttributeIFID:
 				baseImports["net"] = struct{}{}
 			case dictionary.AttributeDate:
 				baseImports["time"] = struct{}{}
@@ -309,6 +309,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			g.genAttributeIPAddr(&w, attr, nil, net.IPv4len)
 		case dictionary.AttributeIPv6Addr:
 			g.genAttributeIPAddr(&w, attr, nil, net.IPv6len)
+		case dictionary.AttributeIPv6Prefix:
+			g.genAttributeIPv6Prefix(&w, attr, nil)
 		case dictionary.AttributeDate:
 			g.genAttributeDate(&w, attr, nil)
 		case dictionary.AttributeInteger:
@@ -334,6 +336,8 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				g.genAttributeIPAddr(&w, attr, vendor, net.IPv4len)
 			case dictionary.AttributeIPv6Addr:
 				g.genAttributeIPAddr(&w, attr, vendor, net.IPv6len)
+			case dictionary.AttributeIPv6Prefix:
+				g.genAttributeIPv6Prefix(&w, attr, vendor)
 			case dictionary.AttributeDate:
 				g.genAttributeDate(&w, attr, vendor)
 			case dictionary.AttributeIFID:

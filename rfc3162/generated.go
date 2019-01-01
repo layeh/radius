@@ -11,6 +11,7 @@ import (
 const (
 	NASIPv6Address_Type    radius.Type = 95
 	FramedInterfaceID_Type radius.Type = 96
+	FramedIPv6Prefix_Type  radius.Type = 97
 	LoginIPv6Host_Type     radius.Type = 98
 	FramedIPv6Route_Type   radius.Type = 99
 	FramedIPv6Pool_Type    radius.Type = 100
@@ -116,6 +117,57 @@ func FramedInterfaceID_Set(p *radius.Packet, value net.HardwareAddr) (err error)
 
 func FramedInterfaceID_Del(p *radius.Packet) {
 	p.Attributes.Del(FramedInterfaceID_Type)
+}
+
+func FramedIPv6Prefix_Add(p *radius.Packet, value *net.IPNet) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPv6Prefix(value)
+	if err != nil {
+		return
+	}
+	p.Add(FramedIPv6Prefix_Type, a)
+	return
+}
+
+func FramedIPv6Prefix_Get(p *radius.Packet) (value *net.IPNet) {
+	value, _ = FramedIPv6Prefix_Lookup(p)
+	return
+}
+
+func FramedIPv6Prefix_Gets(p *radius.Packet) (values []*net.IPNet, err error) {
+	var i *net.IPNet
+	for _, attr := range p.Attributes[FramedIPv6Prefix_Type] {
+		i, err = radius.IPv6Prefix(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func FramedIPv6Prefix_Lookup(p *radius.Packet) (value *net.IPNet, err error) {
+	a, ok := p.Lookup(FramedIPv6Prefix_Type)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value, err = radius.IPv6Prefix(a)
+	return
+}
+
+func FramedIPv6Prefix_Set(p *radius.Packet, value *net.IPNet) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewIPv6Prefix(value)
+	if err != nil {
+		return
+	}
+	p.Set(FramedIPv6Prefix_Type, a)
+	return
+}
+
+func FramedIPv6Prefix_Del(p *radius.Packet) {
+	p.Attributes.Del(FramedIPv6Prefix_Type)
 }
 
 func LoginIPv6Host_Add(p *radius.Packet, value net.IP) (err error) {

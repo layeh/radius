@@ -413,4 +413,57 @@ func TunnelPassword(a Attribute, secret, requestAuthenticator []byte) (password,
 	return
 }
 
-// TODO: ipv6prefix
+func NewIPv6Prefix(prefix *net.IPNet) (Attribute, error) {
+	if prefix == nil {
+		return nil, errors.New("nil prefix")
+	}
+
+	if len(prefix.IP) != net.IPv6len {
+		return nil, errors.New("IP is not IPv6")
+	}
+
+	ones, bits := prefix.Mask.Size()
+	if bits != net.IPv6len*8 {
+		return nil, errors.New("mask is not IPv6")
+	}
+
+	attr := make(Attribute, 2+((ones+7)/8))
+	// attr[0] = 0x00
+	attr[1] = byte(ones)
+	copy(attr[2:], prefix.IP)
+
+	// clear final non-mask bits
+	if i := uint(ones % 8); i != 0 {
+		for ; i < 8; i++ {
+			attr[len(attr)-1] &^= 1 << (7 - i)
+		}
+	}
+
+	return attr, nil
+}
+
+func IPv6Prefix(a Attribute) (*net.IPNet, error) {
+	if len(a) < 2 || len(a) > 18 {
+		return nil, errors.New("invalid length")
+	}
+
+	prefixLength := int(a[1])
+	if (len(a)-2)*8 < prefixLength {
+		return nil, errors.New("invalid prefix length")
+	}
+
+	ip := make(net.IP, net.IPv6len)
+	copy(ip, a[2:])
+
+	// clear final non-mask bits
+	if i := uint(prefixLength % 8); i != 0 {
+		for ; i < 8; i++ {
+			ip[prefixLength/8] &^= 1 << (7 - i)
+		}
+	}
+
+	return &net.IPNet{
+		IP:   ip,
+		Mask: net.CIDRMask(prefixLength, net.IPv6len*8),
+	}, nil
+}
