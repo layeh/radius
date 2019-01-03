@@ -27,6 +27,9 @@ type Client struct {
 	// InsecureSkipVerify controls whether the client should skip verifying
 	// response packets received.
 	InsecureSkipVerify bool
+
+	// Limiting the number of connection attempts
+	MaxConnectionInitiatives int
 }
 
 // DefaultClient is the RADIUS client used by the Exchange function.
@@ -82,9 +85,16 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 		retryTimer = retry.C
 	}
 
+	iter := 0
+
 	go func() {
 		defer conn.Close()
 		for {
+			iter++
+
+			if c.MaxConnectionInitiatives != 0 && c.MaxConnectionInitiatives < iter {
+				break
+			}
 			select {
 			case <-retryTimer:
 				conn.Write(wire)
@@ -109,6 +119,7 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 		}
 
 		received, err := Parse(incoming[:n], packet.Secret)
+
 		if err != nil {
 			packetErrorCount++
 			if c.MaxPacketErrors > 0 && packetErrorCount >= c.MaxPacketErrors {
