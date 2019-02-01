@@ -35,6 +35,7 @@ type Client struct {
 
 // DefaultClient is the RADIUS client used by the Exchange function.
 var DefaultClient = &Client{
+	Timeout:         10 * time.Second,
 	Retry:           time.Second,
 	MaxPacketErrors: 10,
 }
