@@ -18,6 +18,10 @@ type Client struct {
 	// retry).
 	Retry time.Duration
 
+	// Timeout on waitting for respons while exchange. (zero or negtive value
+	// means wait forever.)
+	Timeout time.Duration
+
 	// MaxPacketErrors controls how many packet parsing and validation errors
 	// the client will ignore before returning the error from Exchange.
 	//
@@ -72,7 +76,11 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	conn.Write(wire)
 
 	var cancel context.CancelFunc
-	ctx, cancel = context.WithCancel(ctx)
+	if c.Timeout > 0 {
+		ctx, cancel = context.WithTimeout(ctx, c.Timeout)
+	} else {
+		ctx, cancel = context.WithCancel(ctx)
+	}
 	defer cancel()
 
 	var retryTimer <-chan time.Time
