@@ -25,7 +25,7 @@ func ParseAttributes(b []byte) (Attributes, error) {
 			return nil, errors.New("short buffer")
 		}
 		length := int(b[1])
-		if length > len(b) || length < 2 || length > 253 {
+		if length > len(b) || length < 2 || length > 255 {
 			return nil, errors.New("invalid attribute length")
 		}
 

@@ -29,6 +29,24 @@ func TestParseAttributes_invalid(t *testing.T) {
 	}
 }
 
+func TestParseAttributes_maxLength(t *testing.T) {
+	const typ = 0x10
+	b := bytes.Repeat([]byte{0x00}, 255)
+	b[0] = typ
+	b[1] = 0xFF
+
+	attrs, err := ParseAttributes(b)
+	if err != nil {
+		t.Fatalf("expected no error, got %v", err)
+	}
+	if l := len(attrs[typ]); l != 1 {
+		t.Fatalf("expected one attr, got %d", l)
+	}
+	if !bytes.Equal(b[2:], attrs[typ][0]) {
+		t.Fatalf("expected attr to be all zeros, got %v", attrs[typ][0])
+	}
+}
+
 func TestAttributes_all(t *testing.T) {
 	a := make(Attributes)
 	a.Add(1, []byte(`A`))
