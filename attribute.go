@@ -304,7 +304,7 @@ func NewTLV(tlvType byte, tlvValue Attribute) (Attribute, error) {
 	a := make(Attribute, 1+1+len(tlvValue))
 	a[0] = tlvType
 	a[1] = byte(1 + 1 + len(tlvValue))
-	copy(a, tlvValue)
+	copy(a[2:], tlvValue)
 	return a, nil
 }
 
