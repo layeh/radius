@@ -3,6 +3,7 @@ package radius_test
 import (
 	"bytes"
 	"encoding/hex"
+	"fmt"
 	"net"
 	"strings"
 	"testing"
@@ -301,6 +302,78 @@ func TestPacket_longAttribute(t *testing.T) {
 	p.Add(1, bytes.Repeat([]byte(`a`), 1000))
 	if _, err := p.Encode(); err == nil {
 		t.Fatalf("expecting error, got none")
+	}
+}
+
+func TestPacket_messageAuthenticatior(t *testing.T) {
+	s := []byte(`12345`)
+	response := []byte{
+		0x0b, 0x00, 0x00, 0x19, 0x86, 0xfe, 0x22, 0x0e, 0x76, 0x24, 0xba, 0x2a, 0x10, 0x05, 0xf6, 0xbf,
+		0x9b, 0x55, 0xe0, 0xb2, 0x4f, 0x05, 0x41, 0x42, 0x43,
+	}
+
+	p, err := radius.Parse(response, s)
+	if err != nil {
+		t.Fatalf("failed parsing packet")
+	}
+
+	b, err := p.Encode()
+	if err != nil {
+		t.Fatalf("failed encoding packet")
+	}
+	fmt.Println(b)
+
+	// Parse the encoded bytes, and verify we have the expected Message Authenticator
+	p, err = radius.Parse(b, s)
+	if err != nil {
+		t.Fatalf("failed parsing packet")
+	}
+
+	ma, ok := p.Lookup(rfc2869.MessageAuthenticator_Type)
+	if !ok {
+		t.Fatalf("missing expected Message-Authenticator attribute")
+	}
+	if len(ma) != 16 {
+		t.Fatalf("invalid length of Message-Authenticator")
+	}
+	fmt.Println(ma)
+	if !bytes.Equal(
+		ma,
+		[]byte{
+			8, 71, 135, 203, 13, 160, 248, 108,
+			177, 131, 96, 151, 219, 221, 28, 252,
+		}) {
+		t.Fatalf("invalid Message-Authenticator")
+	}
+}
+
+func TestPacket_messageAuthenticatiorNegative(t *testing.T) {
+	s := []byte(`12345`)
+	response := []byte{
+		0x05, 0x00, 0x00, 0x26, 0x86, 0xfe, 0x22, 0x0e, 0x76, 0x24, 0xba, 0x2a, 0x10, 0x05, 0xf6, 0xbf,
+		0x9b, 0x55, 0xe0, 0xb2, 0x06, 0x06, 0x00, 0x00, 0x00, 0x01, 0x0f, 0x06, 0x00, 0x00, 0x00, 0x00,
+		0x0e, 0x06, 0xc0, 0xa8, 0x01, 0x03,
+	}
+
+	p, err := radius.Parse(response, s)
+	if err != nil {
+		t.Fatalf("failed parsing packet")
+	}
+
+	b, err := p.Encode()
+	if err != nil {
+		t.Fatalf("failed encoding packet")
+	}
+
+	// Parse the encoded bytes, and verify we have the expected Message Authenticator
+	p, err = radius.Parse(b, s)
+	if err != nil {
+		t.Fatalf("failed parsing packet")
+	}
+
+	_, found := p.Lookup(rfc2869.MessageAuthenticator_Type)
+	if found {
+		t.Fatalf("found unexpected Message-Authenticator attribute")
 	}
 }
 
