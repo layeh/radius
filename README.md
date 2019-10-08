@@ -1,4 +1,4 @@
-<img src="internal/radius.svg" width="250" align="right">
+<img src="internal/radius.svg" width="250" align=right alt="Radius">
 
 # radius
 
