@@ -112,7 +112,7 @@ func TestClient_Exchange_invalidPacket(t *testing.T) {
 	if resp != nil {
 		t.Fatalf("got non-nil response (%v); expected nil", resp)
 	}
-	if expecting := `packet not at least 20 bytes long`; !strings.Contains(err.Error(), expecting) {
+	if expecting := `packet not at least 20 bytes long`; err != nil && !strings.Contains(err.Error(), expecting) {
 		t.Fatalf("got error = %v; expecting %s", err, expecting)
 	}
 }

@@ -74,7 +74,7 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 				attrTypeStr = dictAttr.Name
 				switch dictAttr.Type {
 				case dictionary.AttributeString, dictionary.AttributeOctets:
-					if dictAttr != nil && dictAttr.FlagEncrypt.Valid && dictAttr.FlagEncrypt.Int == 1 {
+					if dictAttr.FlagEncrypt.Valid && dictAttr.FlagEncrypt.Int == 1 {
 						decryptedValue, err := radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 						if err == nil {
 							attrStr = fmt.Sprintf("%q", decryptedValue)
@@ -93,19 +93,18 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 					switch len(attr) {
 					case 4:
 						intVal := int(binary.BigEndian.Uint32(attr))
-						if dictAttr != nil {
-							var matchedNames []string
-							for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
-								if value.Number == intVal {
-									matchedNames = append(matchedNames, value.Name)
-								}
-							}
-							if len(matchedNames) > 0 {
-								sort.Stable(sort.StringSlice(matchedNames))
-								attrStr = strings.Join(matchedNames, " / ")
-								break
+						var matchedNames []string
+						for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
+							if value.Number == intVal {
+								matchedNames = append(matchedNames, value.Name)
 							}
 						}
+						if len(matchedNames) > 0 {
+							sort.Stable(sort.StringSlice(matchedNames))
+							attrStr = strings.Join(matchedNames, " / ")
+							break
+						}
+
 						attrStr = strconv.Itoa(intVal)
 					case 8:
 						attrStr = strconv.Itoa(int(binary.BigEndian.Uint64(attr)))
