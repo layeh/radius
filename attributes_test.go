@@ -55,7 +55,7 @@ func TestAttributes_all(t *testing.T) {
 
 	a.Add(TypeInvalid, []byte(`Invalid`))
 
-	if attr := a.Get(1); !bytes.Equal([]byte(attr), []byte(`A`)) {
+	if attr := a.Get(1); !bytes.Equal(attr, []byte(`A`)) {
 		t.Fatalf("got %s; expecting A", attr)
 	}
 
