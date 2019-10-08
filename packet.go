@@ -96,7 +96,7 @@ func (p *Packet) Encode() ([]byte, error) {
 
 	b := make([]byte, size)
 	b[0] = byte(p.Code)
-	b[1] = byte(p.Identifier)
+	b[1] = p.Identifier
 	binary.BigEndian.PutUint16(b[2:4], uint16(size))
 	p.Attributes.encodeTo(b[20:])
 

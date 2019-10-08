@@ -334,7 +334,7 @@ func RADIUSPacketsEqual(a, b []byte) bool {
 			return false
 		}
 		for i, attrA := range attrsA {
-			if !bytes.Equal([]byte(attrA), []byte(ab[typeA][i])) {
+			if !bytes.Equal(attrA, ab[typeA][i]) {
 				return false
 			}
 		}

@@ -31,7 +31,7 @@ func Integer(a Attribute) (uint32, error) {
 func NewInteger(i uint32) Attribute {
 	v := make([]byte, 4)
 	binary.BigEndian.PutUint32(v, i)
-	return Attribute(v)
+	return v
 }
 
 // String returns the given attribute as a string.
@@ -51,7 +51,7 @@ func NewString(s string) (Attribute, error) {
 // Bytes returns the given Attribute as a byte slice.
 func Bytes(a Attribute) []byte {
 	b := make([]byte, len(a))
-	copy(b, []byte(a))
+	copy(b, a)
 	return b
 }
 
@@ -62,7 +62,7 @@ func NewBytes(b []byte) (Attribute, error) {
 		return nil, errors.New("value too long")
 	}
 	a := make(Attribute, len(b))
-	copy(a, Attribute(b))
+	copy(a, b)
 	return a, nil
 }
 
@@ -73,7 +73,7 @@ func IPAddr(a Attribute) (net.IP, error) {
 		return nil, errors.New("invalid length")
 	}
 	b := make([]byte, net.IPv4len)
-	copy(b, []byte(a))
+	copy(b, a)
 	return b, nil
 }
 
@@ -85,7 +85,7 @@ func NewIPAddr(a net.IP) (Attribute, error) {
 		return nil, errors.New("invalid IPv4 address")
 	}
 	b := make(Attribute, len(a))
-	copy(b, Attribute(a))
+	copy(b, a)
 	return b, nil
 }
 
@@ -96,7 +96,7 @@ func IPv6Addr(a Attribute) (net.IP, error) {
 		return nil, errors.New("invalid length")
 	}
 	b := make([]byte, net.IPv6len)
-	copy(b, []byte(a))
+	copy(b, a)
 	return b, nil
 }
 
@@ -108,7 +108,7 @@ func NewIPv6Addr(a net.IP) (Attribute, error) {
 		return nil, errors.New("invalid IPv6 address")
 	}
 	b := make(Attribute, len(a))
-	copy(b, Attribute(a))
+	copy(b, a)
 	return b, nil
 }
 
@@ -228,7 +228,7 @@ func Date(a Attribute) (time.Time, error) {
 	if len(a) != 4 {
 		return time.Time{}, errors.New("invalid length")
 	}
-	sec := binary.BigEndian.Uint32([]byte(a))
+	sec := binary.BigEndian.Uint32(a)
 	return time.Unix(int64(sec), 0), nil
 }
 
@@ -281,7 +281,7 @@ func Integer64(a Attribute) (uint64, error) {
 func NewInteger64(i uint64) Attribute {
 	v := make([]byte, 8)
 	binary.BigEndian.PutUint64(v, i)
-	return Attribute(v)
+	return v
 }
 
 // TLV returns a components of a Type-Length-Value (TLV) attribute.
