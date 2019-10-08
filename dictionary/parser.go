@@ -287,8 +287,11 @@ func parseOID(s string) OID {
 			if i == 0 {
 				o = append(o, 0)
 			}
-			o[len(o)-1] *= 10
-			o[len(o)-1] += int(ch - '0')
+
+			if o != nil {
+				o[len(o)-1] *= 10
+				o[len(o)-1] += int(ch - '0')
+			}
 		default:
 			return nil
 		}
