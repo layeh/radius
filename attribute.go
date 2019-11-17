@@ -317,15 +317,15 @@ func NewTunnelPassword(password, salt, secret, requestAuthenticator []byte) (Att
 	if len(salt) != 2 {
 		return nil, errors.New("invalid salt length")
 	}
-	if salt[0]&0x80 != 0x80 { // MSB must be 1
-		return nil, errors.New("invalid salt")
-	}
 	if len(secret) == 0 {
 		return nil, errors.New("empty secret")
 	}
 	if len(requestAuthenticator) != 16 {
 		return nil, errors.New("invalid requestAuthenticator length")
 	}
+
+	// MSB must be 1
+	salt[0] |= 0x80
 
 	chunks := (1 + len(password) + 16 - 1) / 16
 	if chunks == 0 {
