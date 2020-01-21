@@ -424,11 +424,11 @@ func (p *Parser) parseValue(f []string) (*Value, error) {
 		Name:      f[2],
 	}
 
-	number, err := strconv.ParseInt(f[3], 10, 32)
+	number, err := strconv.ParseUint(f[3], 10, 32)
 	if err != nil {
 		return nil, err
 	}
-	value.Number = int(number)
+	value.Number = uint(number)
 
 	return value, nil
 }

@@ -92,7 +92,7 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 				case dictionary.AttributeInteger:
 					switch len(attr) {
 					case 4:
-						intVal := int(binary.BigEndian.Uint32(attr))
+						intVal := uint(binary.BigEndian.Uint32(attr))
 						if dictAttr != nil {
 							var matchedNames []string
 							for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
@@ -106,7 +106,7 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 								break
 							}
 						}
-						attrStr = strconv.Itoa(intVal)
+						attrStr = strconv.FormatUint(uint64(intVal), 10)
 					case 8:
 						attrStr = strconv.Itoa(int(binary.BigEndian.Uint64(attr)))
 					}
