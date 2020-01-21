@@ -62,6 +62,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 	lineNo := 1
 	for ; s.Scan(); lineNo++ {
 		line := s.Text()
+		line = strings.TrimLeft(line, " ")
 		if idx := strings.IndexByte(line, '#'); idx >= 0 {
 			line = line[:idx]
 		}
