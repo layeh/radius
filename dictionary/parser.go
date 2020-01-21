@@ -417,7 +417,14 @@ func (p *Parser) parseValue(f []string) (*Value, error) {
 		Name:      f[2],
 	}
 
-	number, err := strconv.ParseUint(f[3], 10, 32)
+	numStr := f[3]
+	base := 10
+	if len(numStr) > 2 && (numStr[0] == '0' && (numStr[1] == 'x' || numStr[1] == 'X')) {
+		base = 16
+		numStr = numStr[2:]
+	}
+
+	number, err := strconv.ParseUint(numStr, base, 32)
 	if err != nil {
 		return nil, err
 	}
