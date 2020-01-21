@@ -227,6 +227,18 @@ type Vendor struct {
 	Values     []*Value
 }
 
+func (a *Vendor) Equals(b *Vendor) bool {
+	if a == b {
+		return true
+	}
+
+	if a == nil || b == nil {
+		return false
+	}
+
+	return a.Name == b.Name && a.Number == a.Number
+}
+
 func (v *Vendor) GetTypeOctets() int {
 	if v.TypeOctets == nil {
 		return 1
