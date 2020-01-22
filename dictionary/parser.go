@@ -462,7 +462,7 @@ func (p *Parser) parseVendor(f []string) (*Vendor, error) {
 		// "format=t,l"
 		// t ∈ [1, 2, 4]
 		// l ∈ [0, 1, 2]
-		if !strings.HasPrefix(f[3], "format=") || len(f[3]) != 10 || f[3][8] != ',' || (f[3][7] != '1' && f[3][7] != '2' && f[3][7] != '4') || (f[3][9] < '0' && f[3][9] > '2') {
+		if !strings.HasPrefix(f[3], "format=") || len(f[3]) < 10 || f[3][8] != ',' || (f[3][7] != '1' && f[3][7] != '2' && f[3][7] != '4') || (f[3][9] < '0' || f[3][9] > '2') {
 			return nil, &InvalidVendorFormatError{
 				Format: f[3],
 			}
