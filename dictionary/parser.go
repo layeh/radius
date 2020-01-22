@@ -40,7 +40,8 @@ type Parser struct {
 
 	// IgnoreIdenticalAttributes specifies whether identical attributes are
 	// ignored, rather than a parse error being emitted.
-	IgnoreIdenticalAttributes bool
+	IgnoreIdenticalAttributes  bool
+	IgnoreUnknownAttributeType bool
 }
 
 func (p *Parser) Parse(f File) (*Dictionary, error) {
@@ -75,6 +76,12 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 		case (len(fields) == 4 || len(fields) == 5) && fields[0] == "ATTRIBUTE":
 			attr, err := p.parseAttribute(fields)
 			if err != nil {
+				switch err.(type) {
+				case *UnknownAttributeTypeError:
+					if p.IgnoreUnknownAttributeType {
+						continue
+					}
+				}
 				return &ParseError{
 					Inner: err,
 					File:  f,
