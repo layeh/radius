@@ -96,7 +96,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
 			}
 			if existing != nil {
-				if p.IgnoreIdenticalAttributes && attr.Equals(existing) {
+				if p.IgnoreIdenticalAttributes && attr.MostlyEquals(existing) {
 					break
 				}
 				return &ParseError{

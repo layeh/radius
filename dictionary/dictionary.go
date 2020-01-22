@@ -184,6 +184,37 @@ func (a *Attribute) Equals(o *Attribute) bool {
 	return true
 }
 
+func normalizedType(t AttributeType) AttributeType {
+	if t == AttributeString {
+		return AttributeOctets
+	}
+
+	return t
+}
+
+func (a *Attribute) MostlyEquals(o *Attribute) bool {
+	if a == o {
+		return true
+	}
+	if a == nil || o == nil {
+		return false
+	}
+
+	if a.Name != o.Name || !a.OID.Equals(o.OID) {
+		return false
+	}
+
+	if normalizedType(a.Type) != normalizedType(o.Type) {
+		return false
+	}
+
+	if a.FlagEncrypt != o.FlagEncrypt || a.FlagHasTag != o.FlagHasTag || a.FlagConcat != o.FlagConcat {
+		return false
+	}
+
+	return true
+}
+
 func (a *Attribute) GoString() string {
 	var b bytes.Buffer
 	b.WriteString("&dictionary.Attribute{")
