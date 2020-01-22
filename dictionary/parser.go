@@ -269,6 +269,16 @@ func (p *Parser) ParseFile(filename string) (*Dictionary, error) {
 
 func parseOID(s string) OID {
 	var o OID
+	if len(s) > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X') {
+		num, err := strconv.ParseInt(s[2:], 16, 32)
+		if err != nil {
+			return nil
+		}
+
+		o = append(o, int(num))
+		return o
+	}
+
 	for i, ch := range s {
 		switch ch {
 		case '.':
