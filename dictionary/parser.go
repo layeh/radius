@@ -408,6 +408,8 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 					Valid: true,
 					Bool:  true,
 				}
+			case f == "virtual":
+				continue
 			default:
 				return nil, &UnknownAttributeFlagError{
 					Flag: f,
