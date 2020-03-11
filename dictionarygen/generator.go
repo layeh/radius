@@ -80,7 +80,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		case dictionary.AttributeInteger, dictionary.AttributeInteger64:
 			baseImports["strconv"] = struct{}{}
 		case dictionary.AttributeVSA:
-		case dictionary.AttributeByte:
+		case dictionary.AttributeByte, dictionary.AttributeABinary:
 			baseImports["errors"] = struct{}{}
 		default:
 			invalid = true
@@ -187,7 +187,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				baseImports["time"] = struct{}{}
 			case dictionary.AttributeInteger, dictionary.AttributeInteger64:
 				baseImports["strconv"] = struct{}{}
-			case dictionary.AttributeByte:
+			case dictionary.AttributeByte, dictionary.AttributeABinary:
 				baseImports["errors"] = struct{}{}
 			default:
 				invalid = true
@@ -321,7 +321,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			// skip
 		case dictionary.AttributeInteger64:
 			g.genAttributeInteger(&w, attr, values, 64, nil)
-		case dictionary.AttributeByte:
+		case dictionary.AttributeByte, dictionary.AttributeABinary:
 			g.genAttributeByte(&w, attr, nil)
 		}
 	}
@@ -346,7 +346,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				g.genAttributeInteger(&w, attr, vendor.Values, 32, vendor)
 			case dictionary.AttributeInteger64:
 				g.genAttributeInteger(&w, attr, vendor.Values, 64, vendor)
-			case dictionary.AttributeByte:
+			case dictionary.AttributeByte, dictionary.AttributeABinary:
 				g.genAttributeByte(&w, attr, vendor)
 			}
 		}

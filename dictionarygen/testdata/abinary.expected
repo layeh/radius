@@ -1,0 +1,11 @@
+Constants:
+	const (
+		ABinaryAttr_Type radius.Type = 123
+	)
+Functions:
+		func ABinaryAttr_Add(p *radius.Packet, value byte) (err error)
+		func ABinaryAttr_Del(p *radius.Packet)
+		func ABinaryAttr_Get(p *radius.Packet) (value byte)
+		func ABinaryAttr_Gets(p *radius.Packet) (values []byte, err error)
+		func ABinaryAttr_Lookup(p *radius.Packet) (value byte, err error)
+		func ABinaryAttr_Set(p *radius.Packet, value byte) (err error)
