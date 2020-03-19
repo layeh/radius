@@ -114,7 +114,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	value, _ = `, ident, `_LookupString(p)`)
 	} else {
 		p(w, `func `, ident, `_GetString(p *radius.Packet) (tag byte, value string) {`)
-		p(w, `	_, value, _ = `, ident, `_LookupString(p)`)
+		p(w, `	tag, value, _ = `, ident, `_LookupString(p)`)
 	}
 	p(w, `	return`)
 	p(w, `}`)
