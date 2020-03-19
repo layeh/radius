@@ -274,7 +274,7 @@ func TunnelClientEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelClientEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelClientEndpoint_LookupString(p)
+	tag, value, _ = TunnelClientEndpoint_LookupString(p)
 	return
 }
 
@@ -404,7 +404,7 @@ func TunnelServerEndpoint_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelServerEndpoint_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelServerEndpoint_LookupString(p)
+	tag, value, _ = TunnelServerEndpoint_LookupString(p)
 	return
 }
 
@@ -544,7 +544,7 @@ func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelPassword_LookupString(p)
+	tag, value, _ = TunnelPassword_LookupString(p)
 	return
 }
 
@@ -692,7 +692,7 @@ func TunnelPrivateGroupID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelPrivateGroupID_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelPrivateGroupID_LookupString(p)
+	tag, value, _ = TunnelPrivateGroupID_LookupString(p)
 	return
 }
 
@@ -822,7 +822,7 @@ func TunnelAssignmentID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelAssignmentID_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelAssignmentID_LookupString(p)
+	tag, value, _ = TunnelAssignmentID_LookupString(p)
 	return
 }
 
@@ -1031,7 +1031,7 @@ func TunnelClientAuthID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelClientAuthID_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelClientAuthID_LookupString(p)
+	tag, value, _ = TunnelClientAuthID_LookupString(p)
 	return
 }
 
@@ -1161,7 +1161,7 @@ func TunnelServerAuthID_Get(p *radius.Packet) (tag byte, value []byte) {
 }
 
 func TunnelServerAuthID_GetString(p *radius.Packet) (tag byte, value string) {
-	_, value, _ = TunnelServerAuthID_LookupString(p)
+	tag, value, _ = TunnelServerAuthID_LookupString(p)
 	return
 }
 
