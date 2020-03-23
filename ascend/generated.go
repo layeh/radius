@@ -3,7 +3,6 @@
 package ascend
 
 import (
-	"errors"
 	"net"
 	"strconv"
 
@@ -16643,43 +16642,93 @@ func AscendRemoveSeconds_Del(p *radius.Packet) {
 	_Ascend_DelVendor(p, 241)
 }
 
-func AscendDataFilter_Add(p *radius.Packet, value byte) (err error) {
-	a := radius.Attribute{value}
+func AscendDataFilter_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
 	return _Ascend_AddVendor(p, 242, a)
 }
 
-func AscendDataFilter_Get(p *radius.Packet) (value byte) {
+func AscendDataFilter_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Ascend_AddVendor(p, 242, a)
+}
+
+func AscendDataFilter_Get(p *radius.Packet) (value []byte) {
 	value, _ = AscendDataFilter_Lookup(p)
 	return
 }
 
-func AscendDataFilter_Gets(p *radius.Packet) (values []byte, err error) {
+func AscendDataFilter_GetString(p *radius.Packet) (value string) {
+	value, _ = AscendDataFilter_LookupString(p)
+	return
+}
+
+func AscendDataFilter_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
 	for _, attr := range _Ascend_GetsVendor(p, 242) {
-		if len(attr) != 1 {
-			err = errors.New("invalid byte")
+		i = radius.Bytes(attr)
+		if err != nil {
 			return
 		}
-		values = append(values, attr[0])
+		values = append(values, i)
 	}
 	return
 }
 
-func AscendDataFilter_Lookup(p *radius.Packet) (value byte, err error) {
+func AscendDataFilter_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Ascend_GetsVendor(p, 242) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func AscendDataFilter_Lookup(p *radius.Packet) (value []byte, err error) {
 	a, ok := _Ascend_LookupVendor(p, 242)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
-	if len(a) != 1 {
-		err = errors.New("invalid byte")
-		return
-	}
-	value = a[0]
+	value = radius.Bytes(a)
 	return
 }
 
-func AscendDataFilter_Set(p *radius.Packet, value byte) (err error) {
-	a := radius.Attribute{value}
+func AscendDataFilter_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Ascend_LookupVendor(p, 242)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func AscendDataFilter_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Ascend_SetVendor(p, 242, a)
+}
+
+func AscendDataFilter_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
 	return _Ascend_SetVendor(p, 242, a)
 }
 
@@ -16687,43 +16736,93 @@ func AscendDataFilter_Del(p *radius.Packet) {
 	_Ascend_DelVendor(p, 242)
 }
 
-func AscendCallFilter_Add(p *radius.Packet, value byte) (err error) {
-	a := radius.Attribute{value}
+func AscendCallFilter_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
 	return _Ascend_AddVendor(p, 243, a)
 }
 
-func AscendCallFilter_Get(p *radius.Packet) (value byte) {
+func AscendCallFilter_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Ascend_AddVendor(p, 243, a)
+}
+
+func AscendCallFilter_Get(p *radius.Packet) (value []byte) {
 	value, _ = AscendCallFilter_Lookup(p)
 	return
 }
 
-func AscendCallFilter_Gets(p *radius.Packet) (values []byte, err error) {
+func AscendCallFilter_GetString(p *radius.Packet) (value string) {
+	value, _ = AscendCallFilter_LookupString(p)
+	return
+}
+
+func AscendCallFilter_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
 	for _, attr := range _Ascend_GetsVendor(p, 243) {
-		if len(attr) != 1 {
-			err = errors.New("invalid byte")
+		i = radius.Bytes(attr)
+		if err != nil {
 			return
 		}
-		values = append(values, attr[0])
+		values = append(values, i)
 	}
 	return
 }
 
-func AscendCallFilter_Lookup(p *radius.Packet) (value byte, err error) {
+func AscendCallFilter_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Ascend_GetsVendor(p, 243) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func AscendCallFilter_Lookup(p *radius.Packet) (value []byte, err error) {
 	a, ok := _Ascend_LookupVendor(p, 243)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
-	if len(a) != 1 {
-		err = errors.New("invalid byte")
-		return
-	}
-	value = a[0]
+	value = radius.Bytes(a)
 	return
 }
 
-func AscendCallFilter_Set(p *radius.Packet, value byte) (err error) {
-	a := radius.Attribute{value}
+func AscendCallFilter_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Ascend_LookupVendor(p, 243)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func AscendCallFilter_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Ascend_SetVendor(p, 243, a)
+}
+
+func AscendCallFilter_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
 	return _Ascend_SetVendor(p, 243, a)
 }
 
