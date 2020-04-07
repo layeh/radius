@@ -75,7 +75,7 @@ func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
 				switch dictAttr.Type {
 				case dictionary.AttributeString, dictionary.AttributeOctets:
 					if dictAttr != nil && dictAttr.FlagEncrypt.Valid && dictAttr.FlagEncrypt.Int == 1 {
-						decryptedValue, err := radius.UserPassword(radius.Attribute(attr), p.Secret, p.Authenticator[:])
+						decryptedValue, err := radius.UserPassword(attr, p.Secret, p.Authenticator[:])
 						if err == nil {
 							attrStr = fmt.Sprintf("%q", decryptedValue)
 							break

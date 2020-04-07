@@ -107,7 +107,7 @@ func TestIPv6Prefix(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			if enc := hex.EncodeToString([]byte(attr)); tt.Expected != enc {
+			if enc := hex.EncodeToString(attr); tt.Expected != enc {
 				t.Fatalf("got %s, expected %s", enc, tt.Expected)
 			}
 
