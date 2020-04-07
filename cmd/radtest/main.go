@@ -1,4 +1,4 @@
-package main // import "layeh.com/radius/cmd/radtest"
+package main
 
 import (
 	"context"

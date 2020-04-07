@@ -1,4 +1,4 @@
-package main // import "layeh.com/radius/cmd/radserver"
+package main
 
 import (
 	"flag"
