@@ -80,6 +80,11 @@ func TestParser(t *testing.T) {
 				Name:      "Half",
 				Number:    2,
 			},
+			{
+				Attribute: "Mode",
+				Name:      "Quarter",
+				Number:    4,
+			},
 		},
 	}
 

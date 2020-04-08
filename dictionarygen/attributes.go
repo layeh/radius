@@ -873,7 +873,7 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `const (`)
 		for _, value := range values {
 			valueIdent := identifier(value.Name)
-			p(w, `	`, ident, `_Value_`, valueIdent, ` `, ident, ` = `, strconv.Itoa(value.Number))
+			p(w, `	`, ident, `_Value_`, valueIdent, ` `, ident, ` = `, strconv.FormatUint(uint64(value.Number), 10))
 		}
 		p(w, `)`)
 	}

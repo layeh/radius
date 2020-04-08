@@ -292,7 +292,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		for _, value := range exAttr.Values {
 			attrIdent := identifier(value.Attribute)
 			valueIdent := identifier(value.Name)
-			p(&w, `	`, attrIdent, `_Value_`, valueIdent, ` `, attrIdent, ` = `, strconv.Itoa(value.Number))
+			p(&w, `	`, attrIdent, `_Value_`, valueIdent, ` `, attrIdent, ` = `, strconv.FormatUint(uint64(value.Number), 10))
 		}
 		p(&w, `)`)
 	}

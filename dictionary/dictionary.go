@@ -184,6 +184,37 @@ func (a *Attribute) Equals(o *Attribute) bool {
 	return true
 }
 
+func normalizedType(t AttributeType) AttributeType {
+	if t == AttributeString {
+		return AttributeOctets
+	}
+
+	return t
+}
+
+func (a *Attribute) MostlyEquals(o *Attribute) bool {
+	if a == o {
+		return true
+	}
+	if a == nil || o == nil {
+		return false
+	}
+
+	if a.Name != o.Name || !a.OID.Equals(o.OID) {
+		return false
+	}
+
+	if normalizedType(a.Type) != normalizedType(o.Type) {
+		return false
+	}
+
+	if a.FlagEncrypt != o.FlagEncrypt || a.FlagHasTag != o.FlagHasTag || a.FlagConcat != o.FlagConcat {
+		return false
+	}
+
+	return true
+}
+
 func (a *Attribute) GoString() string {
 	var b bytes.Buffer
 	b.WriteString("&dictionary.Attribute{")
@@ -213,7 +244,7 @@ func (a *Attribute) GoString() string {
 type Value struct {
 	Attribute string
 	Name      string
-	Number    int
+	Number    uint
 }
 
 type Vendor struct {
@@ -225,6 +256,18 @@ type Vendor struct {
 
 	Attributes []*Attribute
 	Values     []*Value
+}
+
+func (a *Vendor) Equals(b *Vendor) bool {
+	if a == b {
+		return true
+	}
+
+	if a == nil || b == nil {
+		return false
+	}
+
+	return a.Name == b.Name && a.Number == a.Number
 }
 
 func (v *Vendor) GetTypeOctets() int {

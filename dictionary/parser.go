@@ -40,7 +40,8 @@ type Parser struct {
 
 	// IgnoreIdenticalAttributes specifies whether identical attributes are
 	// ignored, rather than a parse error being emitted.
-	IgnoreIdenticalAttributes bool
+	IgnoreIdenticalAttributes  bool
+	IgnoreUnknownAttributeType bool
 }
 
 func (p *Parser) Parse(f File) (*Dictionary, error) {
@@ -62,6 +63,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 	lineNo := 1
 	for ; s.Scan(); lineNo++ {
 		line := s.Text()
+		line = strings.TrimLeft(line, " ")
 		if idx := strings.IndexByte(line, '#'); idx >= 0 {
 			line = line[:idx]
 		}
@@ -74,6 +76,12 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 		case (len(fields) == 4 || len(fields) == 5) && fields[0] == "ATTRIBUTE":
 			attr, err := p.parseAttribute(fields)
 			if err != nil {
+				switch err.(type) {
+				case *UnknownAttributeTypeError:
+					if p.IgnoreUnknownAttributeType {
+						continue
+					}
+				}
 				return &ParseError{
 					Inner: err,
 					File:  f,
@@ -88,7 +96,7 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				existing = AttributeByName(vendorBlock.Attributes, attr.Name)
 			}
 			if existing != nil {
-				if p.IgnoreIdenticalAttributes && attr.Equals(existing) {
+				if p.IgnoreIdenticalAttributes && attr.MostlyEquals(existing) {
 					break
 				}
 				return &ParseError{
@@ -134,17 +142,9 @@ func (p *Parser) parse(dict *Dictionary, parsedFiles map[string]struct{}, f File
 				}
 			}
 
-			if existing := vendorByNameOrNumber(dict.Vendors, vendor.Name, vendor.Number); existing != nil {
-				return &ParseError{
-					Inner: &DuplicateVendorError{
-						Vendor: vendor,
-					},
-					File: f,
-					Line: lineNo,
-				}
+			if existing := vendorByNameOrNumber(dict.Vendors, vendor.Name, vendor.Number); existing == nil || !vendor.Equals(existing) {
+				dict.Vendors = append(dict.Vendors, vendor)
 			}
-
-			dict.Vendors = append(dict.Vendors, vendor)
 
 		case len(fields) == 2 && fields[0] == "BEGIN-VENDOR":
 			// TODO: support RFC 6929 extended VSA?
@@ -276,6 +276,16 @@ func (p *Parser) ParseFile(filename string) (*Dictionary, error) {
 
 func parseOID(s string) OID {
 	var o OID
+	if len(s) > 2 && s[0] == '0' && (s[1] == 'x' || s[1] == 'X') {
+		num, err := strconv.ParseInt(s[2:], 16, 32)
+		if err != nil {
+			return nil
+		}
+
+		o = append(o, int(num))
+		return o
+	}
+
 	for i, ch := range s {
 		switch ch {
 		case '.':
@@ -405,6 +415,8 @@ func (p *Parser) parseAttribute(f []string) (*Attribute, error) {
 					Valid: true,
 					Bool:  true,
 				}
+			case f == "virtual":
+				continue
 			default:
 				return nil, &UnknownAttributeFlagError{
 					Flag: f,
@@ -424,11 +436,18 @@ func (p *Parser) parseValue(f []string) (*Value, error) {
 		Name:      f[2],
 	}
 
-	number, err := strconv.ParseInt(f[3], 10, 32)
+	numStr := f[3]
+	base := 10
+	if len(numStr) > 2 && (numStr[0] == '0' && (numStr[1] == 'x' || numStr[1] == 'X')) {
+		base = 16
+		numStr = numStr[2:]
+	}
+
+	number, err := strconv.ParseUint(numStr, base, 32)
 	if err != nil {
 		return nil, err
 	}
-	value.Number = int(number)
+	value.Number = uint(number)
 
 	return value, nil
 }
@@ -450,7 +469,7 @@ func (p *Parser) parseVendor(f []string) (*Vendor, error) {
 		// "format=t,l"
 		// t ∈ [1, 2, 4]
 		// l ∈ [0, 1, 2]
-		if !strings.HasPrefix(f[3], "format=") || len(f[3]) != 10 || f[3][8] != ',' || (f[3][7] != '1' && f[3][7] != '2' && f[3][7] != '4') || (f[3][9] < '0' && f[3][9] > '2') {
+		if !strings.HasPrefix(f[3], "format=") || len(f[3]) < 10 || f[3][8] != ',' || (f[3][7] != '1' && f[3][7] != '2' && f[3][7] != '4') || (f[3][9] < '0' || f[3][9] > '2') {
 			return nil, &InvalidVendorFormatError{
 				Format: f[3],
 			}
