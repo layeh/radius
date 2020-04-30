@@ -863,6 +863,8 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	p(w)
 	if bitsize == 64 {
 		p(w, `type `, ident, ` uint64`)
+	} else if bitsize == 16 {
+		p(w, `type `, ident, ` uint16`)
 	} else { // 32
 		p(w, `type `, ident, ` uint32`)
 	}
@@ -902,6 +904,8 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	if bitsize == 64 {
 		p(w, `	a := radius.NewInteger64(uint64(value))`)
+	} else if bitsize == 16 {
+		p(w, `	a := radius.NewInteger16(uint16(value))`)
 	} else { // 32
 		p(w, `	a := radius.NewInteger(uint32(value))`)
 	}
@@ -939,6 +943,8 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
+	} else if bitsize == 16 {
+		p(w, `	var i uint16`)
 	} else { // 32
 		p(w, `	var i uint32`)
 	}
@@ -956,6 +962,8 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	if bitsize == 64 {
 		p(w, `		i, err = radius.Integer64(attr)`)
+	} else if bitsize == 16 {
+		p(w, `		i, err = radius.Integer16(attr)`)
 	} else { // 32
 		p(w, `		i, err = radius.Integer(attr)`)
 	}
@@ -994,6 +1002,9 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
 		p(w, `	i, err = radius.Integer64(a)`)
+	} else if bitsize == 16 {
+		p(w, `	var i uint16`)
+		p(w, `	i, err = radius.Integer16(a)`)
 	} else { // 32
 		p(w, `	var i uint32`)
 		p(w, `	i, err = radius.Integer(a)`)
@@ -1013,6 +1024,8 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	if bitsize == 64 {
 		p(w, `	a := radius.NewInteger64(uint64(value))`)
+	} else if bitsize == 16 {
+		p(w, `	a := radius.NewInteger16(uint16(value))`)
 	} else { // 32
 		p(w, `	a := radius.NewInteger(uint32(value))`)
 	}
@@ -1040,7 +1053,6 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 	}
 	p(w, `}`)
 }
-
 
 func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, vendor *dictionary.Vendor) {
 	ident := identifier(attr.Name)

@@ -85,7 +85,7 @@ func NewIPAddr(a net.IP) (Attribute, error) {
 		return nil, errors.New("invalid IPv4 address")
 	}
 	b := make(Attribute, len(a))
-	copy(b,a)
+	copy(b, a)
 	return b, nil
 }
 
@@ -281,6 +281,22 @@ func Integer64(a Attribute) (uint64, error) {
 func NewInteger64(i uint64) Attribute {
 	v := make([]byte, 8)
 	binary.BigEndian.PutUint64(v, i)
+	return v
+}
+
+// Integer16 returns the given attribute as an integer. An error is returned if
+// the attribute is not 2 bytes long.
+func Integer16(a Attribute) (uint16, error) {
+	if len(a) != 2 {
+		return 0, errors.New("invalid length")
+	}
+	return binary.BigEndian.Uint16(a), nil
+}
+
+// NewInteger16 creates a new Attribute from the given integer value.
+func NewInteger16(i uint16) Attribute {
+	v := make([]byte, 2)
+	binary.BigEndian.PutUint16(v, i)
 	return v
 }
 
