@@ -1,0 +1,11 @@
+Constants:
+	const (
+		ShortAttr_Type radius.Type = 128
+	)
+Types:
+	type ShortAttr uint16
+		func (a ShortAttr) String() string
+Functions:
+		func ShortAttr_Add(p *radius.Packet, value ShortAttr) (err error)
+		func ShortAttr_Del(p *radius.Packet)
+		func ShortAttr_Set(p *radius.Packet, value ShortAttr) (err error)

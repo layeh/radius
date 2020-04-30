@@ -38,6 +38,9 @@ func TestTestData(t *testing.T) {
 			Err:  "conflicting identifier between First_Name (200) and First-Name (201)",
 		},
 		{
+			Name: "simple",
+		},
+		{
 			Name: "value-collision",
 		},
 	}

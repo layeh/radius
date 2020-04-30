@@ -284,6 +284,22 @@ func NewInteger64(i uint64) Attribute {
 	return v
 }
 
+// Short returns the given attribute as an integer. An error is returned if
+// the attribute is not 2 bytes long.
+func Short(a Attribute) (uint16, error) {
+	if len(a) != 2 {
+		return 0, errors.New("invalid length")
+	}
+	return binary.BigEndian.Uint16(a), nil
+}
+
+// NewShort creates a new Attribute from the given integer value.
+func NewShort(i uint16) Attribute {
+	v := make([]byte, 2)
+	binary.BigEndian.PutUint16(v, i)
+	return v
+}
+
 // TLV returns a components of a Type-Length-Value (TLV) attribute.
 func TLV(a Attribute) (tlvType byte, tlvValue Attribute, err error) {
 	if len(a) < 3 || len(a) > 255 || int(a[1]) != len(a) {
