@@ -533,6 +533,7 @@ func TunnelPassword_Add(p *radius.Packet, tag byte, value []byte) (err error) {
 	if err != nil {
 		return
 	}
+	salt[0] |= (1 << 7) // https://tools.ietf.org/html/rfc2868 set the MSB in the first byte of salt
 	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
@@ -551,6 +552,7 @@ func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err err
 	if err != nil {
 		return
 	}
+	salt[0] |= (1 << 7) // https://tools.ietf.org/html/rfc2868 set the MSB in the first byte of salt
 	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
@@ -659,6 +661,7 @@ func TunnelPassword_Set(p *radius.Packet, tag byte, value []byte) (err error) {
 	if err != nil {
 		return
 	}
+	salt[0] |= (1 << 7) // https://tools.ietf.org/html/rfc2868 set the MSB in the first byte of salt
 	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
@@ -677,6 +680,7 @@ func TunnelPassword_SetString(p *radius.Packet, tag byte, value string) (err err
 	if err != nil {
 		return
 	}
+	salt[0] |= (1 << 7) // https://tools.ietf.org/html/rfc2868 set the MSB in the first byte of salt
 	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
 	if err != nil {
 		return
