@@ -33,7 +33,11 @@ func FramedIPv6Address_Get(p *radius.Packet) (value net.IP) {
 
 func FramedIPv6Address_Gets(p *radius.Packet) (values []net.IP, err error) {
 	var i net.IP
-	for _, attr := range p.Attributes[FramedIPv6Address_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != FramedIPv6Address_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i, err = radius.IPv6Addr(attr)
 		if err != nil {
 			return
@@ -84,7 +88,11 @@ func DNSServerIPv6Address_Get(p *radius.Packet) (value net.IP) {
 
 func DNSServerIPv6Address_Gets(p *radius.Packet) (values []net.IP, err error) {
 	var i net.IP
-	for _, attr := range p.Attributes[DNSServerIPv6Address_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != DNSServerIPv6Address_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i, err = radius.IPv6Addr(attr)
 		if err != nil {
 			return
@@ -135,7 +143,11 @@ func RouteIPv6Information_Get(p *radius.Packet) (value *net.IPNet) {
 
 func RouteIPv6Information_Gets(p *radius.Packet) (values []*net.IPNet, err error) {
 	var i *net.IPNet
-	for _, attr := range p.Attributes[RouteIPv6Information_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != RouteIPv6Information_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i, err = radius.IPv6Prefix(attr)
 		if err != nil {
 			return
@@ -201,7 +213,11 @@ func DelegatedIPv6PrefixPool_GetString(p *radius.Packet) (value string) {
 
 func DelegatedIPv6PrefixPool_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
-	for _, attr := range p.Attributes[DelegatedIPv6PrefixPool_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != DelegatedIPv6PrefixPool_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i = radius.Bytes(attr)
 		if err != nil {
 			return
@@ -213,7 +229,11 @@ func DelegatedIPv6PrefixPool_Gets(p *radius.Packet) (values [][]byte, err error)
 
 func DelegatedIPv6PrefixPool_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
-	for _, attr := range p.Attributes[DelegatedIPv6PrefixPool_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != DelegatedIPv6PrefixPool_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i = radius.String(attr)
 		if err != nil {
 			return
@@ -299,7 +319,11 @@ func StatefulIPv6AddressPool_GetString(p *radius.Packet) (value string) {
 
 func StatefulIPv6AddressPool_Gets(p *radius.Packet) (values [][]byte, err error) {
 	var i []byte
-	for _, attr := range p.Attributes[StatefulIPv6AddressPool_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != StatefulIPv6AddressPool_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i = radius.Bytes(attr)
 		if err != nil {
 			return
@@ -311,7 +335,11 @@ func StatefulIPv6AddressPool_Gets(p *radius.Packet) (values [][]byte, err error)
 
 func StatefulIPv6AddressPool_GetStrings(p *radius.Packet) (values []string, err error) {
 	var i string
-	for _, attr := range p.Attributes[StatefulIPv6AddressPool_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != StatefulIPv6AddressPool_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i = radius.String(attr)
 		if err != nil {
 			return

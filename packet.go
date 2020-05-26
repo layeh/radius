@@ -35,7 +35,6 @@ func New(code Code, secret []byte) *Packet {
 		Code:       code,
 		Identifier: buff[0],
 		Secret:     secret,
-		Attributes: make(Attributes),
 	}
 	copy(packet.Authenticator[:], buff[1:])
 	return packet
@@ -75,7 +74,6 @@ func (p *Packet) Response(code Code) *Packet {
 		Code:       code,
 		Identifier: p.Identifier,
 		Secret:     p.Secret,
-		Attributes: make(Attributes),
 	}
 	copy(q.Authenticator[:], p.Authenticator[:])
 	return q
@@ -85,11 +83,11 @@ func (p *Packet) Response(code Code) *Packet {
 // encoded packet is too long (due to its Attributes), or if the packet has an
 // unknown Code.
 func (p *Packet) Encode() ([]byte, error) {
-	attributesSize := p.Attributes.wireSize()
-	if attributesSize == -1 {
-		return nil, errors.New("invalid packet attribute length")
+	attributesLen, err := AttributesEncodedLen(p.Attributes)
+	if err != nil {
+		return nil, err
 	}
-	size := 20 + attributesSize
+	size := 20 + attributesLen
 	if size > MaxPacketLength {
 		return nil, errors.New("encoded packet is too long")
 	}

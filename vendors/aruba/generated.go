@@ -29,7 +29,11 @@ func _Aruba_AddVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 }
 
 func _Aruba_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
-	for _, attr := range p.Attributes[rfc2865.VendorSpecific_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		attr := avp.Attribute
 		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != _Aruba_VendorID {
 			continue
@@ -49,8 +53,12 @@ func _Aruba_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
 }
 
 func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok bool) {
-	for _, a := range p.Attributes[rfc2865.VendorSpecific_Type] {
-		vendorID, vsa, err := radius.VendorSpecific(a)
+	for _, avp := range p.Attributes {
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		attr := avp.Attribute
+		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != _Aruba_VendorID {
 			continue
 		}
@@ -69,8 +77,12 @@ func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok 
 }
 
 func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
-	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
-		vendorID, vsa, err := radius.VendorSpecific(p.Attributes[rfc2865.VendorSpecific_Type][i])
+	for i := 0; i < len(p.Attributes); {
+		avp := p.Attributes[i]
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != _Aruba_VendorID {
 			i++
 			continue
@@ -87,10 +99,10 @@ func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 			j += int(vsaLen)
 		}
 		if len(vsa) > 0 {
-			copy(p.Attributes[rfc2865.VendorSpecific_Type][i][4:], vsa)
+			copy(avp.Attribute[4:], vsa)
 			i++
 		} else {
-			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+i:]...)
+			p.Attributes = append(p.Attributes[:i], p.Attributes[i+i:]...)
 		}
 	}
 	return _Aruba_AddVendor(p, typ, attr)
@@ -98,9 +110,12 @@ func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 
 func _Aruba_DelVendor(p *radius.Packet, typ byte) {
 vsaLoop:
-	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
-		attr := p.Attributes[rfc2865.VendorSpecific_Type][i]
-		vendorID, vsa, err := radius.VendorSpecific(attr)
+	for i := 0; i < len(p.Attributes); {
+		avp := p.Attributes[i]
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != _Aruba_VendorID {
 			continue
 		}
@@ -118,7 +133,7 @@ vsaLoop:
 			}
 		}
 		if offset == 0 {
-			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+1:]...)
+			p.Attributes = append(p.Attributes[:i], p.Attributes[i+1:]...)
 		} else {
 			i++
 		}

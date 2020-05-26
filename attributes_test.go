@@ -39,16 +39,16 @@ func TestParseAttributes_maxLength(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
-	if l := len(attrs[typ]); l != 1 {
+	if l := len(attrs); l != 1 {
 		t.Fatalf("expected one attr, got %d", l)
 	}
-	if !bytes.Equal(b[2:], attrs[typ][0]) {
-		t.Fatalf("expected attr to be all zeros, got %v", attrs[typ][0])
+	if !bytes.Equal(b[2:], attrs[0].Attribute) {
+		t.Fatalf("expected attr to be all zeros, got %v", attrs[0].Attribute)
 	}
 }
 
 func TestAttributes_all(t *testing.T) {
-	a := make(Attributes)
+	var a Attributes
 	a.Add(1, []byte(`A`))
 	a.Add(1, []byte(`A.A`))
 	a.Add(3, []byte(`C`))
@@ -68,7 +68,10 @@ func TestAttributes_all(t *testing.T) {
 
 	a.Del(1)
 
-	n := a.wireSize()
+	n, err := AttributesEncodedLen(a)
+	if err != nil {
+		t.Fatalf("got error %s; expecting none", err)
+	}
 	if n != 3 {
 		t.Fatalf("got wireSize = %d; expecting 3", n)
 	}
@@ -84,7 +87,7 @@ func TestAttributes_encodeTo_deterministic(t *testing.T) {
 	var base []byte
 
 	for i := 0; i < 10000; i++ {
-		a := make(Attributes)
+		var a Attributes
 		a.Add(83, []byte(`C`))
 		a.Add(1, []byte(`A`))
 		a.Add(1, []byte(`A.A`))
@@ -100,5 +103,14 @@ func TestAttributes_encodeTo_deterministic(t *testing.T) {
 				t.Fatal("Attributes.encodeTo not deterministic")
 			}
 		}
+	}
+}
+
+func TestAttributesEncodedSize(t *testing.T) {
+	attrs := Attributes{}
+	attrs.Add(2, make(Attribute, 254))
+
+	if _, err := AttributesEncodedLen(attrs); err == nil {
+		t.Fatalf("expecting error")
 	}
 }

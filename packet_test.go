@@ -53,7 +53,7 @@ func Test_RFC2865_7_1(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !RADIUSPacketsEqual(wire, request) {
+		if !bytes.Equal(wire, request) {
 			t.Fatal("expecting q.Encode() and request to be equal")
 		}
 	}
@@ -70,7 +70,6 @@ func Test_RFC2865_7_1(t *testing.T) {
 		Identifier:    p.Identifier,
 		Authenticator: p.Authenticator,
 		Secret:        secret,
-		Attributes:    make(radius.Attributes),
 	}
 	rfc2865.ServiceType_Set(&q, rfc2865.ServiceType(1))
 	rfc2865.LoginService_Set(&q, rfc2865.LoginService(0))
@@ -83,7 +82,7 @@ func Test_RFC2865_7_1(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !RADIUSPacketsEqual(wire, response) {
+		if !bytes.Equal(wire, response) {
 			t.Fatalf("expecting q.Encode() and response to be equal\n%v\n%v", wire, response)
 		}
 	}
@@ -302,43 +301,4 @@ func TestPacket_longAttribute(t *testing.T) {
 	if _, err := p.Encode(); err == nil {
 		t.Fatalf("expecting error, got none")
 	}
-}
-
-// RADIUSPacketsEqual returns if two RADIUS packets are equal, ignoring the
-// order of attributes of different types.
-func RADIUSPacketsEqual(a, b []byte) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	if !bytes.Equal(a[:4], b[:4]) {
-		return false
-	}
-
-	// hash is going to be different, as the attribute order could change
-
-	aa, err := radius.ParseAttributes(a[20:])
-	if err != nil {
-		panic(err)
-	}
-	ab, err := radius.ParseAttributes(b[20:])
-	if err != nil {
-		panic(err)
-	}
-
-	if len(aa) != len(ab) {
-		return false
-	}
-
-	for typeA, attrsA := range aa {
-		if len(attrsA) != len(ab[typeA]) {
-			return false
-		}
-		for i, attrA := range attrsA {
-			if !bytes.Equal(attrA, ab[typeA][i]) {
-				return false
-			}
-		}
-	}
-
-	return true
 }

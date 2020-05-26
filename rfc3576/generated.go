@@ -80,7 +80,11 @@ func ErrorCause_Get(p *radius.Packet) (value ErrorCause) {
 
 func ErrorCause_Gets(p *radius.Packet) (values []ErrorCause, err error) {
 	var i uint32
-	for _, attr := range p.Attributes[ErrorCause_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != ErrorCause_Type {
+			continue
+		}
+		attr := avp.Attribute
 		i, err = radius.Integer(attr)
 		if err != nil {
 			return

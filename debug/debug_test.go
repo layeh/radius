@@ -28,7 +28,6 @@ func TestDumpPacket(t *testing.T) {
 					Code:       radius.CodeAccessRequest,
 					Identifier: 33,
 					Secret:     secret,
-					Attributes: make(radius.Attributes),
 				}
 				p.Authenticator[0] = 0x01
 
@@ -93,7 +92,6 @@ func TestDumpRequest(t *testing.T) {
 						Code:       radius.CodeAccessRequest,
 						Identifier: 5,
 						Secret:     secret,
-						Attributes: make(radius.Attributes),
 					},
 				}
 

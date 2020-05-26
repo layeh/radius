@@ -29,7 +29,11 @@ func _Mikrotik_AddVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err
 }
 
 func _Mikrotik_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute) {
-	for _, attr := range p.Attributes[rfc2865.VendorSpecific_Type] {
+	for _, avp := range p.Attributes {
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		attr := avp.Attribute
 		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != _Mikrotik_VendorID {
 			continue
@@ -49,8 +53,12 @@ func _Mikrotik_GetsVendor(p *radius.Packet, typ byte) (values []radius.Attribute
 }
 
 func _Mikrotik_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok bool) {
-	for _, a := range p.Attributes[rfc2865.VendorSpecific_Type] {
-		vendorID, vsa, err := radius.VendorSpecific(a)
+	for _, avp := range p.Attributes {
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		attr := avp.Attribute
+		vendorID, vsa, err := radius.VendorSpecific(attr)
 		if err != nil || vendorID != _Mikrotik_VendorID {
 			continue
 		}
@@ -69,8 +77,12 @@ func _Mikrotik_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, 
 }
 
 func _Mikrotik_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
-	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
-		vendorID, vsa, err := radius.VendorSpecific(p.Attributes[rfc2865.VendorSpecific_Type][i])
+	for i := 0; i < len(p.Attributes); {
+		avp := p.Attributes[i]
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != _Mikrotik_VendorID {
 			i++
 			continue
@@ -87,10 +99,10 @@ func _Mikrotik_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err
 			j += int(vsaLen)
 		}
 		if len(vsa) > 0 {
-			copy(p.Attributes[rfc2865.VendorSpecific_Type][i][4:], vsa)
+			copy(avp.Attribute[4:], vsa)
 			i++
 		} else {
-			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+i:]...)
+			p.Attributes = append(p.Attributes[:i], p.Attributes[i+i:]...)
 		}
 	}
 	return _Mikrotik_AddVendor(p, typ, attr)
@@ -98,9 +110,12 @@ func _Mikrotik_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err
 
 func _Mikrotik_DelVendor(p *radius.Packet, typ byte) {
 vsaLoop:
-	for i := 0; i < len(p.Attributes[rfc2865.VendorSpecific_Type]); {
-		attr := p.Attributes[rfc2865.VendorSpecific_Type][i]
-		vendorID, vsa, err := radius.VendorSpecific(attr)
+	for i := 0; i < len(p.Attributes); {
+		avp := p.Attributes[i]
+		if avp.Type != rfc2865.VendorSpecific_Type {
+			continue
+		}
+		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != _Mikrotik_VendorID {
 			continue
 		}
@@ -118,7 +133,7 @@ vsaLoop:
 			}
 		}
 		if offset == 0 {
-			p.Attributes[rfc2865.VendorSpecific_Type] = append(p.Attributes[rfc2865.VendorSpecific_Type][:i], p.Attributes[rfc2865.VendorSpecific_Type][i+1:]...)
+			p.Attributes = append(p.Attributes[:i], p.Attributes[i+1:]...)
 		} else {
 			i++
 		}
@@ -2383,4 +2398,98 @@ func MikrotikWirelessMaxsignal_SetString(p *radius.Packet, value string) (err er
 
 func MikrotikWirelessMaxsignal_Del(p *radius.Packet) {
 	_Mikrotik_DelVendor(p, 29)
+}
+
+func MikrotikSwitchingFilter_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Mikrotik_AddVendor(p, 30, a)
+}
+
+func MikrotikSwitchingFilter_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Mikrotik_AddVendor(p, 30, a)
+}
+
+func MikrotikSwitchingFilter_Get(p *radius.Packet) (value []byte) {
+	value, _ = MikrotikSwitchingFilter_Lookup(p)
+	return
+}
+
+func MikrotikSwitchingFilter_GetString(p *radius.Packet) (value string) {
+	value, _ = MikrotikSwitchingFilter_LookupString(p)
+	return
+}
+
+func MikrotikSwitchingFilter_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Mikrotik_GetsVendor(p, 30) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func MikrotikSwitchingFilter_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Mikrotik_GetsVendor(p, 30) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func MikrotikSwitchingFilter_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Mikrotik_LookupVendor(p, 30)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func MikrotikSwitchingFilter_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Mikrotik_LookupVendor(p, 30)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func MikrotikSwitchingFilter_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Mikrotik_SetVendor(p, 30, a)
+}
+
+func MikrotikSwitchingFilter_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Mikrotik_SetVendor(p, 30, a)
+}
+
+func MikrotikSwitchingFilter_Del(p *radius.Packet) {
+	_Mikrotik_DelVendor(p, 30)
 }

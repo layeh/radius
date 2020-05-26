@@ -55,112 +55,79 @@ func DumpRequestString(c *Config, req *radius.Request) string {
 }
 
 func dumpAttrs(w io.Writer, c *Config, p *radius.Packet) {
-	for _, elem := range sortedAttributes(p.Attributes) {
-		attrsType, attrs := elem.Type, elem.Attrs
-		if len(attrs) == 0 {
-			continue
-		}
+	for _, avp := range p.Attributes {
+		var attrTypeStr string
+		var attrStr string
 
-		for _, attr := range attrs {
+		searchAttrs := c.Dictionary.Attributes
+		searchValues := c.Dictionary.Values
 
-			var attrTypeStr string
-			var attrStr string
+		dictAttr := dictionary.AttributeByOID(searchAttrs, dictionary.OID{int(avp.Type)})
+		if dictAttr != nil {
+			attrTypeStr = dictAttr.Name
+			switch dictAttr.Type {
+			case dictionary.AttributeString, dictionary.AttributeOctets:
+				if dictAttr != nil && dictAttr.FlagEncrypt.Valid && dictAttr.FlagEncrypt.Int == 1 {
+					decryptedValue, err := radius.UserPassword(avp.Attribute, p.Secret, p.Authenticator[:])
+					if err == nil {
+						attrStr = fmt.Sprintf("%q", decryptedValue)
+						break
+					}
+				}
+				attrStr = fmt.Sprintf("%q", avp.Attribute)
 
-			searchAttrs := c.Dictionary.Attributes
-			searchValues := c.Dictionary.Values
+			case dictionary.AttributeDate:
+				if len(avp.Attribute) == 4 {
+					t := time.Unix(int64(binary.BigEndian.Uint32(avp.Attribute)), 0).UTC()
+					attrStr = t.Format(time.RFC3339)
+				}
 
-			dictAttr := dictionary.AttributeByOID(searchAttrs, dictionary.OID{int(attrsType)})
-			if dictAttr != nil {
-				attrTypeStr = dictAttr.Name
-				switch dictAttr.Type {
-				case dictionary.AttributeString, dictionary.AttributeOctets:
-					if dictAttr != nil && dictAttr.FlagEncrypt.Valid && dictAttr.FlagEncrypt.Int == 1 {
-						decryptedValue, err := radius.UserPassword(attr, p.Secret, p.Authenticator[:])
-						if err == nil {
-							attrStr = fmt.Sprintf("%q", decryptedValue)
+			case dictionary.AttributeInteger:
+				switch len(avp.Attribute) {
+				case 4:
+					intVal := int(binary.BigEndian.Uint32(avp.Attribute))
+					if dictAttr != nil {
+						var matchedNames []string
+						for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
+							if value.Number == intVal {
+								matchedNames = append(matchedNames, value.Name)
+							}
+						}
+						if len(matchedNames) > 0 {
+							sort.Stable(sort.StringSlice(matchedNames))
+							attrStr = strings.Join(matchedNames, " / ")
 							break
 						}
 					}
-					attrStr = fmt.Sprintf("%q", attr)
-
-				case dictionary.AttributeDate:
-					if len(attr) == 4 {
-						t := time.Unix(int64(binary.BigEndian.Uint32(attr)), 0).UTC()
-						attrStr = t.Format(time.RFC3339)
-					}
-
-				case dictionary.AttributeInteger:
-					switch len(attr) {
-					case 4:
-						intVal := int(binary.BigEndian.Uint32(attr))
-						if dictAttr != nil {
-							var matchedNames []string
-							for _, value := range dictionary.ValuesByAttribute(searchValues, dictAttr.Name) {
-								if value.Number == intVal {
-									matchedNames = append(matchedNames, value.Name)
-								}
-							}
-							if len(matchedNames) > 0 {
-								sort.Stable(sort.StringSlice(matchedNames))
-								attrStr = strings.Join(matchedNames, " / ")
-								break
-							}
-						}
-						attrStr = strconv.Itoa(intVal)
-					case 8:
-						attrStr = strconv.Itoa(int(binary.BigEndian.Uint64(attr)))
-					}
-
-				case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr:
-					switch len(attr) {
-					case net.IPv4len, net.IPv6len:
-						attrStr = net.IP(attr).String()
-					}
-
-				case dictionary.AttributeIFID:
-					if len(attr) == 8 {
-						attrStr = net.HardwareAddr(attr).String()
-					}
-
+					attrStr = strconv.Itoa(intVal)
+				case 8:
+					attrStr = strconv.Itoa(int(binary.BigEndian.Uint64(avp.Attribute)))
 				}
-			} else {
-				attrTypeStr = "#" + strconv.Itoa(int(attrsType))
-			}
 
-			if len(attrStr) == 0 {
-				attrStr = "0x" + hex.EncodeToString(attr)
-			}
+			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr:
+				switch len(avp.Attribute) {
+				case net.IPv4len, net.IPv6len:
+					attrStr = net.IP(avp.Attribute).String()
+				}
 
-			io.WriteString(w, "  ")
-			io.WriteString(w, attrTypeStr)
-			io.WriteString(w, " = ")
-			io.WriteString(w, attrStr)
-			io.WriteString(w, "\n")
+			case dictionary.AttributeIFID:
+				if len(avp.Attribute) == 8 {
+					attrStr = net.HardwareAddr(avp.Attribute).String()
+				}
+
+			}
+		} else {
+			attrTypeStr = "#" + strconv.Itoa(int(avp.Type))
 		}
+
+		if len(attrStr) == 0 {
+			attrStr = "0x" + hex.EncodeToString(avp.Attribute)
+		}
+
+		io.WriteString(w, "  ")
+		io.WriteString(w, attrTypeStr)
+		io.WriteString(w, " = ")
+		io.WriteString(w, attrStr)
+		io.WriteString(w, "\n")
 	}
 }
-
-type attributesElement struct {
-	Type  radius.Type
-	Attrs []radius.Attribute
-}
-
-func sortedAttributes(attributes radius.Attributes) []attributesElement {
-	var sortedAttrs []attributesElement
-	for attrsType, attrs := range attributes {
-		sortedAttrs = append(sortedAttrs, attributesElement{
-			Type:  attrsType,
-			Attrs: attrs,
-		})
-	}
-
-	sort.Sort(sortAttributesType(sortedAttrs))
-
-	return sortedAttrs
-}
-
-type sortAttributesType []attributesElement
-
-func (s sortAttributesType) Len() int           { return len(s) }
-func (s sortAttributesType) Less(i, j int) bool { return s[i].Type < s[j].Type }
-func (s sortAttributesType) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }

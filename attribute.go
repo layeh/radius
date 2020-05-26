@@ -15,7 +15,7 @@ import (
 // expected.
 var ErrNoAttribute = errors.New("radius: attribute not found")
 
-// Attribute is a wire encoded RADIUS attribute.
+// Attribute is a wire encoded RADIUS attribute value.
 type Attribute []byte
 
 // Integer returns the given attribute as an integer. An error is returned if
@@ -85,7 +85,7 @@ func NewIPAddr(a net.IP) (Attribute, error) {
 		return nil, errors.New("invalid IPv4 address")
 	}
 	b := make(Attribute, len(a))
-	copy(b,a)
+	copy(b, a)
 	return b, nil
 }
 
