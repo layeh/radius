@@ -36,6 +36,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	if err != nil {`)
 		p(w, `		return`)
 		p(w, `	}`)
+		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
 		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
@@ -77,6 +78,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	if err != nil {`)
 		p(w, `		return`)
 		p(w, `	}`)
+		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
 		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
@@ -320,6 +322,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	if err != nil {`)
 		p(w, `		return`)
 		p(w, `	}`)
+		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
 		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
@@ -361,6 +364,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	if err != nil {`)
 		p(w, `		return`)
 		p(w, `	}`)
+		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
 		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
