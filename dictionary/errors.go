@@ -16,6 +16,8 @@ func (e *ParseError) Error() string {
 	return str
 }
 
+func (e *ParseError) Unwrap() error { return e.Inner }
+
 type DuplicateAttributeError struct {
 	Attribute *Attribute
 }
