@@ -425,19 +425,17 @@ func (p *Parser) parseValue(f []string) (*Value, error) {
 	}
 
 	var err error
-	var number int64
 	if strings.HasPrefix(f[3], "0x") {
-		number, err = strconv.ParseInt(f[3][2:], 16, 32)
+		value.Number, err = strconv.ParseUint(f[3][2:], 16, 32)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		number, err = strconv.ParseInt(f[3], 10, 32)
+		value.Number, err = strconv.ParseUint(f[3], 10, 32)
 		if err != nil {
 			return nil, err
 		}
 	}
-	value.Number = int(number)
 
 	return value, nil
 }

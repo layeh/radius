@@ -213,7 +213,7 @@ func (a *Attribute) GoString() string {
 type Value struct {
 	Attribute string
 	Name      string
-	Number    int
+	Number    uint64
 }
 
 type Vendor struct {
