@@ -157,5 +157,6 @@ func TestClient_Exchange_nilContext(t *testing.T) {
 	}()
 
 	req := New(CodeAccessRequest, []byte(``))
+	//lint:ignore SA1012 This test is specifically checking for a nil context
 	Exchange(nil, req, "")
 }

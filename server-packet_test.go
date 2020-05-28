@@ -133,6 +133,7 @@ func TestRequest_context(t *testing.T) {
 				t.Fatalf("got recover() = %v; expected nil ctx", err)
 			}
 		}()
+		//lint:ignore SA1012 This test is specifically checking for a nil context
 		req.WithContext(nil)
 	}()
 }

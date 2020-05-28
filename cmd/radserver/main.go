@@ -8,7 +8,7 @@ import (
 	"os/exec"
 
 	"layeh.com/radius"
-	. "layeh.com/radius/rfc2865"
+	"layeh.com/radius/rfc2865"
 )
 
 var secret = flag.String("secret", "", "shared RADIUS secret between clients and server")
@@ -16,8 +16,8 @@ var command string
 var arguments []string
 
 func handler(w radius.ResponseWriter, r *radius.Request) {
-	username, err1 := UserName_LookupString(r.Packet)
-	password, err2 := UserPassword_LookupString(r.Packet)
+	username, err1 := rfc2865.UserName_LookupString(r.Packet)
+	password, err2 := rfc2865.UserPassword_LookupString(r.Packet)
 	if err1 != nil || err2 != nil {
 		w.Write(r.Response(radius.CodeAccessReject))
 		return
@@ -45,7 +45,7 @@ func handler(w radius.ResponseWriter, r *radius.Request) {
 	resp := r.Response(code)
 
 	if len(output) > 0 {
-		ReplyMessage_Set(r.Packet, output)
+		rfc2865.ReplyMessage_Set(r.Packet, output)
 	}
 
 	w.Write(resp)

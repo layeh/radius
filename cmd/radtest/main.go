@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"layeh.com/radius"
-	. "layeh.com/radius/rfc2865"
+	"layeh.com/radius/rfc2865"
 )
 
 const usage = `
@@ -38,10 +38,10 @@ func main() {
 	hostport := net.JoinHostPort(host, port)
 
 	packet := radius.New(radius.CodeAccessRequest, []byte(flag.Arg(4)))
-	UserName_SetString(packet, flag.Arg(0))
-	UserPassword_SetString(packet, flag.Arg(1))
+	rfc2865.UserName_SetString(packet, flag.Arg(0))
+	rfc2865.UserPassword_SetString(packet, flag.Arg(1))
 	nasPort, _ := strconv.Atoi(flag.Arg(3))
-	NASPort_Set(packet, NASPort(nasPort))
+	rfc2865.NASPort_Set(packet, rfc2865.NASPort(nasPort))
 
 	ctx, cancel := context.WithTimeout(context.Background(), *timeout)
 	defer cancel()
@@ -52,7 +52,7 @@ func main() {
 	}
 
 	status := received.Code.String()
-	if msg, err := ReplyMessage_LookupString(received); err == nil {
+	if msg, err := rfc2865.ReplyMessage_LookupString(received); err == nil {
 		status += " (" + msg + ")"
 	}
 
