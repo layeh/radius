@@ -79,6 +79,7 @@ func _WISPr_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err er
 	for i := 0; i < len(p.Attributes); {
 		avp := p.Attributes[i]
 		if avp.Type != rfc2865.VendorSpecific_Type {
+			i++
 			continue
 		}
 		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
@@ -112,10 +113,12 @@ vsaLoop:
 	for i := 0; i < len(p.Attributes); {
 		avp := p.Attributes[i]
 		if avp.Type != rfc2865.VendorSpecific_Type {
+			i++
 			continue
 		}
 		vendorID, vsa, err := radius.VendorSpecific(avp.Attribute)
 		if err != nil || vendorID != _WISPr_VendorID {
+			i++
 			continue
 		}
 		offset := 0
