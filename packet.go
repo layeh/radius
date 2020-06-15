@@ -9,7 +9,7 @@ import (
 )
 
 // MaxPacketLength is the maximum wire length of a RADIUS packet.
-const MaxPacketLength = 4095
+const MaxPacketLength = 4096
 
 // Packet is a RADIUS packet.
 type Packet struct {
