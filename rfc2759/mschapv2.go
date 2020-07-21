@@ -4,48 +4,47 @@ import (
 	"crypto/des"
 	"crypto/sha1"
 	"encoding/hex"
-	"fmt"
 	"math/bits"
 	"strings"
 
+	//lint:ignore SA1019 compatibility with legacy systems
 	"golang.org/x/crypto/md4"
 	"golang.org/x/text/encoding/unicode"
 )
 
 // ToUTF16 takes an ASCII string and turns it into a UCS-2 / UTF-16 representation
-func ToUTF16(in string) ([]byte, error) {
+func ToUTF16(in []byte) ([]byte, error) {
 	encoder := unicode.UTF16(unicode.LittleEndian, unicode.IgnoreBOM).NewEncoder()
-	pwd, err := encoder.Bytes([]byte(in))
+	pwd, err := encoder.Bytes(in)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
-
 	return pwd, nil
 }
 
 // GenerateNTResponse - rfc2759, 8.1
-func GenerateNTResponse(authenticatorChallenge, peerChallenge []byte, username, password string) ([]byte, error) {
+func GenerateNTResponse(authenticatorChallenge, peerChallenge, username, password []byte) ([]byte, error) {
 	challenge := ChallengeHash(peerChallenge, authenticatorChallenge, username)
 	ucs2Password, err := ToUTF16(password)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
-	passwordHash := HashPassword(ucs2Password)
+	passwordHash := NTPasswordHash(ucs2Password)
 
 	return ChallengeResponse(challenge, passwordHash), nil
 }
 
 // ChallengeHash - rfc2759, 8.2
-func ChallengeHash(peerChallenge, authenticatorChallenge []byte, username string) []byte {
+func ChallengeHash(peerChallenge, authenticatorChallenge, username []byte) []byte {
 	sha := sha1.New()
 	sha.Write(peerChallenge)
 	sha.Write(authenticatorChallenge)
-	sha.Write([]byte(username))
+	sha.Write(username)
 	return sha.Sum(nil)[:8]
 }
 
-// HashPassword with MD4 - rfc2759, 8.3
-func HashPassword(password []byte) []byte {
+// NTPasswordHash with MD4 - rfc2759, 8.3
+func NTPasswordHash(password []byte) []byte {
 	h := md4.New()
 	h.Write(password)
 	return h.Sum(nil)
@@ -95,38 +94,43 @@ func DESCrypt(key, clear []byte) []byte {
 		k = parityPadDESKey(key)
 	}
 
-	des, err := des.NewCipher(k)
+	cipher, err := des.NewCipher(k)
 	if err != nil {
 		panic(err)
 	}
 
 	b := make([]byte, 8)
-	des.Encrypt(b, clear)
+	cipher.Encrypt(b, clear)
 
 	return b
 }
 
+var (
+	magic1 = []byte{
+		0x4D, 0x61, 0x67, 0x69, 0x63, 0x20, 0x73, 0x65, 0x72, 0x76,
+		0x65, 0x72, 0x20, 0x74, 0x6F, 0x20, 0x63, 0x6C, 0x69, 0x65,
+		0x6E, 0x74, 0x20, 0x73, 0x69, 0x67, 0x6E, 0x69, 0x6E, 0x67,
+		0x20, 0x63, 0x6F, 0x6E, 0x73, 0x74, 0x61, 0x6E, 0x74,
+	}
+
+	magic2 = []byte{
+		0x50, 0x61, 0x64, 0x20, 0x74, 0x6F, 0x20, 0x6D, 0x61, 0x6B,
+		0x65, 0x20, 0x69, 0x74, 0x20, 0x64, 0x6F, 0x20, 0x6D, 0x6F,
+		0x72, 0x65, 0x20, 0x74, 0x68, 0x61, 0x6E, 0x20, 0x6F, 0x6E,
+		0x65, 0x20, 0x69, 0x74, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6F,
+		0x6E,
+	}
+)
+
 // GenerateAuthenticatorResponse - rfc2759, 8.7
-func GenerateAuthenticatorResponse(authenticatorChallenge, peerChallenge, ntResponse []byte, username, password string) (string, error) {
+func GenerateAuthenticatorResponse(authenticatorChallenge, peerChallenge, ntResponse, username, password []byte) (string, error) {
 	ucs2Password, err := ToUTF16(password)
 	if err != nil {
 		return "", err
 	}
 
-	passwordHash := HashPassword(ucs2Password)
-	passwordHashHash := HashPassword(passwordHash)
-
-	magic1 := []byte{
-		0x4D, 0x61, 0x67, 0x69, 0x63, 0x20, 0x73, 0x65, 0x72, 0x76,
-		0x65, 0x72, 0x20, 0x74, 0x6F, 0x20, 0x63, 0x6C, 0x69, 0x65,
-		0x6E, 0x74, 0x20, 0x73, 0x69, 0x67, 0x6E, 0x69, 0x6E, 0x67,
-		0x20, 0x63, 0x6F, 0x6E, 0x73, 0x74, 0x61, 0x6E, 0x74}
-	magic2 := []byte{
-		0x50, 0x61, 0x64, 0x20, 0x74, 0x6F, 0x20, 0x6D, 0x61, 0x6B,
-		0x65, 0x20, 0x69, 0x74, 0x20, 0x64, 0x6F, 0x20, 0x6D, 0x6F,
-		0x72, 0x65, 0x20, 0x74, 0x68, 0x61, 0x6E, 0x20, 0x6F, 0x6E,
-		0x65, 0x20, 0x69, 0x74, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6F,
-		0x6E}
+	passwordHash := NTPasswordHash(ucs2Password)
+	passwordHashHash := NTPasswordHash(passwordHash)
 
 	sha := sha1.New()
 	sha.Write(passwordHashHash)
@@ -142,5 +146,5 @@ func GenerateAuthenticatorResponse(authenticatorChallenge, peerChallenge, ntResp
 	sha.Write(magic2)
 	digest = sha.Sum(nil)
 
-	return fmt.Sprintf("S=%s", strings.ToUpper(hex.EncodeToString(digest))), nil
+	return "S=" + strings.ToUpper(hex.EncodeToString(digest)), nil
 }

@@ -77,21 +77,17 @@ func GetMasterKey(passwordHashHash, ntResponse []byte) []byte {
 // GetAsymmetricStartKey - rfc3079, 3.4
 func GetAsymmetricStartKey(masterKey []byte, sessionKeyLength KeyLength, isSend bool) ([]byte, error) {
 	if len(masterKey) != 16 {
-		return []byte{}, errors.New("masterKey must be 16 bytes long")
-	}
-
-	s := []byte{}
-
-	if isSend {
-		s = magic3
-	} else {
-		s = magic2
+		return nil, errors.New("masterKey must be 16 bytes long")
 	}
 
 	sha := sha1.New()
 	sha.Write(masterKey)
 	sha.Write(shaPad1)
-	sha.Write(s)
+	if isSend {
+		sha.Write(magic3)
+	} else {
+		sha.Write(magic2)
+	}
 	sha.Write(shaPad2)
 	digest := sha.Sum(nil)
 
@@ -99,18 +95,18 @@ func GetAsymmetricStartKey(masterKey []byte, sessionKeyLength KeyLength, isSend 
 }
 
 // MakeKey - rfc2548, 2.4.2
-func MakeKey(ntResponse []byte, password string, isSend bool) ([]byte, error) {
+func MakeKey(ntResponse, password []byte, isSend bool) ([]byte, error) {
 	if len(ntResponse) != 24 {
-		return []byte{}, errors.New("ntresponse must be 24 bytes in size")
+		return nil, errors.New("ntResponse must be 24 bytes in size")
 	}
 
 	ucs2Password, err := rfc2759.ToUTF16(password)
 	if err != nil {
-		return []byte{}, err
+		return nil, err
 	}
 
-	passwordHash := rfc2759.HashPassword(ucs2Password)
-	passwordHashHash := rfc2759.HashPassword(passwordHash)
+	passwordHash := rfc2759.NTPasswordHash(ucs2Password)
+	passwordHashHash := rfc2759.NTPasswordHash(passwordHash)
 	masterKey := GetMasterKey(passwordHashHash, ntResponse)
 
 	return GetAsymmetricStartKey(masterKey, KeyLength128Bit, isSend)
