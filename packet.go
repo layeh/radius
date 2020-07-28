@@ -79,28 +79,25 @@ func (p *Packet) Response(code Code) *Packet {
 	return q
 }
 
-// Encode encodes the RADIUS packet to wire format. An error is returned if the
-// encoded packet is too long (due to its Attributes), or if the packet has an
-// unknown Code.
+// Encode encodes the RADIUS packet to wire format that can then
+// be sent to a RADIUS client.
+//
+// If the RADIUS packet code requires it, the authenticator in
+// the returned data will be a hash calculation based off of the packet
+// data and secret. Use MarshalBinary() to get the packet in wire
+// format without the hash calculation.
+//
+// An error is returned if the encoded packet is too long (due to its Attributes),
+// or if the packet has an unknown Code.
 func (p *Packet) Encode() ([]byte, error) {
-	attributesLen, err := AttributesEncodedLen(p.Attributes)
+	b, err := p.MarshalBinary()
 	if err != nil {
 		return nil, err
 	}
-	size := 20 + attributesLen
-	if size > MaxPacketLength {
-		return nil, errors.New("encoded packet is too long")
-	}
-
-	b := make([]byte, size)
-	b[0] = byte(p.Code)
-	b[1] = p.Identifier
-	binary.BigEndian.PutUint16(b[2:4], uint16(size))
-	p.Attributes.encodeTo(b[20:])
 
 	switch p.Code {
 	case CodeAccessRequest, CodeStatusServer:
-		copy(b[4:20], p.Authenticator[:])
+		// Authenticator is sent as-is
 	case CodeAccessAccept, CodeAccessReject, CodeAccountingRequest, CodeAccountingResponse, CodeAccessChallenge, CodeDisconnectRequest, CodeDisconnectACK, CodeDisconnectNAK, CodeCoARequest, CodeCoAACK, CodeCoANAK:
 		hash := md5.New()
 		hash.Write(b[:4])
@@ -118,6 +115,30 @@ func (p *Packet) Encode() ([]byte, error) {
 		return nil, errors.New("radius: unknown Packet Code")
 	}
 
+	return b, nil
+}
+
+// MarshalBinary returns the packet in wire format.
+//
+// The authenticator in the returned data is copied from p.Authenticator
+// without any hash calculation. Use Encode() if the packet is intended
+// to be sent to a RADIUS client and requires the authenticator to be
+// calculated.
+func (p *Packet) MarshalBinary() ([]byte, error) {
+	attributesLen, err := AttributesEncodedLen(p.Attributes)
+	if err != nil {
+		return nil, err
+	}
+	size := 20 + attributesLen
+	if size > MaxPacketLength {
+		return nil, errors.New("radius: packet is too large")
+	}
+	b := make([]byte, size)
+	b[0] = byte(p.Code)
+	b[1] = p.Identifier
+	binary.BigEndian.PutUint16(b[2:4], uint16(size))
+	copy(b[4:20], p.Authenticator[:])
+	p.Attributes.encodeTo(b[20:])
 	return b, nil
 }
 
