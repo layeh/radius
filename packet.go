@@ -121,6 +121,27 @@ func (p *Packet) Encode() ([]byte, error) {
 	return b, nil
 }
 
+// MarshalBinary returns the Packet as bytes.
+// This is NOT intended to be used in place of Encode() for sending over the wire.
+// This method will not do any Encode actions, but simply return the Packet struct in its current form as bytes
+func (p *Packet) MarshalBinary() ([]byte, error) {
+	attrSize, err := AttributesEncodedLen(p.Attributes)
+	if err != nil {
+		return nil, err
+	}
+	size := 20 + attrSize
+	if size > MaxPacketLength {
+		return nil, errors.New("packet too large")
+	}
+	b := make([]byte, size)
+	b[0] = byte(p.Code)
+	b[1] = byte(p.Identifier)
+	binary.BigEndian.PutUint16(b[2:4], uint16(size))
+	copy(b[4:20], p.Authenticator[:])
+	p.Attributes.encodeTo(b[20:])
+	return b, nil
+}
+
 // IsAuthenticResponse returns if the given RADIUS response is an authentic
 // response to the given request.
 func IsAuthenticResponse(response, request, secret []byte) bool {
