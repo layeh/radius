@@ -320,6 +320,6 @@ func TestPacketMarshalBinary(t *testing.T) {
 		t.Error(err)
 	}
 	if i := bytes.Compare(b, request); i != 0 {
-		t.Errorf("Unmarshal Binary bytes != request, got %v", i)
+		t.Errorf("MarshalBinary bytes != request, got %v", i)
 	}
 }
