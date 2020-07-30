@@ -79,7 +79,7 @@ func TestAttributes_all(t *testing.T) {
 	var encoded [MaxPacketLength]byte
 	a.encodeTo(encoded[:])
 	if expecting := []byte("\x03\x03C"); !bytes.Equal(encoded[:n], expecting) {
-		t.Fatalf("got %x; expecting %x", encoded[:n], expecting)
+		t.Fatalf("got %#v; expecting %#v", encoded[:n], expecting)
 	}
 }
 
@@ -112,5 +112,19 @@ func TestAttributesEncodedSize(t *testing.T) {
 
 	if _, err := AttributesEncodedLen(attrs); err == nil {
 		t.Fatalf("expecting error")
+	}
+}
+
+func TestAttributesSkipInvalid(t *testing.T) {
+	attrs := Attributes{}
+	attrs.Add(1000, NewInteger(15))
+
+	if n, err := AttributesEncodedLen(attrs); err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	} else if n != 0 {
+		t.Fatalf("unexpected length %v", n)
+	} else {
+		b := make([]byte, n)
+		attrs.encodeTo(b)
 	}
 }

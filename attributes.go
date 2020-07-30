@@ -112,7 +112,7 @@ func (a *Attributes) Set(key Type, value Attribute) {
 
 func (a Attributes) encodeTo(b []byte) {
 	for _, attr := range a {
-		if len(attr.Attribute) > 253 {
+		if attr.Type < 0 || 255 < attr.Type || len(attr.Attribute) > 253 {
 			continue
 		}
 		size := 1 + 1 + len(attr.Attribute)
@@ -126,14 +126,15 @@ func (a Attributes) encodeTo(b []byte) {
 // AttributesEncodedLen returns the encoded length of all attributes in a. An error is
 // returned if any attribute in a exceeds the permitted size.
 func AttributesEncodedLen(a Attributes) (int, error) {
-	bytes := 0
+	var n int
 	for _, attr := range a {
-		if 1 <= attr.Type && attr.Type <= 255 {
-			if len(attr.Attribute) > 253 {
-				return 0, errors.New("radius: attribute too large")
-			}
-			bytes += 1 + 1 + len(attr.Attribute)
+		if attr.Type < 0 || 255 < attr.Type {
+			continue
 		}
+		if len(attr.Attribute) > 253 {
+			return 0, errors.New("radius: attribute too large")
+		}
+		n += 1 + 1 + len(attr.Attribute)
 	}
-	return bytes, nil
+	return n, nil
 }
