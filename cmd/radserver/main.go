@@ -82,6 +82,7 @@ func main() {
 	server := radius.PacketServer{
 		Handler:      radius.HandlerFunc(handler),
 		SecretSource: radius.StaticSecretSource([]byte(*secret)),
+		ErrLog:       log.New(os.Stderr, "", log.Ltime|log.Lshortfile|log.Ldate),
 	}
 
 	if err := server.ListenAndServe(); err != nil {
