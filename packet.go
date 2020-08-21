@@ -13,10 +13,11 @@ const MaxPacketLength = 4096
 
 // Packet is a RADIUS packet.
 type Packet struct {
-	Code          Code
-	Identifier    byte
-	Authenticator [16]byte
-	Secret        []byte
+	Code                Code
+	Identifier          byte
+	Authenticator       [16]byte
+	CryptoAuthenticator [16]byte
+	Secret              []byte
 	Attributes
 }
 
@@ -37,12 +38,18 @@ func New(code Code, secret []byte) *Packet {
 		Secret:     secret,
 	}
 	copy(packet.Authenticator[:], buff[1:])
+	switch code {
+	case CodeAccountingRequest, CodeDisconnectRequest, CodeCoARequest:
+		// use null CryptoAuthenticator
+	default:
+		packet.CryptoAuthenticator = packet.Authenticator
+	}
 	return packet
 }
 
 // Parse parses an encoded RADIUS packet b. An error is returned if the packet
 // is malformed.
-func Parse(b, secret []byte) (*Packet, error) {
+func Parse(b []byte, cryptoAuthenticator []byte, secret []byte) (*Packet, error) {
 	if len(b) < 20 {
 		return nil, errors.New("radius: packet not at least 20 bytes long")
 	}
@@ -50,6 +57,10 @@ func Parse(b, secret []byte) (*Packet, error) {
 	length := int(binary.BigEndian.Uint16(b[2:4]))
 	if length < 20 || length > MaxPacketLength || len(b) < length {
 		return nil, errors.New("radius: invalid packet length")
+	}
+
+	if len(cryptoAuthenticator) != 0 && len(cryptoAuthenticator) != 16 {
+		return nil, errors.New("cryptoAuthenticator has invalid length")
 	}
 
 	attrs, err := ParseAttributes(b[20:length])
@@ -63,7 +74,16 @@ func Parse(b, secret []byte) (*Packet, error) {
 		Secret:     secret,
 		Attributes: attrs,
 	}
+
 	copy(packet.Authenticator[:], b[4:20])
+
+	switch packet.Code {
+	case CodeAccountingRequest, CodeDisconnectRequest, CodeCoARequest:
+		// use null CryptoAuthenticator
+	default:
+		copy(packet.CryptoAuthenticator[:], cryptoAuthenticator)
+	}
+
 	return packet, nil
 }
 
@@ -75,7 +95,8 @@ func (p *Packet) Response(code Code) *Packet {
 		Identifier: p.Identifier,
 		Secret:     p.Secret,
 	}
-	copy(q.Authenticator[:], p.Authenticator[:])
+	q.Authenticator = p.Authenticator
+	q.CryptoAuthenticator = p.Authenticator
 	return q
 }
 

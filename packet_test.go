@@ -25,7 +25,8 @@ func Test_RFC2865_7_1(t *testing.T) {
 		0x01, 0x10, 0x05, 0x06, 0x00, 0x00, 0x00, 0x03,
 	}
 
-	p, err := radius.Parse(request, secret)
+	p, err := radius.Parse(request, nil, secret)
+	p.CryptoAuthenticator = p.Authenticator
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -106,7 +107,7 @@ func Test_RFC2865_7_2(t *testing.T) {
 		0x02, 0x07, 0x06, 0x00, 0x00, 0x00, 0x01,
 	}
 
-	p, err := radius.Parse(request, secret)
+	p, err := radius.Parse(request, nil, secret)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -142,7 +143,7 @@ func Test_RFC2865_7_2(t *testing.T) {
 		0x00, 0x01, 0x0c, 0x06, 0x00, 0x00, 0x05, 0xdc,
 	}
 
-	p, err = radius.Parse(response, secret)
+	p, err = radius.Parse(response, nil, secret)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -180,7 +181,7 @@ func Test_RFC5997_6_1(t *testing.T) {
 		0x18, 0x5d, 0x06, 0x23, 0x50, 0x12, 0x5a, 0x66, 0x5e, 0x2e, 0x1e, 0x84, 0x11, 0xf3, 0xe2, 0x43,
 		0x82, 0x20, 0x97, 0xc8, 0x4f, 0xa3,
 	}
-	p, err := radius.Parse(request, secret)
+	p, err := radius.Parse(request, nil, secret)
 	if err != nil {
 		t.Error(err)
 	}
@@ -238,7 +239,7 @@ func TestPasswords(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		q, err := radius.Parse(b, secret)
+		q, err := radius.Parse(b, r.CryptoAuthenticator[:], secret)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -284,7 +285,7 @@ func TestParse_invalid(t *testing.T) {
 	secret := []byte("12345")
 
 	for _, test := range tests {
-		packet, err := radius.Parse([]byte(test.Wire), secret)
+		packet, err := radius.Parse([]byte(test.Wire), nil, secret)
 		if packet != nil {
 			t.Errorf("(%#x): expected empty packet, got %v", test.Wire, packet)
 		} else if err == nil {
@@ -311,7 +312,7 @@ func TestPacketMarshalBinary(t *testing.T) {
 		0x18, 0x5d, 0x06, 0x23, 0x50, 0x12, 0x5a, 0x66, 0x5e, 0x2e, 0x1e, 0x84, 0x11, 0xf3, 0xe2, 0x43,
 		0x82, 0x20, 0x97, 0xc8, 0x4f, 0xa3,
 	}
-	p, err := radius.Parse(request, secret)
+	p, err := radius.Parse(request, nil, secret)
 	if err != nil {
 		t.Error(err)
 	}

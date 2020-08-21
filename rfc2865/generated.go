@@ -161,7 +161,7 @@ func UserName_Del(p *radius.Packet) {
 
 func UserPassword_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
+	a, err = radius.NewUserPassword(value, p.Secret, p.CryptoAuthenticator[:])
 	if err != nil {
 		return
 	}
@@ -171,7 +171,7 @@ func UserPassword_Add(p *radius.Packet, value []byte) (err error) {
 
 func UserPassword_AddString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
+	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.CryptoAuthenticator[:])
 	if err != nil {
 		return
 	}
@@ -196,7 +196,7 @@ func UserPassword_Gets(p *radius.Packet) (values [][]byte, err error) {
 			continue
 		}
 		attr := avp.Attribute
-		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
+		i, err = radius.UserPassword(attr, p.Secret, p.CryptoAuthenticator[:])
 		if err != nil {
 			return
 		}
@@ -213,7 +213,7 @@ func UserPassword_GetStrings(p *radius.Packet) (values []string, err error) {
 		}
 		attr := avp.Attribute
 		var up []byte
-		up, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])
+		up, err = radius.UserPassword(attr, p.Secret, p.CryptoAuthenticator[:])
 		if err == nil {
 			i = string(up)
 		}
@@ -231,7 +231,7 @@ func UserPassword_Lookup(p *radius.Packet) (value []byte, err error) {
 		err = radius.ErrNoAttribute
 		return
 	}
-	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
+	value, err = radius.UserPassword(a, p.Secret, p.CryptoAuthenticator[:])
 	return
 }
 
@@ -242,7 +242,7 @@ func UserPassword_LookupString(p *radius.Packet) (value string, err error) {
 		return
 	}
 	var b []byte
-	b, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])
+	b, err = radius.UserPassword(a, p.Secret, p.CryptoAuthenticator[:])
 	if err == nil {
 		value = string(b)
 	}
@@ -251,7 +251,7 @@ func UserPassword_LookupString(p *radius.Packet) (value string, err error) {
 
 func UserPassword_Set(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
-	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])
+	a, err = radius.NewUserPassword(value, p.Secret, p.CryptoAuthenticator[:])
 	if err != nil {
 		return
 	}
@@ -261,7 +261,7 @@ func UserPassword_Set(p *radius.Packet, value []byte) (err error) {
 
 func UserPassword_SetString(p *radius.Packet, value string) (err error) {
 	var a radius.Attribute
-	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])
+	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.CryptoAuthenticator[:])
 	if err != nil {
 		return
 	}

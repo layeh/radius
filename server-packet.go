@@ -161,7 +161,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				return
 			}
 
-			packet, err := Parse(buff, secret)
+			packet, err := Parse(buff, nil, secret)
 			if err != nil {
 				s.logf("radius: unable to parse packet: %v", err)
 				return

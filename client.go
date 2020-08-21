@@ -69,7 +69,10 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	}
 	defer conn.Close()
 
-	conn.Write(wire)
+	_, err = conn.Write(wire)
+	if err != nil {
+		return nil, err
+	}
 
 	var cancel context.CancelFunc
 	ctx, cancel = context.WithCancel(ctx)
@@ -108,7 +111,7 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 			return nil, err
 		}
 
-		received, err := Parse(incoming[:n], packet.Secret)
+		received, err := Parse(incoming[:n], packet.CryptoAuthenticator[:], packet.Secret)
 		if err != nil {
 			packetErrorCount++
 			if c.MaxPacketErrors > 0 && packetErrorCount >= c.MaxPacketErrors {

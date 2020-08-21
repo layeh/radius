@@ -30,6 +30,7 @@ func TestDumpPacket(t *testing.T) {
 					Secret:     secret,
 				}
 				p.Authenticator[0] = 0x01
+				p.CryptoAuthenticator = p.Authenticator
 
 				UserName_SetString(p, "Tim")
 				UserPassword_SetString(p, "12345")
