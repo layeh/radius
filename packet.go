@@ -90,14 +90,13 @@ func Parse(b []byte, cryptoAuthenticator []byte, secret []byte) (*Packet, error)
 // Response returns a new packet that has the same identifier, secret, and
 // authenticator as the current packet.
 func (p *Packet) Response(code Code) *Packet {
-	q := &Packet{
-		Code:       code,
-		Identifier: p.Identifier,
-		Secret:     p.Secret,
+	return &Packet{
+		Code:                code,
+		Identifier:          p.Identifier,
+		Secret:              p.Secret,
+		Authenticator:       p.Authenticator,
+		CryptoAuthenticator: p.Authenticator,
 	}
-	q.Authenticator = p.Authenticator
-	q.CryptoAuthenticator = p.Authenticator
-	return q
 }
 
 // Encode encodes the RADIUS packet to wire format that can then

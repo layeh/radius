@@ -62,8 +62,7 @@ func TestCOASaltEncryptionFromClientToServer(t *testing.T) {
 		if !bytes.Equal(returned, expected) {
 			t.Fatalf("incorrect tunnel password: expected %v, got %v", expected, returned)
 		}
-		err = w.Write(resp)
-		if err != nil {
+		if err := w.Write(resp); err != nil {
 			t.Fatal(err)
 		}
 	})
@@ -72,7 +71,7 @@ func TestCOASaltEncryptionFromClientToServer(t *testing.T) {
 	defer server.Close()
 
 	client := radius.Client{
-		Retry:           time.Millisecond * 50,
+		Retry:           50 * time.Millisecond,
 		MaxPacketErrors: 2,
 	}
 
@@ -89,15 +88,14 @@ func TestCOASaltEncryptionFromClientToServer(t *testing.T) {
 	}
 }
 
-func newRadiusPacket() (p *radius.Packet) {
-	p = &radius.Packet{
+func newRadiusPacket() *radius.Packet {
+	p := &radius.Packet{
 		Attributes:    radius.Attributes{},
 		Authenticator: [16]byte{0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07},
 		Secret:        []byte{0x0B, 0x00, 0x00, 0x07},
 	}
-
 	p.CryptoAuthenticator = p.Authenticator
-	return
+	return p
 }
 
 func Test_CTIPADDR_Add(t *testing.T) {
