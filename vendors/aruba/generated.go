@@ -3,6 +3,7 @@
 package aruba
 
 import (
+	"crypto/rand"
 	"net"
 	"strconv"
 
@@ -2351,11 +2352,13 @@ type ArubaAirGroupDeviceType uint32
 const (
 	ArubaAirGroupDeviceType_Value_PersonalDevice ArubaAirGroupDeviceType = 1
 	ArubaAirGroupDeviceType_Value_SharedDevice   ArubaAirGroupDeviceType = 2
+	ArubaAirGroupDeviceType_Value_DeletedDevice  ArubaAirGroupDeviceType = 3
 )
 
 var ArubaAirGroupDeviceType_Strings = map[ArubaAirGroupDeviceType]string{
 	ArubaAirGroupDeviceType_Value_PersonalDevice: "Personal-Device",
 	ArubaAirGroupDeviceType_Value_SharedDevice:   "Shared-Device",
+	ArubaAirGroupDeviceType_Value_DeletedDevice:  "Deleted-Device",
 }
 
 func (a ArubaAirGroupDeviceType) String() string {
@@ -3371,6 +3374,63 @@ func ArubaAirGroupVersion_Del(p *radius.Packet) {
 	_Aruba_DelVendor(p, 38)
 }
 
+type ArubaAuthSurvMethod uint32
+
+var ArubaAuthSurvMethod_Strings = map[ArubaAuthSurvMethod]string{}
+
+func (a ArubaAuthSurvMethod) String() string {
+	if str, ok := ArubaAuthSurvMethod_Strings[a]; ok {
+		return str
+	}
+	return "ArubaAuthSurvMethod(" + strconv.FormatUint(uint64(a), 10) + ")"
+}
+
+func ArubaAuthSurvMethod_Add(p *radius.Packet, value ArubaAuthSurvMethod) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_AddVendor(p, 39, a)
+}
+
+func ArubaAuthSurvMethod_Get(p *radius.Packet) (value ArubaAuthSurvMethod) {
+	value, _ = ArubaAuthSurvMethod_Lookup(p)
+	return
+}
+
+func ArubaAuthSurvMethod_Gets(p *radius.Packet) (values []ArubaAuthSurvMethod, err error) {
+	var i uint32
+	for _, attr := range _Aruba_GetsVendor(p, 39) {
+		i, err = radius.Integer(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, ArubaAuthSurvMethod(i))
+	}
+	return
+}
+
+func ArubaAuthSurvMethod_Lookup(p *radius.Packet) (value ArubaAuthSurvMethod, err error) {
+	a, ok := _Aruba_LookupVendor(p, 39)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	var i uint32
+	i, err = radius.Integer(a)
+	if err != nil {
+		return
+	}
+	value = ArubaAuthSurvMethod(i)
+	return
+}
+
+func ArubaAuthSurvMethod_Set(p *radius.Packet, value ArubaAuthSurvMethod) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_SetVendor(p, 39, a)
+}
+
+func ArubaAuthSurvMethod_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 39)
+}
+
 type ArubaPortBounceHost uint32
 
 var ArubaPortBounceHost_Strings = map[ArubaPortBounceHost]string{}
@@ -3569,4 +3629,1081 @@ func ArubaAdminPath_SetString(p *radius.Packet, value string) (err error) {
 
 func ArubaAdminPath_Del(p *radius.Packet) {
 	_Aruba_DelVendor(p, 42)
+}
+
+func ArubaCaptivePortalURL_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 43, a)
+}
+
+func ArubaCaptivePortalURL_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 43, a)
+}
+
+func ArubaCaptivePortalURL_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaCaptivePortalURL_Lookup(p)
+	return
+}
+
+func ArubaCaptivePortalURL_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaCaptivePortalURL_LookupString(p)
+	return
+}
+
+func ArubaCaptivePortalURL_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 43) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaCaptivePortalURL_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 43) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaCaptivePortalURL_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 43)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaCaptivePortalURL_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 43)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaCaptivePortalURL_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 43, a)
+}
+
+func ArubaCaptivePortalURL_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 43, a)
+}
+
+func ArubaCaptivePortalURL_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 43)
+}
+
+func ArubaMPSKPassphrase_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	salt[0] |= 1 << 7
+	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 44, a)
+}
+
+func ArubaMPSKPassphrase_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	salt[0] |= 1 << 7
+	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 44, a)
+}
+
+func ArubaMPSKPassphrase_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaMPSKPassphrase_Lookup(p)
+	return
+}
+
+func ArubaMPSKPassphrase_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaMPSKPassphrase_LookupString(p)
+	return
+}
+
+func ArubaMPSKPassphrase_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 44) {
+		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaMPSKPassphrase_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 44) {
+		var up []byte
+		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		if err == nil {
+			i = string(up)
+		}
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaMPSKPassphrase_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 44)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	return
+}
+
+func ArubaMPSKPassphrase_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 44)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	var b []byte
+	b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	if err == nil {
+		value = string(b)
+	}
+	return
+}
+
+func ArubaMPSKPassphrase_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	salt[0] |= 1 << 7
+	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 44, a)
+}
+
+func ArubaMPSKPassphrase_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	var salt [2]byte
+	_, err = rand.Read(salt[:])
+	if err != nil {
+		return
+	}
+	salt[0] |= 1 << 7
+	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 44, a)
+}
+
+func ArubaMPSKPassphrase_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 44)
+}
+
+func ArubaACLServerQueryInfo_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 45, a)
+}
+
+func ArubaACLServerQueryInfo_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 45, a)
+}
+
+func ArubaACLServerQueryInfo_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaACLServerQueryInfo_Lookup(p)
+	return
+}
+
+func ArubaACLServerQueryInfo_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaACLServerQueryInfo_LookupString(p)
+	return
+}
+
+func ArubaACLServerQueryInfo_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 45) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaACLServerQueryInfo_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 45) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaACLServerQueryInfo_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 45)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaACLServerQueryInfo_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 45)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaACLServerQueryInfo_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 45, a)
+}
+
+func ArubaACLServerQueryInfo_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 45, a)
+}
+
+func ArubaACLServerQueryInfo_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 45)
+}
+
+func ArubaCommandString_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 46, a)
+}
+
+func ArubaCommandString_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 46, a)
+}
+
+func ArubaCommandString_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaCommandString_Lookup(p)
+	return
+}
+
+func ArubaCommandString_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaCommandString_LookupString(p)
+	return
+}
+
+func ArubaCommandString_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 46) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaCommandString_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 46) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaCommandString_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 46)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaCommandString_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 46)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaCommandString_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 46, a)
+}
+
+func ArubaCommandString_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 46, a)
+}
+
+func ArubaCommandString_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 46)
+}
+
+func ArubaNetworkProfile_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 47, a)
+}
+
+func ArubaNetworkProfile_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 47, a)
+}
+
+func ArubaNetworkProfile_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaNetworkProfile_Lookup(p)
+	return
+}
+
+func ArubaNetworkProfile_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaNetworkProfile_LookupString(p)
+	return
+}
+
+func ArubaNetworkProfile_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 47) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaNetworkProfile_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 47) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaNetworkProfile_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 47)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaNetworkProfile_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 47)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaNetworkProfile_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 47, a)
+}
+
+func ArubaNetworkProfile_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 47, a)
+}
+
+func ArubaNetworkProfile_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 47)
+}
+
+func ArubaAdminDeviceGroup_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 48, a)
+}
+
+func ArubaAdminDeviceGroup_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 48, a)
+}
+
+func ArubaAdminDeviceGroup_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaAdminDeviceGroup_Lookup(p)
+	return
+}
+
+func ArubaAdminDeviceGroup_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaAdminDeviceGroup_LookupString(p)
+	return
+}
+
+func ArubaAdminDeviceGroup_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 48) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaAdminDeviceGroup_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 48) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaAdminDeviceGroup_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 48)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaAdminDeviceGroup_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 48)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaAdminDeviceGroup_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 48, a)
+}
+
+func ArubaAdminDeviceGroup_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 48, a)
+}
+
+func ArubaAdminDeviceGroup_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 48)
+}
+
+type ArubaPoEPriority uint32
+
+const (
+	ArubaPoEPriority_Value_Critical ArubaPoEPriority = 0
+	ArubaPoEPriority_Value_High     ArubaPoEPriority = 1
+	ArubaPoEPriority_Value_Low      ArubaPoEPriority = 2
+)
+
+var ArubaPoEPriority_Strings = map[ArubaPoEPriority]string{
+	ArubaPoEPriority_Value_Critical: "Critical",
+	ArubaPoEPriority_Value_High:     "High",
+	ArubaPoEPriority_Value_Low:      "Low",
+}
+
+func (a ArubaPoEPriority) String() string {
+	if str, ok := ArubaPoEPriority_Strings[a]; ok {
+		return str
+	}
+	return "ArubaPoEPriority(" + strconv.FormatUint(uint64(a), 10) + ")"
+}
+
+func ArubaPoEPriority_Add(p *radius.Packet, value ArubaPoEPriority) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_AddVendor(p, 49, a)
+}
+
+func ArubaPoEPriority_Get(p *radius.Packet) (value ArubaPoEPriority) {
+	value, _ = ArubaPoEPriority_Lookup(p)
+	return
+}
+
+func ArubaPoEPriority_Gets(p *radius.Packet) (values []ArubaPoEPriority, err error) {
+	var i uint32
+	for _, attr := range _Aruba_GetsVendor(p, 49) {
+		i, err = radius.Integer(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, ArubaPoEPriority(i))
+	}
+	return
+}
+
+func ArubaPoEPriority_Lookup(p *radius.Packet) (value ArubaPoEPriority, err error) {
+	a, ok := _Aruba_LookupVendor(p, 49)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	var i uint32
+	i, err = radius.Integer(a)
+	if err != nil {
+		return
+	}
+	value = ArubaPoEPriority(i)
+	return
+}
+
+func ArubaPoEPriority_Set(p *radius.Packet, value ArubaPoEPriority) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_SetVendor(p, 49, a)
+}
+
+func ArubaPoEPriority_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 49)
+}
+
+type ArubaPortAuthMode uint32
+
+const (
+	ArubaPortAuthMode_Value_InfrastructureMode ArubaPortAuthMode = 1
+	ArubaPortAuthMode_Value_ClientMode         ArubaPortAuthMode = 2
+)
+
+var ArubaPortAuthMode_Strings = map[ArubaPortAuthMode]string{
+	ArubaPortAuthMode_Value_InfrastructureMode: "Infrastructure-Mode",
+	ArubaPortAuthMode_Value_ClientMode:         "Client-Mode",
+}
+
+func (a ArubaPortAuthMode) String() string {
+	if str, ok := ArubaPortAuthMode_Strings[a]; ok {
+		return str
+	}
+	return "ArubaPortAuthMode(" + strconv.FormatUint(uint64(a), 10) + ")"
+}
+
+func ArubaPortAuthMode_Add(p *radius.Packet, value ArubaPortAuthMode) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_AddVendor(p, 50, a)
+}
+
+func ArubaPortAuthMode_Get(p *radius.Packet) (value ArubaPortAuthMode) {
+	value, _ = ArubaPortAuthMode_Lookup(p)
+	return
+}
+
+func ArubaPortAuthMode_Gets(p *radius.Packet) (values []ArubaPortAuthMode, err error) {
+	var i uint32
+	for _, attr := range _Aruba_GetsVendor(p, 50) {
+		i, err = radius.Integer(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, ArubaPortAuthMode(i))
+	}
+	return
+}
+
+func ArubaPortAuthMode_Lookup(p *radius.Packet) (value ArubaPortAuthMode, err error) {
+	a, ok := _Aruba_LookupVendor(p, 50)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	var i uint32
+	i, err = radius.Integer(a)
+	if err != nil {
+		return
+	}
+	value = ArubaPortAuthMode(i)
+	return
+}
+
+func ArubaPortAuthMode_Set(p *radius.Packet, value ArubaPortAuthMode) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_SetVendor(p, 50, a)
+}
+
+func ArubaPortAuthMode_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 50)
+}
+
+func ArubaNASFilterRule_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 51, a)
+}
+
+func ArubaNASFilterRule_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 51, a)
+}
+
+func ArubaNASFilterRule_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaNASFilterRule_Lookup(p)
+	return
+}
+
+func ArubaNASFilterRule_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaNASFilterRule_LookupString(p)
+	return
+}
+
+func ArubaNASFilterRule_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 51) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaNASFilterRule_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 51) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaNASFilterRule_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 51)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaNASFilterRule_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 51)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaNASFilterRule_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 51, a)
+}
+
+func ArubaNASFilterRule_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 51, a)
+}
+
+func ArubaNASFilterRule_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 51)
+}
+
+type ArubaQoSTrustMode uint32
+
+const (
+	ArubaQoSTrustMode_Value_DSCP ArubaQoSTrustMode = 0
+	ArubaQoSTrustMode_Value_QoS  ArubaQoSTrustMode = 1
+	ArubaQoSTrustMode_Value_None ArubaQoSTrustMode = 2
+)
+
+var ArubaQoSTrustMode_Strings = map[ArubaQoSTrustMode]string{
+	ArubaQoSTrustMode_Value_DSCP: "DSCP",
+	ArubaQoSTrustMode_Value_QoS:  "QoS",
+	ArubaQoSTrustMode_Value_None: "None",
+}
+
+func (a ArubaQoSTrustMode) String() string {
+	if str, ok := ArubaQoSTrustMode_Strings[a]; ok {
+		return str
+	}
+	return "ArubaQoSTrustMode(" + strconv.FormatUint(uint64(a), 10) + ")"
+}
+
+func ArubaQoSTrustMode_Add(p *radius.Packet, value ArubaQoSTrustMode) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_AddVendor(p, 52, a)
+}
+
+func ArubaQoSTrustMode_Get(p *radius.Packet) (value ArubaQoSTrustMode) {
+	value, _ = ArubaQoSTrustMode_Lookup(p)
+	return
+}
+
+func ArubaQoSTrustMode_Gets(p *radius.Packet) (values []ArubaQoSTrustMode, err error) {
+	var i uint32
+	for _, attr := range _Aruba_GetsVendor(p, 52) {
+		i, err = radius.Integer(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, ArubaQoSTrustMode(i))
+	}
+	return
+}
+
+func ArubaQoSTrustMode_Lookup(p *radius.Packet) (value ArubaQoSTrustMode, err error) {
+	a, ok := _Aruba_LookupVendor(p, 52)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	var i uint32
+	i, err = radius.Integer(a)
+	if err != nil {
+		return
+	}
+	value = ArubaQoSTrustMode(i)
+	return
+}
+
+func ArubaQoSTrustMode_Set(p *radius.Packet, value ArubaQoSTrustMode) (err error) {
+	a := radius.NewInteger(uint32(value))
+	return _Aruba_SetVendor(p, 52, a)
+}
+
+func ArubaQoSTrustMode_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 52)
+}
+
+func ArubaUBTGatewayRole_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 53, a)
+}
+
+func ArubaUBTGatewayRole_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 53, a)
+}
+
+func ArubaUBTGatewayRole_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaUBTGatewayRole_Lookup(p)
+	return
+}
+
+func ArubaUBTGatewayRole_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaUBTGatewayRole_LookupString(p)
+	return
+}
+
+func ArubaUBTGatewayRole_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 53) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaUBTGatewayRole_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 53) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaUBTGatewayRole_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 53)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaUBTGatewayRole_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 53)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaUBTGatewayRole_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 53, a)
+}
+
+func ArubaUBTGatewayRole_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 53, a)
+}
+
+func ArubaUBTGatewayRole_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 53)
+}
+
+func ArubaGatewayZone_Add(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 54, a)
+}
+
+func ArubaGatewayZone_AddString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_AddVendor(p, 54, a)
+}
+
+func ArubaGatewayZone_Get(p *radius.Packet) (value []byte) {
+	value, _ = ArubaGatewayZone_Lookup(p)
+	return
+}
+
+func ArubaGatewayZone_GetString(p *radius.Packet) (value string) {
+	value, _ = ArubaGatewayZone_LookupString(p)
+	return
+}
+
+func ArubaGatewayZone_Gets(p *radius.Packet) (values [][]byte, err error) {
+	var i []byte
+	for _, attr := range _Aruba_GetsVendor(p, 54) {
+		i = radius.Bytes(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaGatewayZone_GetStrings(p *radius.Packet) (values []string, err error) {
+	var i string
+	for _, attr := range _Aruba_GetsVendor(p, 54) {
+		i = radius.String(attr)
+		if err != nil {
+			return
+		}
+		values = append(values, i)
+	}
+	return
+}
+
+func ArubaGatewayZone_Lookup(p *radius.Packet) (value []byte, err error) {
+	a, ok := _Aruba_LookupVendor(p, 54)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.Bytes(a)
+	return
+}
+
+func ArubaGatewayZone_LookupString(p *radius.Packet) (value string, err error) {
+	a, ok := _Aruba_LookupVendor(p, 54)
+	if !ok {
+		err = radius.ErrNoAttribute
+		return
+	}
+	value = radius.String(a)
+	return
+}
+
+func ArubaGatewayZone_Set(p *radius.Packet, value []byte) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewBytes(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 54, a)
+}
+
+func ArubaGatewayZone_SetString(p *radius.Packet, value string) (err error) {
+	var a radius.Attribute
+	a, err = radius.NewString(value)
+	if err != nil {
+		return
+	}
+	return _Aruba_SetVendor(p, 54, a)
+}
+
+func ArubaGatewayZone_Del(p *radius.Packet) {
+	_Aruba_DelVendor(p, 54)
 }

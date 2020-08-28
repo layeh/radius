@@ -1,3 +1,3 @@
-//go:generate go run ../../cmd/radius-dict-gen/main.go -package microsoft -output generated.go /usr/share/freeradius/dictionary.microsoft
+//go:generate go run ../../cmd/radius-dict-gen/main.go -package microsoft -output generated.go dictionary.microsoft
 
 package microsoft
