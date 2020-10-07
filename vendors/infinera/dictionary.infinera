@@ -1,0 +1,89 @@
+#
+# Infinera Attributes File
+#
+
+ATTRIBUTE   User-Name                                   1 string
+ATTRIBUTE   User-Password                               2 string encrypt=1
+ATTRIBUTE   Reply-Message                               18 string
+
+VENDOR  Infinera                                        21296
+BEGIN-VENDOR    Infinera
+
+ATTRIBUTE   Infinera-User-Priv-SA                       1 integer
+ATTRIBUTE   Infinera-User-Priv-NA                       2 integer
+ATTRIBUTE   Infinera-User-Priv-NE                       3 integer
+ATTRIBUTE   Infinera-User-Priv-PR                       4 integer
+ATTRIBUTE   Infinera-User-Priv-TT                       5 integer
+ATTRIBUTE   Infinera-User-Priv-MA                       6 integer
+ATTRIBUTE   Infinera-User-Priv-RA                       7 integer
+ATTRIBUTE   Infinera-User-Priv-EA                       8 integer
+ATTRIBUTE   Infinera-User-AdminDomain                   100 string
+ATTRIBUTE   Infinera-User-Max-Concurrent-Session        101 integer
+ATTRIBUTE   Infinera-User-Allowed-Timezone-Config       102 integer
+ATTRIBUTE   Infinera-User-TimeZone                      103 string
+
+ATTRIBUTE   Infinera-User-Email-ID                      110 string
+ATTRIBUTE   Infinera-User-Email-Notification            111 integer
+ATTRIBUTE   Infinera-User-Email-Alarm-Type              112 integer
+ATTRIBUTE   Infinera-User-Email-Filter-Name             113 string
+ATTRIBUTE   Infinera-User-Email-AdminDomain             114 string
+
+ATTRIBUTE   Infinera-User-SessionTimeout                17 integer
+ATTRIBUTE   Infinera-User-LockedOut                     19 integer
+ATTRIBUTE   Infinera-User-CanUseResSession              20 integer
+
+ATTRIBUTE   Infinera-User-MgmtType-EMS                  33 integer
+ATTRIBUTE   Infinera-User-MgmtType-GNM                  34 integer
+ATTRIBUTE   Infinera-User-MgmtType-TL1                  35 integer
+ATTRIBUTE   Infinera-User-MgmtType-CLI                  36 integer
+ATTRIBUTE   Infinera-User-MgmtType-NETCONF              37 integer
+
+ATTRIBUTE   Infinera-Rsvd-Str-Attribute1                240 string
+ATTRIBUTE   Infinera-Rsvd-Str-Attribute2                241 string
+ATTRIBUTE   Infinera-Rsvd-Int-Attribute1                249 integer
+ATTRIBUTE   Infinera-Rsvd-Int-Attribute2                250 integer
+
+VALUE   Infinera-User-Priv-SA                           SA-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-SA                           SA-PRIVILEGED 1
+VALUE   Infinera-User-Priv-NA                           NA-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-NA                           NA-PRIVILEGED 1
+VALUE   Infinera-User-Priv-NE                           NE-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-NE                           NE-PRIVILEGED 1
+VALUE   Infinera-User-Priv-PR                           PR-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-PR                           PR-PRIVILEGED 1
+VALUE   Infinera-User-Priv-TT                           TT-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-TT                           TT-PRIVILEGED 1
+VALUE   Infinera-User-Priv-MA                           MA-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-MA                           MA-PRIVILEGED 1
+VALUE   Infinera-User-Priv-RA                           RA-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-RA                           RA-PRIVILEGED 1
+VALUE   Infinera-User-Priv-EA                           EA-NONPRIVILEGED 0
+VALUE   Infinera-User-Priv-EA                           EA-PRIVILEGED 1
+
+
+VALUE   Infinera-User-Allowed-Timezone-Config           TIMEZONE-CONFIG-ALLOW 1
+VALUE   Infinera-User-Allowed-Timezone-Config           TIMEZONE-CONFIG-NOT-ALLOW 0
+
+VALUE   Infinera-User-Email-Notification                EMAIL-NOTIFICATION-ENABLE 1
+VALUE   Infinera-User-Email-Notification                EMAIL-NOTIFICATION-DISABLE 0
+VALUE   Infinera-User-Email-Alarm-Type                  EMAIL-ALARM-TYPE-ALL 0
+VALUE   Infinera-User-Email-Alarm-Type                  EMAIL-ALARM-TYPE-NEW 1
+VALUE   Infinera-User-Email-Alarm-Type                  EMAIL-ALARM-TYPE-CLEAR 2
+
+VALUE   Infinera-User-CanUseResSession                  CANNOT-USE-RES-SESSION 0
+VALUE   Infinera-User-CanUseResSession                  CAN-USE-RES-SESSION 1
+
+VALUE   Infinera-User-MgmtType-EMS                      MGMTTYPE-EMS-DISALLOWED 0
+VALUE   Infinera-User-MgmtType-EMS                      MGMTTYPE-EMS-ALLOWED 1
+VALUE   Infinera-User-MgmtType-TL1                      MGMTTYPE-TL1-DISALLOWED 0
+VALUE   Infinera-User-MgmtType-TL1                      MGMTTYPE-TL1-ALLOWED 1
+VALUE   Infinera-User-MgmtType-GNM                      MGMTTYPE-GNM-DISALLOWED 0
+VALUE   Infinera-User-MgmtType-GNM                      MGMTTYPE-GNM-ALLOWED 1
+VALUE   Infinera-User-MgmtType-CLI                      MGMTTYPE-CLI-DISALLOWED 0
+VALUE   Infinera-User-MgmtType-CLI                      MGMTTYPE-CLI-ALLOWED 1
+VALUE   Infinera-User-MgmtType-NETCONF                  MGMTTYPE-NETCONF-DISALLOWED 0
+VALUE   Infinera-User-MgmtType-NETCONF                  MGMTTYPE-NETCONF-ALLOWED 1
+
+VALUE   Infinera-Rsvd-Int-Attribute1                    INFINERA 1
+
+END-VENDOR  Infinera

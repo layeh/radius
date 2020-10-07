@@ -1,0 +1,16 @@
+# Vendor-specific RADIUS dictionary for Transmode
+#
+VENDOR Transmode 8708
+BEGIN-VENDOR Transmode
+#
+# Authentication attributes and values
+
+# Used for both DNA-M and ENM user privileges
+# "readonly", "operator", and "administrator"
+ATTRIBUTE Transmode-User-Category 1 string
+
+# Used for ENM only (not DNA-M)
+# "readonly", "operator", and "administrator"
+ATTRIBUTE Transmode-ENM-User-Category 2 string
+
+END-VENDOR Transmode

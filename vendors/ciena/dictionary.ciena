@@ -1,0 +1,17 @@
+# Vendor-specific RADIUS dictionary for Ciena
+#
+VENDOR Ciena 1271
+BEGIN-VENDOR Ciena
+#
+# Authentication attributes and values
+#
+ATTRIBUTE Ciena-1C-Role 200 string
+ATTRIBUTE Ciena-BPMCP-Role 220 string
+ATTRIBUTE Ciena-WS-User-Priv 10 integer
+
+VALUE Ciena-WS-User-Priv    Waveserver-Priv-Limited   1
+VALUE Ciena-WS-User-Priv    Waveserver-Priv-Admin     2
+VALUE Ciena-WS-User-Priv    Waveserver-Priv-Super     3
+VALUE Ciena-WS-User-Priv    Waveserver-Priv-Diag      4
+
+END-VENDOR Ciena
