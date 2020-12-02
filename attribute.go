@@ -378,6 +378,7 @@ func NewTunnelPassword(password, salt, secret, requestAuthenticator []byte) (Att
 
 // TunnelPassword decrypts an RFC 2868 encrypted Tunnel-Password.
 // The Attribute must not be prefixed with a tag.
+// The requestAuthenticator must be from the Access-Request packet.
 func TunnelPassword(a Attribute, secret, requestAuthenticator []byte) (password, salt []byte, err error) {
 	if len(a) > 252 || len(a) < 18 || (len(a)-2)%16 != 0 {
 		err = errors.New("invalid length")
@@ -396,7 +397,10 @@ func TunnelPassword(a Attribute, secret, requestAuthenticator []byte) (password,
 		return
 	}
 
-	chunks := (len(a) - 2) / 16
+	salt = append([]byte(nil), a[:2]...)
+	a = a[2:]
+
+	chunks := len(a) / 16
 	plaintext := make([]byte, chunks*16)
 
 	hash := md5.New()
@@ -408,14 +412,14 @@ func TunnelPassword(a Attribute, secret, requestAuthenticator []byte) (password,
 		hash.Write(secret)
 		if chunk == 0 {
 			hash.Write(requestAuthenticator)
-			hash.Write(a[:2]) // salt
+			hash.Write(salt)
 		} else {
-			hash.Write(a[2+(chunk-1)*16 : 2+chunk*16])
+			hash.Write(a[(chunk-1)*16 : chunk*16])
 		}
 		hash.Sum(b[:0])
 
 		for i := 0; i < 16; i++ {
-			plaintext[chunk*16+i] = a[2+chunk*16+i] ^ b[i]
+			plaintext[chunk*16+i] = a[chunk*16+i] ^ b[i]
 		}
 	}
 
@@ -425,7 +429,6 @@ func TunnelPassword(a Attribute, secret, requestAuthenticator []byte) (password,
 		return
 	}
 	password = plaintext[1 : 1+passwordLength]
-	salt = append([]byte(nil), a[:2]...)
 	return
 }
 

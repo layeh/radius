@@ -564,17 +564,17 @@ func TunnelPassword_AddString(p *radius.Packet, tag byte, value string) (err err
 	return
 }
 
-func TunnelPassword_Get(p *radius.Packet) (tag byte, value []byte) {
-	tag, value, _ = TunnelPassword_Lookup(p)
+func TunnelPassword_Get(p, q *radius.Packet) (tag byte, value []byte) {
+	tag, value, _ = TunnelPassword_Lookup(p, q)
 	return
 }
 
-func TunnelPassword_GetString(p *radius.Packet) (tag byte, value string) {
-	tag, value, _ = TunnelPassword_LookupString(p)
+func TunnelPassword_GetString(p, q *radius.Packet) (tag byte, value string) {
+	tag, value, _ = TunnelPassword_LookupString(p, q)
 	return
 }
 
-func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {
+func TunnelPassword_Gets(p, q *radius.Packet) (tags []byte, values [][]byte, err error) {
 	var i []byte
 	for _, avp := range p.Attributes {
 		if avp.Type != TunnelPassword_Type {
@@ -586,7 +586,7 @@ func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err er
 			tag = attr[0]
 			attr = attr[1:]
 		}
-		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		i, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])
 		if err != nil {
 			return
 		}
@@ -596,7 +596,7 @@ func TunnelPassword_Gets(p *radius.Packet) (tags []byte, values [][]byte, err er
 	return
 }
 
-func TunnelPassword_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {
+func TunnelPassword_GetStrings(p, q *radius.Packet) (tags []byte, values []string, err error) {
 	var i string
 	for _, avp := range p.Attributes {
 		if avp.Type != TunnelPassword_Type {
@@ -609,7 +609,7 @@ func TunnelPassword_GetStrings(p *radius.Packet) (tags []byte, values []string, 
 			attr = attr[1:]
 		}
 		var up []byte
-		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		up, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])
 		if err == nil {
 			i = string(up)
 		}
@@ -622,7 +622,7 @@ func TunnelPassword_GetStrings(p *radius.Packet) (tags []byte, values []string, 
 	return
 }
 
-func TunnelPassword_Lookup(p *radius.Packet) (tag byte, value []byte, err error) {
+func TunnelPassword_Lookup(p, q *radius.Packet) (tag byte, value []byte, err error) {
 	a, ok := p.Lookup(TunnelPassword_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
@@ -632,11 +632,11 @@ func TunnelPassword_Lookup(p *radius.Packet) (tag byte, value []byte, err error)
 		tag = a[0]
 		a = a[1:]
 	}
-	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	value, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])
 	return
 }
 
-func TunnelPassword_LookupString(p *radius.Packet) (tag byte, value string, err error) {
+func TunnelPassword_LookupString(p, q *radius.Packet) (tag byte, value string, err error) {
 	a, ok := p.Lookup(TunnelPassword_Type)
 	if !ok {
 		err = radius.ErrNoAttribute
@@ -647,7 +647,7 @@ func TunnelPassword_LookupString(p *radius.Packet) (tag byte, value string, err 
 		a = a[1:]
 	}
 	var b []byte
-	b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	b, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])
 	if err == nil {
 		value = string(b)
 	}

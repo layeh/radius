@@ -101,31 +101,59 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value []byte) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Get(p, q *radius.Packet) (value []byte) {`)
+			p(w, `	value, _ = `, ident, `_Lookup(p, q)`)
+		} else {
+			p(w, `func `, ident, `_Get(p *radius.Packet) (value []byte) {`)
+			p(w, `	value, _ = `, ident, `_Lookup(p)`)
+		}
 	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value []byte) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Get(p, q *radius.Packet) (tag byte, value []byte) {`)
+			p(w, `	tag, value, _ = `, ident, `_Lookup(p, q)`)
+		} else {
+			p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value []byte) {`)
+			p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
+		}
 	}
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_GetString(p *radius.Packet) (value string) {`)
-		p(w, `	value, _ = `, ident, `_LookupString(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_GetString(p, q *radius.Packet) (value string) {`)
+			p(w, `	value, _ = `, ident, `_LookupString(p, q)`)
+		} else {
+			p(w, `func `, ident, `_GetString(p *radius.Packet) (value string) {`)
+			p(w, `	value, _ = `, ident, `_LookupString(p)`)
+		}
 	} else {
-		p(w, `func `, ident, `_GetString(p *radius.Packet) (tag byte, value string) {`)
-		p(w, `	tag, value, _ = `, ident, `_LookupString(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_GetString(p, q *radius.Packet) (tag byte, value string) {`)
+			p(w, `	tag, value, _ = `, ident, `_LookupString(p, q)`)
+		} else {
+			p(w, `func `, ident, `_GetString(p *radius.Packet) (tag byte, value string) {`)
+			p(w, `	tag, value, _ = `, ident, `_LookupString(p)`)
+		}
 	}
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values [][]byte, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Gets(p, q *radius.Packet) (values [][]byte, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Gets(p *radius.Packet) (values [][]byte, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Gets(p, q *radius.Packet) (tags []byte, values [][]byte, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values [][]byte, err error) {`)
+		}
 	}
 	p(w, `	var i []byte`)
 	if vendor != nil {
@@ -147,7 +175,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `		i, err = radius.UserPassword(attr, p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])`)
+		p(w, `		i, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])`)
 	} else {
 		p(w, `		i = radius.Bytes(attr)`)
 	}
@@ -169,9 +197,17 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_GetStrings(p *radius.Packet) (values []string, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_GetStrings(p, q *radius.Packet) (values []string, err error) {`)
+		} else {
+			p(w, `func `, ident, `_GetStrings(p *radius.Packet) (values []string, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_GetStrings(p, q *radius.Packet) (tags []byte, values []string, err error) {`)
+		} else {
+			p(w, `func `, ident, `_GetStrings(p *radius.Packet) (tags []byte, values []string, err error) {`)
+		}
 	}
 	p(w, `	var i string`)
 	if vendor != nil {
@@ -198,7 +234,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `		}`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
 		p(w, `		var up []byte`)
-		p(w, `		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])`)
+		p(w, `		up, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])`)
 		p(w, `		if err == nil {`)
 		p(w, `			i = string(up)`)
 		p(w, `		}`)
@@ -223,9 +259,17 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value []byte, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Lookup(p, q *radius.Packet) (value []byte, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Lookup(p *radius.Packet) (value []byte, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value []byte, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Lookup(p, q *radius.Packet) (tag byte, value []byte, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value []byte, err error) {`)
+		}
 	}
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
@@ -245,7 +289,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	value, err = radius.UserPassword(a, p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])`)
+		p(w, `	value, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])`)
 	} else {
 		p(w, `	value = radius.Bytes(a)`)
 	}
@@ -259,9 +303,17 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_LookupString(p *radius.Packet) (value string, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_LookupString(p, q *radius.Packet) (value string, err error) {`)
+		} else {
+			p(w, `func `, ident, `_LookupString(p *radius.Packet) (value string, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_LookupString(p *radius.Packet) (tag byte, value string, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_LookupString(p, q *radius.Packet) (tag byte, value string, err error) {`)
+		} else {
+			p(w, `func `, ident, `_LookupString(p *radius.Packet) (tag byte, value string, err error) {`)
+		}
 	}
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
@@ -286,7 +338,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 		p(w, `	}`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
 		p(w, `		var b []byte`)
-		p(w, `		b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])`)
+		p(w, `		b, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])`)
 		p(w, `		if err == nil {`)
 		p(w, `			value = string(b)`)
 		p(w, `		}`)

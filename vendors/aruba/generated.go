@@ -3755,20 +3755,20 @@ func ArubaMPSKPassphrase_AddString(p *radius.Packet, value string) (err error) {
 	return _Aruba_AddVendor(p, 44, a)
 }
 
-func ArubaMPSKPassphrase_Get(p *radius.Packet) (value []byte) {
-	value, _ = ArubaMPSKPassphrase_Lookup(p)
+func ArubaMPSKPassphrase_Get(p, q *radius.Packet) (value []byte) {
+	value, _ = ArubaMPSKPassphrase_Lookup(p, q)
 	return
 }
 
-func ArubaMPSKPassphrase_GetString(p *radius.Packet) (value string) {
-	value, _ = ArubaMPSKPassphrase_LookupString(p)
+func ArubaMPSKPassphrase_GetString(p, q *radius.Packet) (value string) {
+	value, _ = ArubaMPSKPassphrase_LookupString(p, q)
 	return
 }
 
-func ArubaMPSKPassphrase_Gets(p *radius.Packet) (values [][]byte, err error) {
+func ArubaMPSKPassphrase_Gets(p, q *radius.Packet) (values [][]byte, err error) {
 	var i []byte
 	for _, attr := range _Aruba_GetsVendor(p, 44) {
-		i, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		i, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])
 		if err != nil {
 			return
 		}
@@ -3777,11 +3777,11 @@ func ArubaMPSKPassphrase_Gets(p *radius.Packet) (values [][]byte, err error) {
 	return
 }
 
-func ArubaMPSKPassphrase_GetStrings(p *radius.Packet) (values []string, err error) {
+func ArubaMPSKPassphrase_GetStrings(p, q *radius.Packet) (values []string, err error) {
 	var i string
 	for _, attr := range _Aruba_GetsVendor(p, 44) {
 		var up []byte
-		up, _, err = radius.TunnelPassword(attr, p.Secret, p.Authenticator[:])
+		up, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])
 		if err == nil {
 			i = string(up)
 		}
@@ -3793,24 +3793,24 @@ func ArubaMPSKPassphrase_GetStrings(p *radius.Packet) (values []string, err erro
 	return
 }
 
-func ArubaMPSKPassphrase_Lookup(p *radius.Packet) (value []byte, err error) {
+func ArubaMPSKPassphrase_Lookup(p, q *radius.Packet) (value []byte, err error) {
 	a, ok := _Aruba_LookupVendor(p, 44)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
-	value, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	value, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])
 	return
 }
 
-func ArubaMPSKPassphrase_LookupString(p *radius.Packet) (value string, err error) {
+func ArubaMPSKPassphrase_LookupString(p, q *radius.Packet) (value string, err error) {
 	a, ok := _Aruba_LookupVendor(p, 44)
 	if !ok {
 		err = radius.ErrNoAttribute
 		return
 	}
 	var b []byte
-	b, _, err = radius.TunnelPassword(a, p.Secret, p.Authenticator[:])
+	b, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])
 	if err == nil {
 		value = string(b)
 	}

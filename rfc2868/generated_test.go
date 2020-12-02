@@ -9,88 +9,116 @@ import (
 
 func Test_TunnelPasswordAdd(t *testing.T) {
 	for i := 1; i <= 10; i++ { // 10 times to test random salt generator
-		p := &radius.Packet{
-			Authenticator: [16]byte{0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07},
-			Secret:        []byte{0x0B, 0x00, 0x00, 0x07},
-		}
+		request := radius.New(radius.CodeAccessRequest, []byte("secretly"))
+
+		response := request.Response(radius.CodeAccessAccept)
 		password := []byte{0x00, 0x01, 0xde, 0xaf, 0x0B, 0x00, 0x00, 0x07}
-		if err := TunnelPassword_Add(p, 0, password); err != nil {
+		if err := TunnelPassword_Add(response, 0, password); err != nil {
 			t.Fatalf("TunnelPassword_Add unexpected err iteration %d: %s", i, err)
 		}
+		responseRaw, err := response.Encode()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		_, returned, err := TunnelPassword_Lookup(p)
+		response, err = radius.Parse(responseRaw, request.Secret)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, returned, err := TunnelPassword_Lookup(response, request)
 		if err != nil {
 			t.Fatalf("unexpected err: %s", err)
 		}
 		if !bytes.Equal(returned, password) {
 			t.Fatalf("decrypted password does not match encrypted")
-			TunnelPassword_Del(p)
 		}
 	}
 }
 
 func Test_TunnelPasswordSet(t *testing.T) {
 	for i := 1; i <= 10; i++ { // 10 times to test random salt generator
-		p := &radius.Packet{
-			Authenticator: [16]byte{0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07},
-			Secret:        []byte{0x0B, 0x00, 0x00, 0x07},
-		}
+		request := radius.New(radius.CodeAccessRequest, []byte("secretly"))
+
+		response := request.Response(radius.CodeAccessAccept)
 		password := []byte{0x00, 0x01, 0xde, 0xaf, 0x0B, 0x00, 0x00, 0x07}
-		if err := TunnelPassword_Set(p, 0, password); err != nil {
+		if err := TunnelPassword_Set(response, 0, password); err != nil {
 			t.Fatalf("TunnelPassword_Set unexpected err iteration %d: %s", i, err)
 		}
+		responseRaw, err := response.Encode()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		_, returned, err := TunnelPassword_Lookup(p)
+		response, err = radius.Parse(responseRaw, request.Secret)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, returned, err := TunnelPassword_Lookup(response, request)
 		if err != nil {
 			t.Fatalf("unexpected err: %s", err)
 		}
 		if !bytes.Equal(returned, password) {
 			t.Fatalf("decrypted password does not match encrypted")
-			TunnelPassword_Del(p)
 		}
 	}
 }
 
 func Test_TunnelPasswordSetString(t *testing.T) {
 	for i := 1; i <= 10; i++ { // 10 times to test random salt generator
-		p := &radius.Packet{
-			Authenticator: [16]byte{0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07},
-			Secret:        []byte{0x0B, 0x00, 0x00, 0x07},
-		}
+		request := radius.New(radius.CodeAccessRequest, []byte("secretly"))
+
+		response := request.Response(radius.CodeAccessAccept)
 		password := "TunnelPassword"
-		if err := TunnelPassword_SetString(p, 0, password); err != nil {
+		if err := TunnelPassword_SetString(response, 0, password); err != nil {
 			t.Fatalf("TunnelPassword_SetString unexpected err iteration %d: %s", i, err)
 		}
+		responseRaw, err := response.Encode()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		_, returned, err := TunnelPassword_LookupString(p)
+		response, err = radius.Parse(responseRaw, request.Secret)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, returned, err := TunnelPassword_LookupString(response, request)
 		if err != nil {
 			t.Fatalf("unexpected err: %s", err)
 		}
 		if returned != password {
 			t.Fatalf("decrypted password does not match encrypted")
-			TunnelPassword_Del(p)
 		}
 	}
 }
 
 func Test_TunnelPasswordAddString(t *testing.T) {
 	for i := 1; i <= 10; i++ { // 10 times to test random salt generator
-		p := &radius.Packet{
-			Authenticator: [16]byte{0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07, 0x0B, 0x00, 0x00, 0x07},
-			Secret:        []byte{0x0B, 0x00, 0x00, 0x07},
-		}
+		request := radius.New(radius.CodeAccessRequest, []byte("secretly"))
+
+		response := request.Response(radius.CodeAccessAccept)
 		password := "TunnelPassword"
-		if err := TunnelPassword_AddString(p, 0, password); err != nil {
+		if err := TunnelPassword_AddString(response, 0, password); err != nil {
 			t.Fatalf("TunnelPassword_AddString unexpected err iteration %d: %s", i, err)
 		}
+		responseRaw, err := response.Encode()
+		if err != nil {
+			t.Fatal(err)
+		}
 
-		_, returned, err := TunnelPassword_LookupString(p)
+		response, err = radius.Parse(responseRaw, request.Secret)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		_, returned, err := TunnelPassword_LookupString(response, request)
 		if err != nil {
 			t.Fatalf("unexpected err: %s", err)
 		}
 		if returned != password {
 			t.Fatalf("decrypted password does not match encrypted")
-			TunnelPassword_Del(p)
 		}
 	}
 }
