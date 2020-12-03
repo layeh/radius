@@ -1,0 +1,15 @@
+# Vendor-specific RADIUS dictionary for Nokia (formerly Tropic Networks)
+# For emailed info from Nokia see P59299613
+
+VENDOR NokiaPSS1830 7483
+BEGIN-VENDOR NokiaPSS1830
+
+# Authentication attributes and values
+
+ATTRIBUTE    Nokia-Role           1        integer
+VALUE        Nokia-Role           Nokia-Observer       0
+VALUE        Nokia-Role           Nokia-Provisioner    1
+VALUE        Nokia-Role           Nokia-Administrator  2
+VALUE        Nokia-Role           Nokia-Crypto         4
+
+END-VENDOR NokiaPSS1830

@@ -1,0 +1,16 @@
+# Vendor-specific RADIUS dictionary for Cyan Inc.
+#
+VENDOR CyanInc 28533
+BEGIN-VENDOR CyanInc
+#
+# Authentication attributes and values
+#
+ATTRIBUTE CyanInc-User-Roles 1 string
+#
+# Accounting attributes and values
+#
+ATTRIBUTE CyanInc-Acct-Event-Text 100 string
+#
+# This line must be last
+#
+END-VENDOR CyanInc
