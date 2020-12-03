@@ -31,13 +31,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `	var salt [2]byte`)
-		p(w, `	_, err = rand.Read(salt[:])`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
-		p(w, `	}`)
-		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
-		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
+		genNewTunnelPassword(w, `value`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
 	}
@@ -73,13 +67,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `	var salt [2]byte`)
-		p(w, `	_, err = rand.Read(salt[:])`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
-		p(w, `	}`)
-		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
-		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
+		genNewTunnelPassword(w, `[]byte(value)`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
 	}
@@ -369,13 +357,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword(value, p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `	var salt [2]byte`)
-		p(w, `	_, err = rand.Read(salt[:])`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
-		p(w, `	}`)
-		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
-		p(w, `	a, err = radius.NewTunnelPassword(value, salt[:], p.Secret, p.Authenticator[:])`)
+		genNewTunnelPassword(w, `value`)
 	} else {
 		p(w, `	a, err = radius.NewBytes(value)`)
 	}
@@ -411,13 +393,7 @@ func (g *Generator) genAttributeStringOctets(w io.Writer, attr *dictionary.Attri
 	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptUserPassword {
 		p(w, `	a, err = radius.NewUserPassword([]byte(value), p.Secret, p.Authenticator[:])`)
 	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
-		p(w, `	var salt [2]byte`)
-		p(w, `	_, err = rand.Read(salt[:])`)
-		p(w, `	if err != nil {`)
-		p(w, `		return`)
-		p(w, `	}`)
-		p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
-		p(w, `	a, err = radius.NewTunnelPassword([]byte(value), salt[:], p.Secret, p.Authenticator[:])`)
+		genNewTunnelPassword(w, `[]byte(value)`)
 	} else {
 		p(w, `	a, err = radius.NewString(value)`)
 	}
@@ -582,6 +558,9 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		genNewTunnelPassword(w, `a`)
+	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -591,13 +570,22 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 
 	p(w)
-	p(w, `func `, ident, `_Get(p *radius.Packet) (value net.IP) {`)
-	p(w, `	value, _ = `, ident, `_Lookup(p)`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `func `, ident, `_Get(p, q *radius.Packet) (value net.IP) {`)
+		p(w, `	value, _ = `, ident, `_Lookup(p, q)`)
+	} else {
+		p(w, `func `, ident, `_Get(p *radius.Packet) (value net.IP) {`)
+		p(w, `	value, _ = `, ident, `_Lookup(p)`)
+	}
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
-	p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.IP, err error) {`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `func `, ident, `_Gets(p, q *radius.Packet) (values []net.IP, err error) {`)
+	} else {
+		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []net.IP, err error) {`)
+	}
 	p(w, `	var i net.IP`)
 	if vendor != nil {
 		p(w, `	for _, attr := range _`, vendorIdent, `_GetsVendor(p, `, strconv.Itoa(attr.OID[0]), `) {`)
@@ -607,6 +595,12 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 		p(w, `			continue`)
 		p(w, `		}`)
 		p(w, `		attr := avp.Attribute`)
+	}
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `		attr, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
 	}
 	if length == net.IPv4len {
 		p(w, `		i, err = radius.IPAddr(attr)`)
@@ -622,7 +616,11 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `}`)
 
 	p(w)
-	p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.IP, err error) {`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `func `, ident, `_Lookup(p, q *radius.Packet) (value net.IP, err error) {`)
+	} else {
+		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value net.IP, err error) {`)
+	}
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
 	} else {
@@ -632,6 +630,12 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `		err = radius.ErrNoAttribute`)
 	p(w, `		return`)
 	p(w, `	}`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		p(w, `	a, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])`)
+		p(w, `	if err != nil {`)
+		p(w, `		return`)
+		p(w, `	}`)
+	}
 	if length == net.IPv4len {
 		p(w, `	value, err = radius.IPAddr(a)`)
 	} else {
@@ -651,6 +655,9 @@ func (g *Generator) genAttributeIPAddr(w io.Writer, attr *dictionary.Attribute, 
 	p(w, `	if err != nil {`)
 	p(w, `		return`)
 	p(w, `	}`)
+	if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		genNewTunnelPassword(w, `a`)
+	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_SetVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
 	} else {
@@ -1009,6 +1016,10 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `		} else {`)
 		p(w, `			a[0] = 0x00`)
 		p(w, `		}`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		// Having a tag an being encrypted with Tunnel password seems mutually exclusive for integers.
+		// Don't implement unless we see otherwise.
+		genNewTunnelPassword(w, `a`)
 	}
 	if vendor != nil {
 		p(w, `	return _`, vendorIdent, `_AddVendor(p, `, strconv.Itoa(attr.OID[0]), `, a)`)
@@ -1020,20 +1031,38 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (value `, ident, `) {`)
-		p(w, `	value, _ = `, ident, `_Lookup(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Get(p, q *radius.Packet) (value `, ident, `) {`)
+			p(w, `	value, _ = `, ident, `_Lookup(p, q)`)
+		} else {
+			p(w, `func `, ident, `_Get(p *radius.Packet) (value `, ident, `) {`)
+			p(w, `	value, _ = `, ident, `_Lookup(p)`)
+		}
 	} else {
-		p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value `, ident, `) {`)
-		p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Get(p, q *radius.Packet) (tag byte, value `, ident, `) {`)
+			p(w, `	tag, value, _ = `, ident, `_Lookup(p, q)`)
+		} else {
+			p(w, `func `, ident, `_Get(p *radius.Packet) (tag byte, value `, ident, `) {`)
+			p(w, `	tag, value, _ = `, ident, `_Lookup(p)`)
+		}
 	}
 	p(w, `	return`)
 	p(w, `}`)
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (values []`, ident, `, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Gets(p, q *radius.Packet) (values []`, ident, `, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Gets(p *radius.Packet) (values []`, ident, `, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values []`, ident, `, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Gets(p, q *radius.Packet) (tags []byte, values []`, ident, `, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Gets(p *radius.Packet) (tags []byte, values []`, ident, `, err error) {`)
+		}
 	}
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
@@ -1057,6 +1086,13 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `			tag = attr[0]`)
 		p(w, `			attr[0] = 0x00`)
 		p(w, `		}`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		// Having a tag an being encrypted with Tunnel password seems mutually exclusive for integers.
+		// Don't implement unless we see otherwise.
+		p(w, `		attr, _, err = radius.TunnelPassword(attr, p.Secret, q.Authenticator[:])`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
 	}
 	if bitsize == 64 {
 		p(w, `		i, err = radius.Integer64(attr)`)
@@ -1078,9 +1114,17 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 
 	p(w)
 	if !attr.HasTag() {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (value `, ident, `, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Lookup(p, q *radius.Packet) (value `, ident, `, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Lookup(p *radius.Packet) (value `, ident, `, err error) {`)
+		}
 	} else {
-		p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value `, ident, `, err error) {`)
+		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+			p(w, `func `, ident, `_Lookup(p, q *radius.Packet) (tag byte, value `, ident, `, err error) {`)
+		} else {
+			p(w, `func `, ident, `_Lookup(p *radius.Packet) (tag byte, value `, ident, `, err error) {`)
+		}
 	}
 	if vendor != nil {
 		p(w, `	a, ok  := _`, vendorIdent, `_LookupVendor(p, `, strconv.Itoa(attr.OID[0]), `)`)
@@ -1096,6 +1140,13 @@ func (g *Generator) genAttributeInteger(w io.Writer, attr *dictionary.Attribute,
 		p(w, `		tag = a[0]`)
 		p(w, `		a[0] = 0x00`)
 		p(w, `	}`)
+	} else if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
+		// Having a tag an being encrypted with Tunnel password seems mutually exclusive for integers.
+		// Don't implement unless we see otherwise.
+		p(w, `		a, _, err = radius.TunnelPassword(a, p.Secret, q.Authenticator[:])`)
+		p(w, `		if err != nil {`)
+		p(w, `			return`)
+		p(w, `		}`)
 	}
 	if bitsize == 64 {
 		p(w, `	var i uint64`)
@@ -1237,4 +1288,14 @@ func (g *Generator) genAttributeByte(w io.Writer, attr *dictionary.Attribute, ve
 		p(w, `	p.Attributes.Del(`, ident, `_Type)`)
 	}
 	p(w, `}`)
+}
+
+func genNewTunnelPassword(w io.Writer, valueExpr string) {
+	p(w, `	var salt [2]byte`)
+	p(w, `	_, err = rand.Read(salt[:])`)
+	p(w, `	if err != nil {`)
+	p(w, `		return`)
+	p(w, `	}`)
+	p(w, `	salt[0] |= 1 << 7`) // RFC 2868 § 3.5
+	p(w, `	a, err = radius.NewTunnelPassword(`, valueExpr, `, salt[:], p.Secret, p.Authenticator[:])`)
 }
