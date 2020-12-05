@@ -2,6 +2,7 @@ package radius
 
 import (
 	"context"
+	"net"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -159,4 +160,33 @@ func TestClient_Exchange_nilContext(t *testing.T) {
 	req := New(CodeAccessRequest, []byte(``))
 	//lint:ignore SA1012 This test is specifically checking for a nil context
 	Exchange(nil, req, "")
+}
+
+func TestClient_Exchange_readTimeout(t *testing.T) {
+	secret := []byte(`12345`)
+
+	var server *TestServer
+	handler := HandlerFunc(func(w ResponseWriter, r *Request) {
+		time.Sleep(time.Minute)
+		resp := r.Response(CodeAccessAccept)
+		w.Write(resp)
+	})
+	server = NewTestServer(handler, StaticSecretSource(secret))
+	defer server.Close()
+
+	req := New(CodeAccessRequest, secret)
+
+	client := Client{
+		ResponseTimeout: time.Second,
+	}
+	resp, err := client.Exchange(context.Background(), req, server.Addr)
+	if resp != nil {
+		t.Fatalf("got non-nil response (%v); expected nil", resp)
+	}
+	if err == nil {
+		t.Fatal("got nil error; expected one")
+	}
+	if !err.(net.Error).Timeout() {
+		t.Fatalf("got err = %v; expected net.Error.Timeout()", err)
+	}
 }

@@ -18,6 +18,10 @@ type Client struct {
 	// retry).
 	Retry time.Duration
 
+	// Interval on which the response is timed out (zero or negative value means no
+	// timeout).
+	ResponseTimeout time.Duration
+
 	// MaxPacketErrors controls how many packet parsing and validation errors
 	// the client will ignore before returning the error from Exchange.
 	//
@@ -32,6 +36,7 @@ type Client struct {
 // DefaultClient is the RADIUS client used by the Exchange function.
 var DefaultClient = &Client{
 	Retry:           time.Second,
+	ResponseTimeout: 0 * time.Second,
 	MaxPacketErrors: 10,
 }
 
@@ -95,6 +100,12 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	}()
 
 	var packetErrorCount int
+	if c.ResponseTimeout > 0 {
+		err = conn.SetReadDeadline(time.Now().Add(c.ResponseTimeout))
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	var incoming [MaxPacketLength]byte
 	for {
