@@ -43,6 +43,9 @@ func TestTestData(t *testing.T) {
 		{
 			Name: "value-collision",
 		},
+		{
+			Name: "abinary",
+		},
 	}
 
 	for _, tt := range tbl {

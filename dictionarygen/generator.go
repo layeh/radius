@@ -51,7 +51,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			invalid = true
 		}
 		if attr.Size.Valid {
-			if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets {
+			if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeABinary {
 				baseImports["errors"] = struct{}{}
 			} else {
 				invalid = true
@@ -63,16 +63,16 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		if attr.FlagEncrypt.Valid && attr.FlagEncrypt.Int == dictionary.EncryptTunnelPassword {
 			baseImports["crypto/rand"] = struct{}{}
 		}
-		if attr.FlagConcat.Valid && attr.FlagConcat.Bool && ((attr.Type != dictionary.AttributeOctets && attr.Type != dictionary.AttributeString) || attr.FlagEncrypt.Valid || attr.FlagHasTag.Valid || attr.Size.Valid) {
+		if attr.FlagConcat.Valid && attr.FlagConcat.Bool && ((attr.Type != dictionary.AttributeOctets && attr.Type != dictionary.AttributeString && attr.Type != dictionary.AttributeABinary) || attr.FlagEncrypt.Valid || attr.FlagHasTag.Valid || attr.Size.Valid) {
 			invalid = true
 		}
-		if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeInteger) {
+		if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeABinary || attr.Type == dictionary.AttributeInteger) {
 			invalid = true
 		}
 
 		switch attr.Type {
 		case dictionary.AttributeString:
-		case dictionary.AttributeOctets:
+		case dictionary.AttributeOctets, dictionary.AttributeABinary:
 		case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIPv6Prefix, dictionary.AttributeIFID:
 			baseImports["net"] = struct{}{}
 		case dictionary.AttributeDate:
@@ -159,7 +159,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 				invalid = true
 			}
 			if attr.Size.Valid {
-				if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets {
+				if attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeABinary {
 					baseImports["errors"] = struct{}{}
 				} else {
 					invalid = true
@@ -174,13 +174,13 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 			if attr.FlagConcat.Valid && attr.FlagConcat.Bool {
 				invalid = true
 			}
-			if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeInteger) {
+			if attr.FlagHasTag.Valid && attr.FlagHasTag.Bool && !(attr.Type == dictionary.AttributeOctets || attr.Type == dictionary.AttributeString || attr.Type == dictionary.AttributeABinary || attr.Type == dictionary.AttributeInteger) {
 				invalid = true
 			}
 
 			switch attr.Type {
 			case dictionary.AttributeString:
-			case dictionary.AttributeOctets:
+			case dictionary.AttributeOctets, dictionary.AttributeABinary:
 			case dictionary.AttributeIPAddr, dictionary.AttributeIPv6Addr, dictionary.AttributeIPv6Prefix, dictionary.AttributeIFID:
 				baseImports["net"] = struct{}{}
 			case dictionary.AttributeDate:
@@ -299,7 +299,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 
 	for _, attr := range attrs {
 		switch attr.Type {
-		case dictionary.AttributeString, dictionary.AttributeOctets:
+		case dictionary.AttributeString, dictionary.AttributeOctets, dictionary.AttributeABinary:
 			if attr.FlagConcat.Valid && attr.FlagConcat.Bool {
 				g.genAttributeStringOctetsConcat(&w, attr)
 			} else {
@@ -332,7 +332,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		g.genVendor(&w, vendor)
 		for _, attr := range vendor.Attributes {
 			switch attr.Type {
-			case dictionary.AttributeString, dictionary.AttributeOctets:
+			case dictionary.AttributeString, dictionary.AttributeOctets, dictionary.AttributeABinary:
 				g.genAttributeStringOctets(&w, attr, vendor)
 			case dictionary.AttributeIPAddr:
 				g.genAttributeIPAddr(&w, attr, vendor, net.IPv4len)
