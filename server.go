@@ -87,3 +87,15 @@ type staticSecretSource struct {
 func (s *staticSecretSource) RADIUSSecret(ctx context.Context, remoteAddr net.Addr) ([]byte, error) {
 	return s.secret, nil
 }
+
+// SecretSourceWithBytes supplies RADIUS servers with the secret that should be used for
+// authorizing and decrypting packets. This interface has access to the received radius packet
+// in wire format. This provides the alternative of using packet information
+// to determine a secret when relying on RemoteAddr is not feasible.
+//
+// ctx is canceled if the server's Shutdown method is called.
+//
+// Returning an empty secret will discard the incoming packet.
+type SecretSourceWithBytes interface {
+	RADIUSSecretWithBytes(ctx context.Context, buff []byte) ([]byte, error)
+}
