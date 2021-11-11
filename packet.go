@@ -1,9 +1,9 @@
 package radius
 
 import (
-	"bytes"
 	"crypto/md5"
 	"crypto/rand"
+	"crypto/subtle"
 	"encoding/binary"
 	"errors"
 )
@@ -155,7 +155,7 @@ func IsAuthenticResponse(response, request, secret []byte) bool {
 	hash.Write(response[20:])
 	hash.Write(secret)
 	var sum [md5.Size]byte
-	return bytes.Equal(hash.Sum(sum[:0]), response[4:20])
+	return subtle.ConstantTimeCompare(hash.Sum(sum[:0]), response[4:20])
 }
 
 // IsAuthenticRequest returns if the given RADIUS request is an authentic
@@ -176,7 +176,7 @@ func IsAuthenticRequest(request, secret []byte) bool {
 		hash.Write(request[20:])
 		hash.Write(secret)
 		var sum [md5.Size]byte
-		return bytes.Equal(hash.Sum(sum[:0]), request[4:20])
+		return subtle.ConstantTimeCompare(hash.Sum(sum[:0]), request[4:20])
 	default:
 		return false
 	}
