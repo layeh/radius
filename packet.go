@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"errors"
+	"unsafe"
 )
 
 // MaxPacketLength is the maximum wire length of a RADIUS packet.
@@ -26,17 +27,16 @@ type Packet struct {
 //
 // The function panics if not enough random data could be generated.
 func New(code Code, secret []byte) *Packet {
-	var buff [17]byte
+	packet := &Packet{
+		Code:   code,
+		Secret: secret,
+	}
+
+	buff := (*[17]byte)(unsafe.Pointer(&packet.Identifier))
 	if _, err := rand.Read(buff[:]); err != nil {
 		panic(err)
 	}
 
-	packet := &Packet{
-		Code:       code,
-		Identifier: buff[0],
-		Secret:     secret,
-	}
-	copy(packet.Authenticator[:], buff[1:])
 	return packet
 }
 
@@ -71,11 +71,11 @@ func Parse(b, secret []byte) (*Packet, error) {
 // authenticator as the current packet.
 func (p *Packet) Response(code Code) *Packet {
 	q := &Packet{
-		Code:       code,
-		Identifier: p.Identifier,
-		Secret:     p.Secret,
+		Code:          code,
+		Identifier:    p.Identifier,
+		Authenticator: p.Authenticator,
+		Secret:        p.Secret,
 	}
-	copy(q.Authenticator[:], p.Authenticator[:])
 	return q
 }
 
