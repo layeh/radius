@@ -170,11 +170,11 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				return
 			}
 
-			key := requestKey{
-				IP:         remoteAddr.String(),
-				Identifier: packet.Identifier,
-			}
 			if !s.AllowRetransmission {
+				key := requestKey{
+					IP:         remoteAddr.String(),
+					Identifier: packet.Identifier,
+				}
 				requestsLock.Lock()
 				if _, ok := requests[key]; ok {
 					requestsLock.Unlock()
