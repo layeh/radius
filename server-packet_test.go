@@ -215,7 +215,7 @@ func TestPacketServer_AllowRetransmission(t *testing.T) {
 	}
 
 	var clientErr error
-	go func(rr *int) {
+	go func(rr int) {
 		defer server.Shutdown(context.Background())
 
 		packet := New(CodeAccessRequest, secret)
@@ -233,7 +233,7 @@ func TestPacketServer_AllowRetransmission(t *testing.T) {
 		if receivedRequests < 2 {
 			clientErr = fmt.Errorf("got %d requests; expecting at least 2", receivedRequests)
 		}
-	}(&receivedRequests)
+	}(receivedRequests)
 
 	if err := server.Serve(pc); err != ErrServerShutdown {
 		t.Fatal(err)
@@ -259,19 +259,18 @@ func TestPacketServer_BlockRetransmission(t *testing.T) {
 	secret := []byte("123456790")
 	server := PacketServer{
 		SecretSource: StaticSecretSource(secret),
-		//AllowRetransmission: true,
 		Handler: HandlerFunc(func(w ResponseWriter, r *Request) {
 			receivedRequests++
 			if _, ok := identifiers[r.Identifier]; ok {
 				return
 			}
-			time.Sleep(time.Millisecond * 200)
+			time.Sleep(time.Millisecond * 500)
 			w.Write(r.Response(CodeAccessReject))
 		}),
 	}
 
 	var clientErr error
-	go func(rr *int) {
+	go func(rr int) {
 		defer server.Shutdown(context.Background())
 
 		packet := New(CodeAccessRequest, secret)
@@ -286,10 +285,10 @@ func TestPacketServer_BlockRetransmission(t *testing.T) {
 		if response.Code != CodeAccessReject {
 			clientErr = fmt.Errorf("got response code %v; expecting CodeAccessReject", response.Code)
 		}
-		if receivedRequests != 2 {
+		if receivedRequests != 1 {
 			clientErr = fmt.Errorf("got %d requests; expecting only 1", receivedRequests)
 		}
-	}(&receivedRequests)
+	}(receivedRequests)
 
 	if err := server.Serve(pc); err != ErrServerShutdown {
 		t.Fatal(err)
