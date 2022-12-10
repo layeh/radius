@@ -35,9 +35,12 @@ type PacketServer struct {
 	// The network on which the server listens. Defaults to udp.
 	Network string
 
+	// Only one secret source type is supported at once, do not set both SecretSource
+	// and SecretSourceWithBytes
 	// The source from which the secret is obtained for parsing and validating
 	// the request.
-	SecretSource SecretSource
+	SecretSource          SecretSource
+	SecretSourceWithBytes SecretSourceWithBytes
 
 	// Handler which is called to process the request.
 	Handler Handler
@@ -87,13 +90,32 @@ func (s *PacketServer) logf(format string, args ...interface{}) {
 	}
 }
 
+func (s *PacketServer) secret(remoteAddr net.Addr, buff []byte) ([]byte, error) {
+	if s.SecretSource != nil {
+		return s.SecretSource.RADIUSSecret(s.ctx, remoteAddr)
+	}
+	return s.SecretSourceWithBytes.RADIUSSecretWithBytes(s.ctx, buff)
+}
+
+func (s *PacketServer) verifySecretSource() error {
+	if s.SecretSource == nil && s.SecretSourceWithBytes == nil {
+		return errors.New("radius: nil SecretSource and SecretSourceWithBytes, must set one")
+	}
+	if s.SecretSource != nil && s.SecretSourceWithBytes != nil {
+		return errors.New("radius: non-nil SecretSource and SecretSourceWithBytes, only set one")
+	}
+	return nil
+}
+
 // Serve accepts incoming connections on conn.
 func (s *PacketServer) Serve(conn net.PacketConn) error {
 	if s.Handler == nil {
 		return errors.New("radius: nil Handler")
 	}
-	if s.SecretSource == nil {
-		return errors.New("radius: nil SecretSource")
+
+	// validate only a single secret source type is set
+	if err := s.verifySecretSource(); err != nil {
+		return err
 	}
 
 	s.mu.Lock()
@@ -146,7 +168,7 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 		go func(buff []byte, remoteAddr net.Addr) {
 			defer s.activeDone()
 
-			secret, err := s.SecretSource.RADIUSSecret(s.ctx, remoteAddr)
+			secret, err := s.secret(remoteAddr, buff)
 			if err != nil {
 				s.logf("radius: error fetching from secret source: %v", err)
 				return
@@ -208,8 +230,9 @@ func (s *PacketServer) ListenAndServe() error {
 	if s.Handler == nil {
 		return errors.New("radius: nil Handler")
 	}
-	if s.SecretSource == nil {
-		return errors.New("radius: nil SecretSource")
+	// validate only a single secret source type is set
+	if err := s.verifySecretSource(); err != nil {
+		return err
 	}
 
 	addrStr := ":1812"
