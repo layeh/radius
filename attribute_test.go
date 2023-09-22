@@ -10,27 +10,35 @@ import (
 
 func TestNewUserPassword_length(t *testing.T) {
 	tbl := []struct {
-		Password      string
+		Password      []byte
 		EncodedLength int
 	}{
-		{"", 16},
-		{"abc", 16},
-		{"0123456789abcde", 16},
-		{"0123456789abcdef", 16},
-		{"0123456789abcdef0", 16 * 2},
-		{"0123456789abcdef0123456789abcdef0123456789abcdef", 16 * 3},
+		{append(make([]byte, 0, 0), ""...), 16},
+		{append(make([]byte, 0, 15), "abc"...), 16},
+		{append(make([]byte, 0, 15), "0123456789abcde"...), 16},
+		{append(make([]byte, 0, 16), "0123456789abcdef"...), 16},
+		{append(make([]byte, 0, 30), "0123456789abcdef0"...), 16 * 2},
+		{append(make([]byte, 0, 48), "0123456789abcdefzzzzzzzzzzzzzzzzQQQQQQQQQQQQQQQQ"...), 16 * 3},
 	}
 
 	secret := []byte(`12345`)
 	ra := []byte(`0123456789abcdef`)
 
 	for _, x := range tbl {
-		attr, err := NewUserPassword([]byte(x.Password), secret, ra)
+		attr, err := NewUserPassword(x.Password, secret, ra)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if len(attr) != x.EncodedLength {
 			t.Fatalf("expected encoded length of %#v = %d, got %d", x.Password, x.EncodedLength, len(attr))
+		}
+
+		decoded, err := UserPassword(attr, secret, ra)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !bytes.Equal(decoded, x.Password) {
+			t.Fatalf("expected roundtrip to succeed")
 		}
 	}
 }
