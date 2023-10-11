@@ -1,0 +1,58 @@
+# -*- text -*-
+# Copyright (C) 2011 The FreeRADIUS Server project and contributors
+#
+#	 stuff.
+#
+#	ftp://ftp..org/specs/2002-06/R1999/29_series/29061-3a0.zip
+#
+#	$Id: 4b6bda40c1098b488c0f10414c287004790df486 $
+#
+#  VENDOR						10415
+
+#
+#	Most of the 'string' attributes are UTF-8 encoded text.
+#	Maybe we want a UTF-8 'type' in the server...
+#
+ATTRIBUTE	IMSI				            1	string		
+ATTRIBUTE	Charging-ID			            2	integer		
+ATTRIBUTE	PDP-Type				        3	integer		
+ATTRIBUTE	Charging-Gateway-Address		4	ipaddr		
+ATTRIBUTE	GPRS-Negotiated-QoS-profile	    5	string		
+ATTRIBUTE	SGSN-Address			        6	ipaddr		
+ATTRIBUTE	GGSN-Address			        7	ipaddr		
+ATTRIBUTE	IMSI-MCC-MNC			        8	string		
+ATTRIBUTE	GGSN-MCC-MNC			        9	string		
+ATTRIBUTE	NSAPI				            10	string		
+ATTRIBUTE	Session-Stop-Indicator		    11	byte		
+ATTRIBUTE	Selection-Mode			        12	string		
+ATTRIBUTE	Charging-Characteristics		13	string		
+ATTRIBUTE	Charging-Gateway-IPv6-Address	14	ipv6addr	
+ATTRIBUTE	SGSN-IPv6-Address			    15	ipv6addr	
+ATTRIBUTE	GGSN-IPv6-Address			    16	ipv6addr	
+
+#
+#	This attribute is really an array of IPv6 addresses.
+#	Why the heck couldn't they just send multiple attributes?
+#
+ATTRIBUTE	IPv6-DNS-Servers			    17	octets		
+
+ATTRIBUTE	SGSN-MCC-MNC			        18	string		
+ATTRIBUTE	Teardown-Indicator			    19	byte		
+ATTRIBUTE	IMEISV				            20	string		
+ATTRIBUTE	RAT-Type				        21	byte		
+ATTRIBUTE	Location-Info			        22	octets		
+ATTRIBUTE	MS-Time-Zone			        23	integer		
+ATTRIBUTE	Camel-Charging-Info		        24	octets		
+ATTRIBUTE	Packet-Filter			        25	octets		
+ATTRIBUTE	Negotiated-DSCP			        26	byte		
+ATTRIBUTE	Allocate-IP-Type			    27	byte		
+
+VALUE	RAT-Type			IEEE-802.16e	        101
+VALUE	RAT-Type			2-eHRPD		            102
+VALUE	RAT-Type			2-HRPD		            103
+VALUE	RAT-Type			2-1xRTT		            104
+
+VALUE	Allocate-IP-Type		Do-Not-Allocate		    0
+VALUE	Allocate-IP-Type		Allocate-IPv4-Address	1
+VALUE	Allocate-IP-Type		Allocate-IPv6-Prefix	2
+VALUE	Allocate-IP-Type		Allocate-IPv4-and-IPv6	3
