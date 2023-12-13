@@ -130,6 +130,19 @@ func TestIPv6Prefix(t *testing.T) {
 	}
 }
 
+func TestIPv6Prefix_issue118(t *testing.T) {
+	ipNet, err := IPv6Prefix([]byte{0x00, 0x40, 0x20, 0x01, 0x15, 0x30, 0x10, 0x0e})
+	if err != nil {
+		t.Fatalf("unexpected error: %s", err)
+	}
+	if expected := net.ParseIP("2001:1530:100e::"); !ipNet.IP.Equal(expected) {
+		t.Fatalf("got %v, expected %v", ipNet.IP, expected)
+	}
+	if ones, size := ipNet.Mask.Size(); ones != 64 || size != 128 {
+		t.Fatalf("got %v:%v, expected 64, 128", ones, size)
+	}
+}
+
 func ipNetEquals(a, b *net.IPNet) bool {
 	if a == nil && b == nil {
 		return true
