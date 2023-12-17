@@ -156,7 +156,8 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				return
 			}
 
-			if !s.InsecureSkipVerify && !IsAuthenticRequest(buff, secret) {
+			isAuthentic := IsAuthenticRequest(buff, secret)
+			if !s.InsecureSkipVerify && !isAuthentic {
 				s.logf("radius: packet validation failed; bad secret")
 				return
 			}
@@ -192,10 +193,11 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			}()
 
 			request := Request{
-				LocalAddr:  conn.LocalAddr(),
-				RemoteAddr: remoteAddr,
-				Packet:     packet,
-				ctx:        s.ctx,
+				LocalAddr:   conn.LocalAddr(),
+				RemoteAddr:  remoteAddr,
+				IsAuthentic: isAuthentic,
+				Packet:      packet,
+				ctx:         s.ctx,
 			}
 
 			s.Handler.ServeRADIUS(&response, &request)

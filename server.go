@@ -32,6 +32,8 @@ type Request struct {
 	// RemoteAddr is the address from which the incoming RADIUS request
 	// was sent.
 	RemoteAddr net.Addr
+	// IsAuthentic is true if the secret that was used matches the one we have
+	IsAuthentic bool
 
 	// Packet is the RADIUS packet sent in the request.
 	*Packet
