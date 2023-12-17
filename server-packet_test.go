@@ -186,3 +186,116 @@ func TestPacketServer_singleUse(t *testing.T) {
 		t.Fatalf("got err %v; expecting ErrServerShutdown", err)
 	}
 }
+
+func TestPacketServer_AllowRetransmission(t *testing.T) {
+	addr, err := net.ResolveUDPAddr("udp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	pc, err := net.ListenUDP("udp", addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	secret := []byte("123456790")
+	var receivedRequests = 0
+	var identifiers = make(map[byte]struct{})
+	server := PacketServer{
+		SecretSource:        StaticSecretSource(secret),
+		AllowRetransmission: true,
+		Handler: HandlerFunc(func(w ResponseWriter, r *Request) {
+			receivedRequests++
+			if _, ok := identifiers[r.Identifier]; ok {
+				return
+			}
+			identifiers[r.Identifier] = struct{}{}
+			time.Sleep(time.Millisecond * 200)
+			w.Write(r.Response(CodeAccessReject))
+		}),
+	}
+
+	var clientErr error
+	go func(rr int) {
+		defer server.Shutdown(context.Background())
+
+		packet := New(CodeAccessRequest, secret)
+		client := Client{
+			Retry: time.Millisecond * 10,
+		}
+		response, err := client.Exchange(context.Background(), packet, pc.LocalAddr().String())
+		if err != nil {
+			clientErr = err
+			return
+		}
+		if response.Code != CodeAccessReject {
+			clientErr = fmt.Errorf("got response code %v; expecting CodeAccessReject", response.Code)
+		}
+		if receivedRequests < 2 {
+			clientErr = fmt.Errorf("got %d requests; expecting at least 2", receivedRequests)
+		}
+	}(receivedRequests)
+
+	if err := server.Serve(pc); err != ErrServerShutdown {
+		t.Fatal(err)
+	}
+
+	server.Shutdown(context.Background())
+	if clientErr != nil {
+		t.Fatal(clientErr)
+	}
+}
+
+func TestPacketServer_BlockRetransmission(t *testing.T) {
+	addr, err := net.ResolveUDPAddr("udp", "localhost:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	pc, err := net.ListenUDP("udp", addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var receivedRequests = 0
+	var identifiers = make(map[byte]struct{})
+	secret := []byte("123456790")
+	server := PacketServer{
+		SecretSource: StaticSecretSource(secret),
+		Handler: HandlerFunc(func(w ResponseWriter, r *Request) {
+			receivedRequests++
+			if _, ok := identifiers[r.Identifier]; ok {
+				return
+			}
+			time.Sleep(time.Millisecond * 500)
+			w.Write(r.Response(CodeAccessReject))
+		}),
+	}
+
+	var clientErr error
+	go func(rr int) {
+		defer server.Shutdown(context.Background())
+
+		packet := New(CodeAccessRequest, secret)
+		client := Client{
+			Retry: time.Millisecond * 10,
+		}
+		response, err := client.Exchange(context.Background(), packet, pc.LocalAddr().String())
+		if err != nil {
+			clientErr = err
+			return
+		}
+		if response.Code != CodeAccessReject {
+			clientErr = fmt.Errorf("got response code %v; expecting CodeAccessReject", response.Code)
+		}
+		if receivedRequests != 1 {
+			clientErr = fmt.Errorf("got %d requests; expecting only 1", receivedRequests)
+		}
+	}(receivedRequests)
+
+	if err := server.Serve(pc); err != ErrServerShutdown {
+		t.Fatal(err)
+	}
+
+	server.Shutdown(context.Background())
+	if clientErr != nil {
+		t.Fatal(clientErr)
+	}
+}

@@ -46,6 +46,9 @@ type PacketServer struct {
 	// This should only be set to true for debugging purposes.
 	InsecureSkipVerify bool
 
+	// Don't block dupplicated requests (retransmissions).
+	AllowRetransmission bool
+
 	// ErrorLog specifies an optional logger for errors
 	// around packet accepting, processing, and validation.
 	// If nil, logging is done via the log package's standard logger.
@@ -167,29 +170,30 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 				return
 			}
 
-			key := requestKey{
-				IP:         remoteAddr.String(),
-				Identifier: packet.Identifier,
-			}
-
-			requestsLock.Lock()
-			if _, ok := requests[key]; ok {
+			if !s.AllowRetransmission {
+				key := requestKey{
+					IP:         remoteAddr.String(),
+					Identifier: packet.Identifier,
+				}
+				requestsLock.Lock()
+				if _, ok := requests[key]; ok {
+					requestsLock.Unlock()
+					return
+				}
+				requests[key] = struct{}{}
 				requestsLock.Unlock()
-				return
-			}
-			requests[key] = struct{}{}
-			requestsLock.Unlock()
 
+				//clean up afterwards
+				defer func() {
+					requestsLock.Lock()
+					delete(requests, key)
+					requestsLock.Unlock()
+				}()
+			}
 			response := packetResponseWriter{
 				conn: conn,
 				addr: remoteAddr,
 			}
-
-			defer func() {
-				requestsLock.Lock()
-				delete(requests, key)
-				requestsLock.Unlock()
-			}()
 
 			request := Request{
 				LocalAddr:  conn.LocalAddr(),
