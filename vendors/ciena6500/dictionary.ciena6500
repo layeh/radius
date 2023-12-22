@@ -1,0 +1,25 @@
+# Vendor-specific RADIUS dictionary for Ciena6500
+#
+VENDOR Ciena6500 562
+BEGIN-VENDOR Ciena6500
+#
+# Authentication attributes and values
+#
+
+# We may want these if we enable RADIUS accounting at some point...
+ATTRIBUTE Ciena-6500-Last-Login-Time            3   string
+ATTRIBUTE Ciena-6500-Last-Login-Location        4   string
+ATTRIBUTE Ciena-6500-Failed-Login-Attempts      5   integer
+ATTRIBUTE Ciena-6500-Last-Failed-Login-Location 6   string
+ATTRIBUTE Ciena-6500-Pwd-Exp-Warn               7   integer
+
+# Access-Accept Attribute
+ATTRIBUTE Ciena-6500-User-Priv-Code             216 integer
+
+VALUE Ciena-6500-User-Priv-Code        UPC-L1-MONITOR 1
+VALUE Ciena-6500-User-Priv-Code        UPC-L2-MAINT   2
+VALUE Ciena-6500-User-Priv-Code        UPC-L3-PROV    3
+VALUE Ciena-6500-User-Priv-Code        UPC-L4-ADMIN   4
+VALUE Ciena-6500-User-Priv-Code        UPC-L5-SURVEIL 5
+
+END-VENDOR Ciena6500
