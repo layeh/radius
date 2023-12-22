@@ -107,8 +107,9 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 	s.mu.Unlock()
 
 	type requestKey struct {
-		IP         string
-		Identifier byte
+		IP            string
+		Identifier    byte
+		Authenticator [16]byte
 	}
 
 	var (
@@ -168,8 +169,9 @@ func (s *PacketServer) Serve(conn net.PacketConn) error {
 			}
 
 			key := requestKey{
-				IP:         remoteAddr.String(),
-				Identifier: packet.Identifier,
+				IP:            remoteAddr.String(),
+				Identifier:    packet.Identifier,
+				Authenticator: packet.Authenticator,
 			}
 
 			requestsLock.Lock()
