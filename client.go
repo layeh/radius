@@ -6,13 +6,17 @@ import (
 	"time"
 )
 
+type Dialer interface {
+	DialContext(context.Context, string, string) (net.Conn, error)
+}
+
 // Client is a RADIUS client that can exchange packets with a RADIUS server.
 type Client struct {
 	// Network on which to make the connection. Defaults to "udp".
 	Net string
 
 	// Dialer to use when making the outgoing connections.
-	Dialer net.Dialer
+	Dialer Dialer
 
 	// Interval on which to resend packet (zero or negative value means no
 	// retry).
@@ -33,6 +37,7 @@ type Client struct {
 var DefaultClient = &Client{
 	Retry:           time.Second,
 	MaxPacketErrors: 10,
+	Dialer:          &net.Dialer{},
 }
 
 // Exchange uses DefaultClient to send the given RADIUS packet to the server at
@@ -56,6 +61,10 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 	connNet := c.Net
 	if connNet == "" {
 		connNet = "udp"
+	}
+
+	if c.Dialer == nil {
+		c.Dialer = &net.Dialer{}
 	}
 
 	conn, err := c.Dialer.DialContext(ctx, connNet, addr)
