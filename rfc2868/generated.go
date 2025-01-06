@@ -22,6 +22,19 @@ const (
 	TunnelServerAuthID_Type   radius.Type = 91
 )
 
+func init() {
+	radius.AddType(TunnelType_Type, "TunnelType")
+	radius.AddType(TunnelMediumType_Type, "TunnelMediumType")
+	radius.AddType(TunnelClientEndpoint_Type, "TunnelClientEndpoint")
+	radius.AddType(TunnelServerEndpoint_Type, "TunnelServerEndpoint")
+	radius.AddType(TunnelPassword_Type, "TunnelPassword")
+	radius.AddType(TunnelPrivateGroupID_Type, "TunnelPrivateGroupID")
+	radius.AddType(TunnelAssignmentID_Type, "TunnelAssignmentID")
+	radius.AddType(TunnelPreference_Type, "TunnelPreference")
+	radius.AddType(TunnelClientAuthID_Type, "TunnelClientAuthID")
+	radius.AddType(TunnelServerAuthID_Type, "TunnelServerAuthID")
+}
+
 type TunnelType uint32
 
 const (

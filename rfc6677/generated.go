@@ -12,6 +12,10 @@ const (
 	EAPLowerLayer_Type radius.Type = 163
 )
 
+func init() {
+	radius.AddType(EAPLowerLayer_Type, "EAPLowerLayer")
+}
+
 type EAPLowerLayer uint32
 
 const (

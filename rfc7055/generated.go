@@ -13,6 +13,13 @@ const (
 	GSSAcceptorRealmName_Type        radius.Type = 167
 )
 
+func init() {
+	radius.AddType(GSSAcceptorServiceName_Type, "GSSAcceptorServiceName")
+	radius.AddType(GSSAcceptorHostName_Type, "GSSAcceptorHostName")
+	radius.AddType(GSSAcceptorServiceSpecifics_Type, "GSSAcceptorServiceSpecifics")
+	radius.AddType(GSSAcceptorRealmName_Type, "GSSAcceptorRealmName")
+}
+
 func GSSAcceptorServiceName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

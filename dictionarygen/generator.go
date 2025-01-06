@@ -277,6 +277,14 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 		p(&w, `)`)
 	}
 
+	p(&w)
+	p(&w, `func init() {`)
+	for _, attr := range attrs {
+		p(&w, `	radius.AddType(`, identifier(attr.Name), `_Type, "`, identifier(attr.Name), `")`)
+	}
+	p(&w, `}`)
+	p(&w)
+
 	for _, exAttr := range externalAttributes {
 		p(&w)
 		p(&w, `func init() {`)

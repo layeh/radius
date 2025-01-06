@@ -17,6 +17,15 @@ const (
 	FramedIPv6Pool_Type    radius.Type = 100
 )
 
+func init() {
+	radius.AddType(NASIPv6Address_Type, "NASIPv6Address")
+	radius.AddType(FramedInterfaceID_Type, "FramedInterfaceID")
+	radius.AddType(FramedIPv6Prefix_Type, "FramedIPv6Prefix")
+	radius.AddType(LoginIPv6Host_Type, "LoginIPv6Host")
+	radius.AddType(FramedIPv6Route_Type, "FramedIPv6Route")
+	radius.AddType(FramedIPv6Pool_Type, "FramedIPv6Pool")
+}
+
 func NASIPv6Address_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPv6Addr(value)

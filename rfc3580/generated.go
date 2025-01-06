@@ -9,6 +9,9 @@ import (
 )
 
 func init() {
+}
+
+func init() {
 	AcctTerminateCause_Strings[AcctTerminateCause_Value_SupplicantRestart] = "Supplicant-Restart"
 	AcctTerminateCause_Strings[AcctTerminateCause_Value_ReauthenticationFailure] = "Reauthentication-Failure"
 	AcctTerminateCause_Strings[AcctTerminateCause_Value_PortReinit] = "Port-Reinit"

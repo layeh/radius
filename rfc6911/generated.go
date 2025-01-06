@@ -16,6 +16,14 @@ const (
 	StatefulIPv6AddressPool_Type radius.Type = 172
 )
 
+func init() {
+	radius.AddType(FramedIPv6Address_Type, "FramedIPv6Address")
+	radius.AddType(DNSServerIPv6Address_Type, "DNSServerIPv6Address")
+	radius.AddType(RouteIPv6Information_Type, "RouteIPv6Information")
+	radius.AddType(DelegatedIPv6PrefixPool_Type, "DelegatedIPv6PrefixPool")
+	radius.AddType(StatefulIPv6AddressPool_Type, "StatefulIPv6AddressPool")
+}
+
 func FramedIPv6Address_Add(p *radius.Packet, value net.IP) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPv6Addr(value)

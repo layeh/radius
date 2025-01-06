@@ -29,6 +29,29 @@ const (
 	SIPAOR_Type               radius.Type = 122
 )
 
+func init() {
+	radius.AddType(DigestResponse_Type, "DigestResponse")
+	radius.AddType(DigestRealm_Type, "DigestRealm")
+	radius.AddType(DigestNonce_Type, "DigestNonce")
+	radius.AddType(DigestResponseAuth_Type, "DigestResponseAuth")
+	radius.AddType(DigestNextnonce_Type, "DigestNextnonce")
+	radius.AddType(DigestMethod_Type, "DigestMethod")
+	radius.AddType(DigestURI_Type, "DigestURI")
+	radius.AddType(DigestQop_Type, "DigestQop")
+	radius.AddType(DigestAlgorithm_Type, "DigestAlgorithm")
+	radius.AddType(DigestEntityBodyHash_Type, "DigestEntityBodyHash")
+	radius.AddType(DigestCNonce_Type, "DigestCNonce")
+	radius.AddType(DigestNonceCount_Type, "DigestNonceCount")
+	radius.AddType(DigestUsername_Type, "DigestUsername")
+	radius.AddType(DigestOpaque_Type, "DigestOpaque")
+	radius.AddType(DigestAuthParam_Type, "DigestAuthParam")
+	radius.AddType(DigestAKAAuts_Type, "DigestAKAAuts")
+	radius.AddType(DigestDomain_Type, "DigestDomain")
+	radius.AddType(DigestStale_Type, "DigestStale")
+	radius.AddType(DigestHA1_Type, "DigestHA1")
+	radius.AddType(SIPAOR_Type, "SIPAOR")
+}
+
 func DigestResponse_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

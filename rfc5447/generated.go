@@ -13,6 +13,11 @@ const (
 	MIP6HomeLinkPrefix_Type radius.Type = 125
 )
 
+func init() {
+	radius.AddType(MIP6FeatureVector_Type, "MIP6FeatureVector")
+	radius.AddType(MIP6HomeLinkPrefix_Type, "MIP6HomeLinkPrefix")
+}
+
 type MIP6FeatureVector uint64
 
 var MIP6FeatureVector_Strings = map[MIP6FeatureVector]string{}

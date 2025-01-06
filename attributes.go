@@ -2,10 +2,13 @@ package radius
 
 import (
 	"errors"
+	"strconv"
 )
 
 // Type is the RADIUS attribute type.
 type Type int
+
+var _TypeName map[Type]string = map[Type]string{}
 
 // TypeInvalid is a Type that can be used to represent an invalid RADIUS
 // attribute type.
@@ -137,4 +140,15 @@ func AttributesEncodedLen(a Attributes) (int, error) {
 		n += 1 + 1 + len(attr.Attribute)
 	}
 	return n, nil
+}
+
+func AddType(t Type, name string) {
+	_TypeName[t] = name
+}
+
+func (t Type) String() string {
+	if s, ok := _TypeName[t]; ok {
+		return s
+	}
+	return "Type(" + strconv.FormatUint(uint64(t), 10) + ")"
 }

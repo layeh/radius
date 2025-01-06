@@ -18,6 +18,16 @@ const (
 	RequestedLocationInfo_Type       radius.Type = 132
 )
 
+func init() {
+	radius.AddType(OperatorName_Type, "OperatorName")
+	radius.AddType(LocationInformation_Type, "LocationInformation")
+	radius.AddType(LocationData_Type, "LocationData")
+	radius.AddType(BasicLocationPolicyRules_Type, "BasicLocationPolicyRules")
+	radius.AddType(ExtendedLocationPolicyRules_Type, "ExtendedLocationPolicyRules")
+	radius.AddType(LocationCapable_Type, "LocationCapable")
+	radius.AddType(RequestedLocationInfo_Type, "RequestedLocationInfo")
+}
+
 func OperatorName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

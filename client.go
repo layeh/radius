@@ -27,6 +27,8 @@ type Client struct {
 	// InsecureSkipVerify controls whether the client should skip verifying
 	// response packets received.
 	InsecureSkipVerify bool
+
+	Timeout time.Duration
 }
 
 // DefaultClient is the RADIUS client used by the Exchange function.
@@ -98,6 +100,9 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 
 	var incoming [MaxPacketLength]byte
 	for {
+		if c.Timeout > 0 {
+			conn.SetReadDeadline(time.Now().Add(c.Timeout))
+		}
 		n, err := conn.Read(incoming[:])
 		if err != nil {
 			select {

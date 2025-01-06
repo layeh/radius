@@ -23,6 +23,21 @@ const (
 	AcctLinkCount_Type      radius.Type = 51
 )
 
+func init() {
+	radius.AddType(AcctStatusType_Type, "AcctStatusType")
+	radius.AddType(AcctDelayTime_Type, "AcctDelayTime")
+	radius.AddType(AcctInputOctets_Type, "AcctInputOctets")
+	radius.AddType(AcctOutputOctets_Type, "AcctOutputOctets")
+	radius.AddType(AcctSessionID_Type, "AcctSessionID")
+	radius.AddType(AcctAuthentic_Type, "AcctAuthentic")
+	radius.AddType(AcctSessionTime_Type, "AcctSessionTime")
+	radius.AddType(AcctInputPackets_Type, "AcctInputPackets")
+	radius.AddType(AcctOutputPackets_Type, "AcctOutputPackets")
+	radius.AddType(AcctTerminateCause_Type, "AcctTerminateCause")
+	radius.AddType(AcctMultiSessionID_Type, "AcctMultiSessionID")
+	radius.AddType(AcctLinkCount_Type, "AcctLinkCount")
+}
+
 type AcctStatusType uint32
 
 const (

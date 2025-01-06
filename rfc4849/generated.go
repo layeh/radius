@@ -10,6 +10,10 @@ const (
 	NASFilterRule_Type radius.Type = 92
 )
 
+func init() {
+	radius.AddType(NASFilterRule_Type, "NASFilterRule")
+}
+
 func NASFilterRule_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

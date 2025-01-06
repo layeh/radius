@@ -7,6 +7,9 @@ import (
 )
 
 func init() {
+}
+
+func init() {
 	NASPortType_Strings[NASPortType_Value_PPPoA] = "PPPoA"
 	NASPortType_Strings[NASPortType_Value_PPPoEoA] = "PPPoEoA"
 	NASPortType_Strings[NASPortType_Value_PPPoEoE] = "PPPoEoE"

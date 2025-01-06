@@ -18,6 +18,16 @@ const (
 	PKMAuthKey_Type         radius.Type = 143
 )
 
+func init() {
+	radius.AddType(PKMSSCert_Type, "PKMSSCert")
+	radius.AddType(PKMCACert_Type, "PKMCACert")
+	radius.AddType(PKMConfigSettings_Type, "PKMConfigSettings")
+	radius.AddType(PKMCryptosuiteList_Type, "PKMCryptosuiteList")
+	radius.AddType(PKMSAID_Type, "PKMSAID")
+	radius.AddType(PKMSADescriptor_Type, "PKMSADescriptor")
+	radius.AddType(PKMAuthKey_Type, "PKMAuthKey")
+}
+
 func PKMSSCert_Get(p *radius.Packet) (value []byte) {
 	value, _ = PKMSSCert_Lookup(p)
 	return

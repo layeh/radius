@@ -12,6 +12,10 @@ const (
 	DelegatedIPv6Prefix_Type radius.Type = 123
 )
 
+func init() {
+	radius.AddType(DelegatedIPv6Prefix_Type, "DelegatedIPv6Prefix")
+}
+
 func DelegatedIPv6Prefix_Add(p *radius.Packet, value *net.IPNet) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewIPv6Prefix(value)

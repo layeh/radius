@@ -15,6 +15,10 @@ const (
 )
 
 func init() {
+	radius.AddType(ErrorCause_Type, "ErrorCause")
+}
+
+func init() {
 	ServiceType_Strings[ServiceType_Value_AuthorizeOnly] = "Authorize-Only"
 }
 

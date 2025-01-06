@@ -10,6 +10,10 @@ const (
 	EAPKeyName_Type radius.Type = 102
 )
 
+func init() {
+	radius.AddType(EAPKeyName_Type, "EAPKeyName")
+}
+
 func EAPKeyName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

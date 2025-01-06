@@ -18,6 +18,13 @@ const (
 )
 
 func init() {
+	radius.AddType(FramedManagement_Type, "FramedManagement")
+	radius.AddType(ManagementTransportProtection_Type, "ManagementTransportProtection")
+	radius.AddType(ManagementPolicyID_Type, "ManagementPolicyID")
+	radius.AddType(ManagementPrivilegeLevel_Type, "ManagementPrivilegeLevel")
+}
+
+func init() {
 	ServiceType_Strings[ServiceType_Value_FramedManagement] = "Framed-Management"
 }
 

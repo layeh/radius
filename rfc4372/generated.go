@@ -11,6 +11,10 @@ const (
 )
 
 func init() {
+	radius.AddType(ChargeableUserIdentity_Type, "ChargeableUserIdentity")
+}
+
+func init() {
 }
 
 const ()

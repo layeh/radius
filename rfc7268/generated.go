@@ -29,6 +29,26 @@ const (
 	WLANRFBand_Type             radius.Type = 190
 )
 
+func init() {
+	radius.AddType(AllowedCalledStationID_Type, "AllowedCalledStationID")
+	radius.AddType(EAPPeerID_Type, "EAPPeerID")
+	radius.AddType(EAPServerID_Type, "EAPServerID")
+	radius.AddType(MobilityDomainID_Type, "MobilityDomainID")
+	radius.AddType(PreauthTimeout_Type, "PreauthTimeout")
+	radius.AddType(NetworkIDName_Type, "NetworkIDName")
+	radius.AddType(EAPoLAnnouncement_Type, "EAPoLAnnouncement")
+	radius.AddType(WLANHESSID_Type, "WLANHESSID")
+	radius.AddType(WLANVenueInfo_Type, "WLANVenueInfo")
+	radius.AddType(WLANVenueLanguage_Type, "WLANVenueLanguage")
+	radius.AddType(WLANVenueName_Type, "WLANVenueName")
+	radius.AddType(WLANReasonCode_Type, "WLANReasonCode")
+	radius.AddType(WLANPairwiseCipher_Type, "WLANPairwiseCipher")
+	radius.AddType(WLANGroupCipher_Type, "WLANGroupCipher")
+	radius.AddType(WLANAKMSuite_Type, "WLANAKMSuite")
+	radius.AddType(WLANGroupMgmtCipher_Type, "WLANGroupMgmtCipher")
+	radius.AddType(WLANRFBand_Type, "WLANRFBand")
+}
+
 func AllowedCalledStationID_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

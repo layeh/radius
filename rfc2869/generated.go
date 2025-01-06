@@ -31,6 +31,27 @@ const (
 	FramedPool_Type            radius.Type = 88
 )
 
+func init() {
+	radius.AddType(AcctInputGigawords_Type, "AcctInputGigawords")
+	radius.AddType(AcctOutputGigawords_Type, "AcctOutputGigawords")
+	radius.AddType(EventTimestamp_Type, "EventTimestamp")
+	radius.AddType(ARAPPassword_Type, "ARAPPassword")
+	radius.AddType(ARAPFeatures_Type, "ARAPFeatures")
+	radius.AddType(ARAPZoneAccess_Type, "ARAPZoneAccess")
+	radius.AddType(ARAPSecurity_Type, "ARAPSecurity")
+	radius.AddType(ARAPSecurityData_Type, "ARAPSecurityData")
+	radius.AddType(PasswordRetry_Type, "PasswordRetry")
+	radius.AddType(Prompt_Type, "Prompt")
+	radius.AddType(ConnectInfo_Type, "ConnectInfo")
+	radius.AddType(ConfigurationToken_Type, "ConfigurationToken")
+	radius.AddType(EAPMessage_Type, "EAPMessage")
+	radius.AddType(MessageAuthenticator_Type, "MessageAuthenticator")
+	radius.AddType(ARAPChallengeResponse_Type, "ARAPChallengeResponse")
+	radius.AddType(AcctInterimInterval_Type, "AcctInterimInterval")
+	radius.AddType(NASPortID_Type, "NASPortID")
+	radius.AddType(FramedPool_Type, "FramedPool")
+}
+
 type AcctInputGigawords uint32
 
 var AcctInputGigawords_Strings = map[AcctInputGigawords]string{}

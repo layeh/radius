@@ -10,6 +10,10 @@ const (
 	DSLiteTunnelName_Type radius.Type = 144
 )
 
+func init() {
+	radius.AddType(DSLiteTunnelName_Type, "DSLiteTunnelName")
+}
+
 func DSLiteTunnelName_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

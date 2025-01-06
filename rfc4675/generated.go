@@ -15,6 +15,13 @@ const (
 	UserPriorityTable_Type radius.Type = 59
 )
 
+func init() {
+	radius.AddType(EgressVLANID_Type, "EgressVLANID")
+	radius.AddType(IngressFilters_Type, "IngressFilters")
+	radius.AddType(EgressVLANName_Type, "EgressVLANName")
+	radius.AddType(UserPriorityTable_Type, "UserPriorityTable")
+}
+
 type EgressVLANID uint32
 
 var EgressVLANID_Strings = map[EgressVLANID]string{}

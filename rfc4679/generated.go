@@ -13,6 +13,9 @@ const (
 	_ADSLForum_VendorID = 3561
 )
 
+func init() {
+}
+
 func _ADSLForum_AddVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
 	var vsa radius.Attribute
 	vendor := make(radius.Attribute, 2+len(attr))

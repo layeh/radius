@@ -7,6 +7,9 @@ import (
 )
 
 func init() {
+}
+
+func init() {
 	ErrorCause_Strings[ErrorCause_Value_InvalidAttributeValue] = "Invalid-Attribute-Value"
 	ErrorCause_Strings[ErrorCause_Value_MultipleSessionSelectionUnsupported] = "Multiple-Session-Selection-Unsupported"
 }

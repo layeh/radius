@@ -27,6 +27,25 @@ const (
 	PMIP6VisitedIPv4Gateway_Type        radius.Type = 162
 )
 
+func init() {
+	radius.AddType(MobileNodeIdentifier_Type, "MobileNodeIdentifier")
+	radius.AddType(ServiceSelection_Type, "ServiceSelection")
+	radius.AddType(PMIP6HomeLMAIPv6Address_Type, "PMIP6HomeLMAIPv6Address")
+	radius.AddType(PMIP6VisitedLMAIPv6Address_Type, "PMIP6VisitedLMAIPv6Address")
+	radius.AddType(PMIP6HomeLMAIPv4Address_Type, "PMIP6HomeLMAIPv4Address")
+	radius.AddType(PMIP6VisitedLMAIPv4Address_Type, "PMIP6VisitedLMAIPv4Address")
+	radius.AddType(PMIP6HomeHNPrefix_Type, "PMIP6HomeHNPrefix")
+	radius.AddType(PMIP6VisitedHNPrefix_Type, "PMIP6VisitedHNPrefix")
+	radius.AddType(PMIP6HomeInterfaceID_Type, "PMIP6HomeInterfaceID")
+	radius.AddType(PMIP6VisitedInterfaceID_Type, "PMIP6VisitedInterfaceID")
+	radius.AddType(PMIP6HomeDHCP4ServerAddress_Type, "PMIP6HomeDHCP4ServerAddress")
+	radius.AddType(PMIP6VisitedDHCP4ServerAddress_Type, "PMIP6VisitedDHCP4ServerAddress")
+	radius.AddType(PMIP6HomeDHCP6ServerAddress_Type, "PMIP6HomeDHCP6ServerAddress")
+	radius.AddType(PMIP6VisitedDHCP6ServerAddress_Type, "PMIP6VisitedDHCP6ServerAddress")
+	radius.AddType(PMIP6HomeIPv4Gateway_Type, "PMIP6HomeIPv4Gateway")
+	radius.AddType(PMIP6VisitedIPv4Gateway_Type, "PMIP6VisitedIPv4Gateway")
+}
+
 func MobileNodeIdentifier_Add(p *radius.Packet, value []byte) (err error) {
 	var a radius.Attribute
 	a, err = radius.NewBytes(value)

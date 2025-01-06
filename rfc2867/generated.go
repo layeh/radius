@@ -16,6 +16,11 @@ const (
 )
 
 func init() {
+	radius.AddType(AcctTunnelConnection_Type, "AcctTunnelConnection")
+	radius.AddType(AcctTunnelPacketsLost_Type, "AcctTunnelPacketsLost")
+}
+
+func init() {
 	AcctStatusType_Strings[AcctStatusType_Value_TunnelStart] = "Tunnel-Start"
 	AcctStatusType_Strings[AcctStatusType_Value_TunnelStop] = "Tunnel-Stop"
 	AcctStatusType_Strings[AcctStatusType_Value_TunnelReject] = "Tunnel-Reject"
