@@ -87,9 +87,9 @@ func (g *Generator) genVendor(w io.Writer, vendor *dictionary.Vendor) {
 	p(w, `			i++`)
 	p(w, `			continue`)
 	p(w, `		}`)
-	p(w, `		for j := 0; len(vsa[j:]) >= 3; {`)
+	p(w, `		for j := 0; len(vsa)-j >= 3; {`)
 	p(w, `			vsaTyp, vsaLen := vsa[0], vsa[1]`)
-	p(w, `			if int(vsaLen) > len(vsa[j:]) || vsaLen < 3 {`) // malformed
+	p(w, `			if int(vsaLen) > len(vsa)-j || vsaLen < 3 {`) // malformed
 	p(w, `				i++`)
 	p(w, `				break`)
 	p(w, `			}`)
@@ -123,7 +123,7 @@ func (g *Generator) genVendor(w io.Writer, vendor *dictionary.Vendor) {
 	p(w, `			continue`)
 	p(w, `		}`)
 	p(w, `		offset := 0`)
-	p(w, `		for len(vsa[offset:]) >= 3 {`)
+	p(w, `		for len(vsa)-offset >= 3 {`)
 	p(w, `			vsaTyp, vsaLen := vsa[offset], vsa[offset+1]`)
 	p(w, `			if int(vsaLen) > len(vsa) || vsaLen < 3 {`) // malformed
 	p(w, `				continue vsaLoop`)
