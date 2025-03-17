@@ -26,6 +26,10 @@ func (r *packetResponseWriter) Write(packet *Packet) error {
 	return nil
 }
 
+type Logger interface {
+	Printf(format string, v ...interface{})
+}
+
 // PacketServer listens for RADIUS requests on a packet-based protocols (e.g.
 // UDP).
 type PacketServer struct {
@@ -49,7 +53,7 @@ type PacketServer struct {
 	// ErrorLog specifies an optional logger for errors
 	// around packet accepting, processing, and validation.
 	// If nil, logging is done via the log package's standard logger.
-	ErrorLog *log.Logger
+	ErrorLog Logger
 
 	shutdownRequested int32
 
