@@ -43,6 +43,12 @@ func Exchange(ctx context.Context, packet *Packet, addr string) (*Packet, error)
 
 // Exchange sends the packet to the given server and waits for a response. ctx
 // must be non-nil.
+//
+// If the request packet cannot be encoded, the returned error is a
+// *MalformedRequestError; such an error indicates a problem with the request
+// and will not be resolved by retrying against another server. Network-level
+// failures are returned as their underlying error (which usually implements
+// net.Error), and an expired or cancelled ctx is reported via ctx.Err().
 func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Packet, error) {
 	if ctx == nil {
 		panic("nil context")
@@ -50,7 +56,7 @@ func (c *Client) Exchange(ctx context.Context, packet *Packet, addr string) (*Pa
 
 	wire, err := packet.Encode()
 	if err != nil {
-		return nil, err
+		return nil, &MalformedRequestError{Err: err}
 	}
 
 	connNet := c.Net

@@ -2,6 +2,7 @@ package radius
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -159,4 +160,41 @@ func TestClient_Exchange_nilContext(t *testing.T) {
 	req := New(CodeAccessRequest, []byte(``))
 	//lint:ignore SA1012 This test is specifically checking for a nil context
 	Exchange(nil, req, "")
+}
+
+func TestClient_Exchange_malformedRequest(t *testing.T) {
+	// A packet with an unknown Code cannot be encoded.
+	req := New(CodeAccessRequest, []byte(`secret`))
+	req.Code = Code(255)
+
+	client := Client{}
+	resp, err := client.Exchange(context.Background(), req, "127.0.0.1:1")
+	if resp != nil {
+		t.Fatalf("got non-nil response (%v); expected nil", resp)
+	}
+	if err == nil {
+		t.Fatal("got nil error; expected one")
+	}
+
+	var malformed *MalformedRequestError
+	if !errors.As(err, &malformed) {
+		t.Fatalf("got error %T (%v); expecting *MalformedRequestError", err, err)
+	}
+	if malformed.Unwrap() == nil {
+		t.Fatal("got nil from Unwrap; expected the underlying encode error")
+	}
+
+	// A network error must not be reported as a MalformedRequestError, so that
+	// callers can tell encoding problems apart from server/connection failures.
+	netReq := New(CodeAccessRequest, []byte(`secret`))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond*50)
+	defer cancel()
+	// 203.0.113.0/24 (TEST-NET-3) is reserved and unroutable.
+	_, netErr := client.Exchange(ctx, netReq, "203.0.113.1:1")
+	if netErr == nil {
+		t.Fatal("got nil error for unreachable server; expected one")
+	}
+	if errors.As(netErr, &malformed) {
+		t.Fatalf("network error reported as *MalformedRequestError: %v", netErr)
+	}
 }
