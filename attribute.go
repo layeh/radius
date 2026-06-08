@@ -474,14 +474,14 @@ func IPv6Prefix(a Attribute) (*net.IPNet, error) {
 	ip := make(net.IP, net.IPv6len)
 	copy(ip, a[2:])
 
-	bit := uint(prefixLength % 8)
-	for octet := prefixLength / 8; octet < len(ip); octet++ {
-		for ; bit < 8; bit++ {
-			if ip[octet]&(1<<(7-bit)) != 0 {
-				return nil, errors.New("invalid prefix data")
-			}
-		}
-		bit = 0
+	// Clear any bits beyond the prefix length. RFC 3162 requires these bits to
+	// be zero, but some equipment leaves them set; tolerate that here instead
+	// of rejecting the attribute.
+	if bit := uint(prefixLength % 8); bit != 0 {
+		ip[prefixLength/8] &^= 0xff >> bit
+	}
+	for octet := (prefixLength + 7) / 8; octet < len(ip); octet++ {
+		ip[octet] = 0
 	}
 
 	return &net.IPNet{

@@ -143,6 +143,39 @@ func TestIPv6Prefix_issue118(t *testing.T) {
 	}
 }
 
+func TestIPv6Prefix_issue119(t *testing.T) {
+	tests := []struct {
+		Name     string
+		Attr     []byte
+		Expected string
+	}{
+		{
+			// /64 prefix sent with the host bits (::1) still set.
+			Name:     "host bits set",
+			Attr:     []byte{0x00, 0x40, 0x20, 0x01, 0x0d, 0xb8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01},
+			Expected: "2001:db8::/64",
+		},
+		{
+			// /47 prefix with a non-zero bit beyond the prefix length.
+			Name:     "non-octet boundary with trailing bit",
+			Attr:     []byte{0x00, 0x2f, 0x20, 0x01, 0x15, 0x30, 0x10, 0x0f},
+			Expected: "2001:1530:100e::/47",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			ipNet, err := IPv6Prefix(tt.Attr)
+			if err != nil {
+				t.Fatalf("unexpected error: %s", err)
+			}
+			if got := ipNet.String(); got != tt.Expected {
+				t.Fatalf("got %s, expected %s", got, tt.Expected)
+			}
+		})
+	}
+}
+
 func ipNetEquals(a, b *net.IPNet) bool {
 	if a == nil && b == nil {
 		return true
