@@ -1139,6 +1139,7 @@ func EAPMessage_Set(p *radius.Packet, value []byte) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(EAPMessage_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
@@ -1162,6 +1163,7 @@ func EAPMessage_SetString(p *radius.Packet, value string) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(EAPMessage_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }

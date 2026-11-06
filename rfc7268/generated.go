@@ -650,6 +650,7 @@ func EAPoLAnnouncement_Set(p *radius.Packet, value []byte) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(EAPoLAnnouncement_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
@@ -673,6 +674,7 @@ func EAPoLAnnouncement_SetString(p *radius.Packet, value string) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(EAPoLAnnouncement_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }

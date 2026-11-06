@@ -89,6 +89,7 @@ func PKMSSCert_Set(p *radius.Packet, value []byte) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(PKMSSCert_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
@@ -112,6 +113,7 @@ func PKMSSCert_SetString(p *radius.Packet, value string) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(PKMSSCert_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
@@ -191,6 +193,7 @@ func PKMCACert_Set(p *radius.Packet, value []byte) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(PKMCACert_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
@@ -214,6 +217,7 @@ func PKMCACert_SetString(p *radius.Packet, value string) (err error) {
 		})
 		value = value[n:]
 	}
+	p.Attributes.Del(PKMCACert_Type)
 	p.Attributes = append(p.Attributes, attrs...)
 	return
 }
