@@ -145,6 +145,7 @@ func (g *Generator) Generate(dict *dictionary.Dictionary) ([]byte, error) {
 
 	vendors := make([]*dictionary.Vendor, 0, len(dict.Vendors))
 	for _, vendor := range dict.Vendors {
+		baseImports["errors"] = struct{}{}
 		if vendor.GetLengthOctets() != 1 || vendor.GetTypeOctets() != 1 {
 			return nil, errors.New("dictionarygen: cannot generate code for " + vendor.Name)
 		}

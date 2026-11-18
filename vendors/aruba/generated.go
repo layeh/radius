@@ -4,6 +4,7 @@ package aruba
 
 import (
 	"crypto/rand"
+	"errors"
 	"net"
 	"strconv"
 
@@ -78,6 +79,9 @@ func _Aruba_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, ok 
 }
 
 func _Aruba_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
+	if len(attr) > 247 {
+		return errors.New("value too long")
+	}
 	for i := 0; i < len(p.Attributes); {
 		avp := p.Attributes[i]
 		if avp.Type != rfc2865.VendorSpecific_Type {

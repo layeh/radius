@@ -3,6 +3,7 @@
 package mikrotik
 
 import (
+	"errors"
 	"net"
 	"strconv"
 
@@ -77,6 +78,9 @@ func _Mikrotik_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute, 
 }
 
 func _Mikrotik_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
+	if len(attr) > 247 {
+		return errors.New("value too long")
+	}
 	for i := 0; i < len(p.Attributes); {
 		avp := p.Attributes[i]
 		if avp.Type != rfc2865.VendorSpecific_Type {

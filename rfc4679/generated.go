@@ -3,6 +3,7 @@
 package rfc4679
 
 import (
+	"errors"
 	"strconv"
 
 	"layeh.com/radius"
@@ -76,6 +77,9 @@ func _ADSLForum_LookupVendor(p *radius.Packet, typ byte) (attr radius.Attribute,
 }
 
 func _ADSLForum_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {
+	if len(attr) > 247 {
+		return errors.New("value too long")
+	}
 	for i := 0; i < len(p.Attributes); {
 		avp := p.Attributes[i]
 		if avp.Type != rfc2865.VendorSpecific_Type {
