@@ -76,6 +76,9 @@ func (g *Generator) genVendor(w io.Writer, vendor *dictionary.Vendor) {
 
 	p(w)
 	p(w, `func _`, ident, `_SetVendor(p *radius.Packet, typ byte, attr radius.Attribute) (err error) {`)
+	p(w, `	if len(attr) > 247 {`)
+	p(w, `		return errors.New("value too long")`)
+	p(w, `	}`)
 	p(w, `	for i := 0; i < len(p.Attributes); {`)
 	p(w, `		avp := p.Attributes[i]`)
 	p(w, `		if avp.Type != rfc2865.VendorSpecific_Type {`)
